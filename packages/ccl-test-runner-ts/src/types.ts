@@ -9,7 +9,6 @@ import { err, ok, type Result } from "true-myth/result";
 
 export type { Err, Ok } from "true-myth/result";
 // Re-export Result types from true-myth
-// biome-ignore lint/performance/noBarrelFile: This is an intentional re-export entrypoint
 export { err, ok, Result } from "true-myth/result";
 
 // ============================================================================

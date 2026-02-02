@@ -294,7 +294,6 @@ function countLeadingWhitespace(line: string): number {
  *
  * @beta
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Hierarchy building requires handling multiple entry types (empty keys, nested CCL, terminals) and duplicate key merging
 export function buildHierarchy(
 	entries: Entry[],
 ): Result<CCLObject, ParseError> {
@@ -364,7 +363,6 @@ function isPlainObject(value: unknown): value is CCLObject {
  * - If both are arrays, concatenate
  * - Otherwise, the second value takes precedence
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Object merging requires handling all type combinations (object+object, array+array, string+string, mixed types)
 function mergeObjects(base: CCLObject, overlay: CCLObject): CCLObject {
 	const result: CCLObject = { ...base };
 

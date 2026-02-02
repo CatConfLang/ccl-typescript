@@ -39,12 +39,20 @@
 			"allowTrailingCommas": true,
 		},
 	},
+	"css": {
+		"parser": {
+			"cssModules": true
+		},
+		"linter": {
+			"enabled": false
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true,
 			"correctness": {
-				"useImportExtensions": "error",
+				"useImportExtensions": "off",
 				"noUnusedImports": "error",
 				"noUnusedVariables": "error",
 			},
@@ -59,11 +67,26 @@
 	},
 	"overrides": [
 		{
-			"includes": ["*.config.*", "vitest.config.*"],
+			"includes": ["**/*.config.*", "**/vitest.config.*", "**/*-reporter.ts", "**/*.mjs"],
 			"linter": {
 				"rules": {
 					"style": {
 						"noDefaultExport": "off",
+					},
+				},
+			},
+		},
+		{
+			"includes": ["**/*.svelte"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noDefaultExport": "off",
+					},
+					"correctness": {
+						"noUnusedVariables": "off",
+						"noUnusedImports": "off",
+						"noUnusedFunctionParameters": "off"
 					},
 				},
 			},

@@ -79,7 +79,6 @@ describe("CCL (Declarative API)", async () => {
 				switch (categorization.type) {
 					case "skip":
 						// Function or feature not supported - skip
-						// biome-ignore lint/suspicious/noSkippedTests: Intentional capability-based skip
 						test.skip(testCase.name, () => {});
 						break;
 

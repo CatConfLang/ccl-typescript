@@ -6,7 +6,7 @@ interface Props {
 	};
 }
 
-let { entry }: Props = $props();
+const { entry }: Props = $props();
 
 // Visualize whitespace like the terminal version
 function visualizeWhitespace(s: string): string {

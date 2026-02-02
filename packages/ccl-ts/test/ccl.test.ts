@@ -58,19 +58,16 @@ function runAssertions(result: CCLTestResult): void {
 	// as a count of the output - it's typically 1 to indicate a single valid object result
 	if (expected.count !== undefined && expected.entries !== undefined) {
 		const actualCount = Array.isArray(result.output) ? result.output.length : 0;
-		// biome-ignore lint/suspicious/noMisplacedAssertion: helper function called from within test()
 		expect(actualCount).toBe(expected.count);
 	}
 
 	// Check entries if expected
 	if (expected.entries !== undefined) {
-		// biome-ignore lint/suspicious/noMisplacedAssertion: helper function called from within test()
 		expect(result.output).toEqual(expected.entries);
 	}
 
 	// Check object if expected
 	if (expected.object !== undefined) {
-		// biome-ignore lint/suspicious/noMisplacedAssertion: helper function called from within test()
 		expect(result.output).toEqual(expected.object);
 	}
 }
@@ -153,7 +150,6 @@ describe("CCL", async () => {
 				switch (categorization.type) {
 					case "skip":
 						// Function or feature not supported - skip
-						// biome-ignore lint/suspicious/noSkippedTests: Intentional capability-based skip
 						test.skip(testCase.name, () => {});
 						break;
 

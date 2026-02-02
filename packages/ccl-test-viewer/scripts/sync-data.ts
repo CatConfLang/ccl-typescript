@@ -10,10 +10,10 @@
 // @biomejs/js-api is currently in alpha, but provides programmatic formatting
 // See: https://github.com/biomejs/biome/tree/main/packages/@biomejs/js-api
 import { Biome } from "@biomejs/js-api/nodejs";
-import { mkdir, readdir, readFile, stat, writeFile } from "fs/promises";
-import { createRequire } from "module";
-import { dirname, join, relative, resolve } from "path";
-import { fileURLToPath } from "url";
+import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
+import { dirname, join, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
 
@@ -88,7 +88,7 @@ interface SearchIndex {
 async function ensureDir(path: string): Promise<void> {
 	try {
 		await mkdir(path, { recursive: true });
-	} catch (error) {
+	} catch (_error) {
 		// Directory might already exist
 	}
 }
@@ -101,7 +101,7 @@ async function getGitHubToken(): Promise<string | undefined> {
 
 	// Try to get token from gh CLI
 	try {
-		const { execSync } = await import("child_process");
+		const { execSync } = await import("node:child_process");
 		const token = execSync("gh auth token", { encoding: "utf-8" }).trim();
 		return token;
 	} catch {
@@ -352,9 +352,9 @@ async function generateTypeDefinitions(
 
 	for (const category of categories) {
 		for (const test of category.tests) {
-			test.functions.forEach((f) => allFunctions.add(f));
-			test.features.forEach((f) => allFeatures.add(f));
-			test.behaviors.forEach((b) => allBehaviors.add(b));
+			for (const f of test.functions) allFunctions.add(f);
+			for (const f of test.features) allFeatures.add(f);
+			for (const b of test.behaviors) allBehaviors.add(b);
 		}
 	}
 

@@ -69,7 +69,6 @@ function formatEntries(entries: Entry[], label: string, limit = 10): string {
 /**
  * Find differences between two entry arrays.
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Entry diff logic inherently complex
 function findEntryDifferences(actual: Entry[], expected: Entry[]): EntryDiff[] {
 	const diffs: EntryDiff[] = [];
 	const maxLen = Math.max(actual.length, expected.length);
@@ -110,7 +109,6 @@ function analyzeWhitespace(str: string) {
 /**
  * Format value differences for display, highlighting invisible characters.
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Detailed error formatting requires many checks
 function formatValueDiff(actual: string, expected: string): string {
 	const lines: string[] = [];
 
@@ -173,7 +171,6 @@ function formatValueDiff(actual: string, expected: string): string {
 /**
  * Format object differences for hierarchy comparison.
  */
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Recursive object diff inherently complex
 function formatObjectDiff(
 	actual: unknown,
 	expected: unknown,
@@ -289,8 +286,7 @@ export const cclMatchers = {
 	 * expect(result).toPassCCLTest();
 	 * ```
 	 */
-	// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Error message formatting requires comprehensive checks
-	toPassCCLTest(received: CCLTestResult) {
+		toPassCCLTest(received: CCLTestResult) {
 		const { testCase, input, output, expected, passed, error } = received;
 
 		if (passed) {

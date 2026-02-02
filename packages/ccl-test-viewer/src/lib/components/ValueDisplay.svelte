@@ -7,7 +7,7 @@ interface Props {
 	functionType: CCLFunction;
 }
 
-let { value, functionType }: Props = $props();
+const { value, functionType }: Props = $props();
 
 // Type-specific formatting and styling using theme variables
 const formattedValue = $derived.by(() => {
