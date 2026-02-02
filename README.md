@@ -1,6 +1,6 @@
 # CCL TypeScript
 
-TypeScript packages for [CCL (Colon Config Language)](https://ccl.tylerbutler.com).
+TypeScript packages for [CCL (Categorical Configuration Language)](https://ccl.tylerbutler.com).
 
 ## Packages
 
