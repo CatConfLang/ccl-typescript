@@ -2,10 +2,10 @@
 	"name": "ccl-docs",
 	"version": "0.0.1",
 	"private": true,
-	"bugs": "https://github.com/tylerbutler/tools-monorepo/issues",
+	"bugs": "https://github.com/tylerbutler/ccl-typescript/issues",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/tylerbutler/tools-monorepo.git",
+		"url": "git+https://github.com/tylerbutler/ccl-typescript.git",
 		"directory": "packages/ccl-docs"
 	},
 	"license": "MIT",

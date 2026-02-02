@@ -1,0 +1,10 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": ["./tsconfig.base.json", "@tsconfig/strictest/tsconfig.json"],
+	"compilerOptions": {
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"outDir": "./esm",
+		"rootDir": "./src"
+	}
+}

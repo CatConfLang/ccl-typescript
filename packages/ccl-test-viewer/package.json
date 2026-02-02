@@ -9,11 +9,11 @@
 		"viewer",
 		"sveltekit"
 	],
-	"homepage": "https://github.com/tylerbutler/tools-monorepo/tree/main/packages/ccl-test-viewer#readme",
-	"bugs": "https://github.com/tylerbutler/tools-monorepo/issues",
+	"homepage": "https://github.com/tylerbutler/ccl-typescript/tree/main/packages/ccl-test-viewer#readme",
+	"bugs": "https://github.com/tylerbutler/ccl-typescript/issues",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/tylerbutler/tools-monorepo.git",
+		"url": "git+https://github.com/tylerbutler/ccl-typescript.git",
 		"directory": "packages/ccl-test-viewer"
 	},
 	"license": "MIT",

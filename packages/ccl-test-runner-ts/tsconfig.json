@@ -7,9 +7,4 @@
 		"types": ["node"],
 		"resolveJsonModule": true,
 	},
-	"references": [
-		{
-			"path": "../dill-cli",
-		},
-	],
 }
