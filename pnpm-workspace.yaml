@@ -1,3 +1,10 @@
 packages:
-  - "packages/*"
-  - "config"
+  - packages/*
+  - config
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - esbuild
+  - msw
+  - nx
+  - sharp

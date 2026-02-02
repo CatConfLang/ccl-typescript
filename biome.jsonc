@@ -4,38 +4,39 @@
 		"enabled": true,
 		"clientKind": "git",
 		"defaultBranch": "main",
-		"useIgnoreFile": true
+		"useIgnoreFile": true,
 	},
 	"files": {
 		"ignoreUnknown": true,
 		"includes": ["**"],
-		"ignore": [
-			"**/node_modules/**",
-			"**/dist/**",
-			"**/esm/**",
-			"**/_temp/**",
-			"**/.coverage/**"
-		]
+		"includes": [
+			"**",
+			"!**/node_modules/**",
+			"!**/dist/**",
+			"!**/esm/**",
+			"!**/_temp/**",
+			"!**/.coverage/**",
+		],
 	},
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"lineWidth": 100
+		"lineWidth": 100,
 	},
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double",
-			"trailingCommas": "all"
-		}
+			"trailingCommas": "all",
+		},
 	},
 	"json": {
 		"formatter": {
-			"trailingCommas": "all"
+			"trailingCommas": "all",
 		},
 		"parser": {
 			"allowComments": true,
-			"allowTrailingCommas": true
-		}
+			"allowTrailingCommas": true,
+		},
 	},
 	"linter": {
 		"enabled": true,
@@ -44,16 +45,16 @@
 			"correctness": {
 				"useImportExtensions": "error",
 				"noUnusedImports": "error",
-				"noUnusedVariables": "error"
+				"noUnusedVariables": "error",
 			},
 			"style": {
 				"noDefaultExport": "error",
-				"useImportType": "error"
+				"useImportType": "error",
 			},
 			"suspicious": {
-				"noExplicitAny": "warn"
-			}
-		}
+				"noExplicitAny": "warn",
+			},
+		},
 	},
 	"overrides": [
 		{
@@ -61,10 +62,10 @@
 			"linter": {
 				"rules": {
 					"style": {
-						"noDefaultExport": "off"
-					}
-				}
-			}
-		}
-	]
+						"noDefaultExport": "off",
+					},
+				},
+			},
+		},
+	],
 }
