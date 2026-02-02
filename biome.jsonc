@@ -4,37 +4,47 @@
 		"enabled": true,
 		"clientKind": "git",
 		"defaultBranch": "main",
-		"useIgnoreFile": true
+		"useIgnoreFile": true,
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["**"],
-		"ignore": [
-			"**/node_modules/**",
-			"**/dist/**",
-			"**/esm/**",
-			"**/_temp/**",
-			"**/.coverage/**"
+		"includes": [
+			"**",
+			"!**/node_modules",
+			"!**/dist",
+			"!**/esm",
+			"!**/_temp",
+			"!**/.coverage",
+			"!**/.svelte-kit",
+			"!**/build"
 		]
 	},
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"lineWidth": 100
+		"lineWidth": 100,
 	},
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double",
-			"trailingCommas": "all"
-		}
+			"trailingCommas": "all",
+		},
 	},
 	"json": {
 		"formatter": {
-			"trailingCommas": "all"
+			"trailingCommas": "all",
 		},
 		"parser": {
 			"allowComments": true,
-			"allowTrailingCommas": true
+			"allowTrailingCommas": true,
+		},
+	},
+	"css": {
+		"parser": {
+			"cssModules": true
+		},
+		"linter": {
+			"enabled": false
 		}
 	},
 	"linter": {
@@ -42,29 +52,44 @@
 		"rules": {
 			"recommended": true,
 			"correctness": {
-				"useImportExtensions": "error",
+				"useImportExtensions": "off",
 				"noUnusedImports": "error",
-				"noUnusedVariables": "error"
+				"noUnusedVariables": "error",
 			},
 			"style": {
 				"noDefaultExport": "error",
-				"useImportType": "error"
+				"useImportType": "error",
 			},
 			"suspicious": {
-				"noExplicitAny": "warn"
-			}
-		}
+				"noExplicitAny": "warn",
+			},
+		},
 	},
 	"overrides": [
 		{
-			"includes": ["*.config.*", "vitest.config.*"],
+			"includes": ["**/*.config.*", "**/vitest.config.*", "**/*-reporter.ts", "**/*.mjs"],
 			"linter": {
 				"rules": {
 					"style": {
-						"noDefaultExport": "off"
-					}
-				}
-			}
-		}
-	]
+						"noDefaultExport": "off",
+					},
+				},
+			},
+		},
+		{
+			"includes": ["**/*.svelte"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noDefaultExport": "off",
+					},
+					"correctness": {
+						"noUnusedVariables": "off",
+						"noUnusedImports": "off",
+						"noUnusedFunctionParameters": "off"
+					},
+				},
+			},
+		},
+	],
 }

@@ -14,7 +14,7 @@ interface Props {
 	data: LayoutData;
 }
 
-let { children, data }: Props = $props();
+const { children, data }: Props = $props();
 
 // Navigation state - using runes with data from load function
 const currentPath = $derived(data.currentPath);

@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { unlinkSync, writeFileSync } from "fs";
-import { tmpdir } from "os";
-import { join } from "path";
+import { unlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 test.describe("Upload and Data Persistence", () => {
 	// Test data that matches the CCL test format
@@ -66,7 +66,7 @@ test.describe("Upload and Data Persistence", () => {
 		// Clean up test file
 		try {
 			unlinkSync(testFilePath);
-		} catch (error) {
+		} catch (_error) {
 			// File may not exist, ignore error
 		}
 	});
@@ -277,7 +277,7 @@ test.describe("Upload and Data Persistence", () => {
 			// Clean up second file
 			try {
 				unlinkSync(secondFilePath);
-			} catch (error) {
+			} catch (_error) {
 				// Ignore cleanup errors
 			}
 		}
@@ -369,7 +369,7 @@ test.describe("Upload and Data Persistence", () => {
 			// Clean up invalid file
 			try {
 				unlinkSync(invalidFilePath);
-			} catch (error) {
+			} catch (_error) {
 				// Ignore cleanup errors
 			}
 		}

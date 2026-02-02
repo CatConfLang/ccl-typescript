@@ -1,4 +1,4 @@
-import { base16Tailwind } from "base16-tailwind";
+
 
 /** @type {import('tailwindcss').Config} */
 const config = {

@@ -12,7 +12,7 @@ interface Props {
 	rawExpected?: any;
 }
 
-let { functionName, rawExpected }: Props = $props();
+const { functionName, rawExpected }: Props = $props();
 
 const status = $derived(FUNCTION_STATUS[functionName]);
 const description = $derived(

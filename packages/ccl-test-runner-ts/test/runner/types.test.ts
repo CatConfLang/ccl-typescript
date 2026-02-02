@@ -294,7 +294,6 @@ describe("Normalization Functions", () => {
 
 		it("should catch non-Error thrown by function and convert to string", () => {
 			const throwingFn = (_input: string): Entry[] => {
-				// biome-ignore lint/style/useThrowOnlyError: Testing non-Error throw handling
 				throw "string error";
 			};
 
@@ -415,7 +414,6 @@ describe("Normalization Functions", () => {
 
 		it("should catch non-Error thrown by function and convert to string", () => {
 			const throwingFn = (_entries: Entry[]): CCLObject => {
-				// biome-ignore lint/style/useThrowOnlyError: Testing non-Error throw handling
 				throw 42;
 			};
 

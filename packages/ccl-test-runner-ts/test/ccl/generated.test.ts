@@ -215,12 +215,10 @@ describe("CCL", async () => {
 	for (const validationFn of sortedFunctions) {
 		const tests = testsByFunction.get(validationFn) ?? [];
 
-		// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Test categorization logic
 		describe(validationFn, () => {
 			for (const testCase of tests) {
 				// Check if the validation function is supported by capabilities
 				if (!isFunctionSupported(validationFn)) {
-					// biome-ignore lint/suspicious/noSkippedTests: Intentional capability-based skip
 					test.skip(testCase.name, () => {});
 					continue;
 				}
@@ -232,7 +230,6 @@ describe("CCL", async () => {
 				);
 
 				if (unsupportedFunctions.length > 0) {
-					// biome-ignore lint/suspicious/noSkippedTests: Intentional capability-based skip
 					test.skip(testCase.name, () => {});
 					continue;
 				}
@@ -259,7 +256,6 @@ describe("CCL", async () => {
 				const filterResult = shouldRunTest(testCase, capabilities);
 
 				if (!filterResult.shouldRun) {
-					// biome-ignore lint/suspicious/noSkippedTests: Intentional capability-based skip
 					test.skip(testCase.name, () => {});
 					continue;
 				}

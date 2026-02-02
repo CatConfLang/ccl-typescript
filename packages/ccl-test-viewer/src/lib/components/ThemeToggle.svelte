@@ -9,7 +9,7 @@ interface Props {
 	variant?: "default" | "outline" | "ghost";
 }
 
-let { size = "default", variant = "ghost" }: Props = $props();
+const { size = "default", variant = "ghost" }: Props = $props();
 
 // Reactive theme state using $effect for proper lifecycle management
 let currentTheme = $state<"light" | "dark">("light");

@@ -8,7 +8,7 @@ interface Props {
 	data: PageData;
 }
 
-let { data }: Props = $props();
+const { data }: Props = $props();
 
 // Extract data directly from load function - no lifecycle issues
 const testName = $derived(data.testName);

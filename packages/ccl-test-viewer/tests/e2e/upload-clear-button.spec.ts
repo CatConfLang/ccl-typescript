@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { unlinkSync, writeFileSync } from "fs";
-import { tmpdir } from "os";
-import { join } from "path";
+import { unlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 test.describe("Upload UI - Clear All Button Functionality", () => {
 	// Test data that matches the CCL test format
@@ -71,7 +71,7 @@ test.describe("Upload UI - Clear All Button Functionality", () => {
 		for (const filePath of [testFile1Path, testFile2Path, invalidFilePath]) {
 			try {
 				unlinkSync(filePath);
-			} catch (error) {
+			} catch (_error) {
 				// File may not exist, ignore error
 			}
 		}

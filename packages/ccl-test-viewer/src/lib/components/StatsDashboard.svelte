@@ -14,7 +14,7 @@ interface Props {
 	stats: TestStats;
 }
 
-let { stats }: Props = $props();
+const { stats }: Props = $props();
 
 let categoryChartCanvas: HTMLCanvasElement;
 let functionChartCanvas: HTMLCanvasElement;

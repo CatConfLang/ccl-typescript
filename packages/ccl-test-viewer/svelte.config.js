@@ -4,7 +4,7 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 // Detect build environment
 const isTauriBuild =
 	process.env.TAURI_BUILD === "true" || process.env.BUILD_TARGET === "tauri";
-const isNetlifyBuild =
+const _isNetlifyBuild =
 	process.env.NETLIFY === "true" || process.env.BUILD_TARGET === "netlify";
 
 /** @type {import('@sveltejs/kit').Config} */
