@@ -8,15 +8,16 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["**"],
 		"includes": [
 			"**",
-			"!**/node_modules/**",
-			"!**/dist/**",
-			"!**/esm/**",
-			"!**/_temp/**",
-			"!**/.coverage/**",
-		],
+			"!**/node_modules",
+			"!**/dist",
+			"!**/esm",
+			"!**/_temp",
+			"!**/.coverage",
+			"!**/.svelte-kit",
+			"!**/build"
+		]
 	},
 	"formatter": {
 		"enabled": true,
