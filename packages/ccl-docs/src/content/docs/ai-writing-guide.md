@@ -144,9 +144,9 @@ database =
   port = 5432
 ```
 
-<Aside type="caution">
+:::caution
 Dotted keys like `database.host` are valid CCL but they create a **literal key** named `"database.host"`, not a nested structure. This is almost never what you want when generating configuration.
-</Aside>
+:::
 
 ### Escape Sequences
 

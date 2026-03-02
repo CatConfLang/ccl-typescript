@@ -56,12 +56,18 @@ formula = E = mc²
 url = https://example.com?key=value
 ```
 
+:::note[Delimiter Strategy]
+With the default `delimiter_first_equals` strategy, keys cannot contain `=`. With `delimiter_prefer_spaced`, keys can contain `=` when the delimiter uses ` = ` spacing. See [Behavior Reference](/behavior-reference#delimiter-strategy).
+:::
+
 **Dots in keys (literal characters):**
 ```ccl
 database.host = localhost
 file.txt = content
 ```
-⚠️ Dotted keys are **literal strings**, not nested structures. See [Dotted Keys Explained](/dotted-keys-explained).
+:::caution[Dotted keys are literal]
+Dotted keys are **literal strings**, not nested structures. See [Dotted Keys Explained](/dotted-keys-explained).
+:::
 
 **Unicode support:**
 ```ccl

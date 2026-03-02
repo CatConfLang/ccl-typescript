@@ -28,11 +28,12 @@ nested =
 
 ### Parse Entries
 
-Find the first `=` character and split:
+Find the `=` delimiter and split into key and value. The strategy used depends on the `delimiter_first_equals` or `delimiter_prefer_spaced` behavior (see [Behavior Reference](/behavior-reference#delimiter-strategy)):
 
 ```
 "key = value"  →  Entry {key: "key", value: "value"}
-"a = b = c"    →  Entry {key: "a", value: "b = c"}
+"a = b = c"    →  Entry {key: "a", value: "b = c"}   (delimiter_first_equals)
+"a = b = c"    →  Entry {key: "a=b", value: "c"}      (delimiter_prefer_spaced, spaced = preferred)
 ```
 
 **Key whitespace rules**:
@@ -185,7 +186,7 @@ def recursively_parse(entries):
 - Empty lines → ignore
 
 **Edge cases**:
-- Keys with '=' in them → impossible, first '=' is split point
+- Keys with '=' in them → depends on delimiter strategy. With `delimiter_first_equals` (default), the first '=' is always the split point so keys cannot contain '='. With `delimiter_prefer_spaced`, ` = ` is preferred, allowing '=' in keys. See [Behavior Reference](/behavior-reference#delimiter-strategy)
 - Values with '=' → fine, parse recursively
 - Unicode in keys/values → valid, CCL is UTF-8
 - CRLF vs LF → CCL treats only LF as a newline, so CRs present are preserved as-is

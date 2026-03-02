@@ -166,6 +166,8 @@ See [Library Features](/library-features#formatting-functions) for details on `p
 
 ## Common Challenges
 
+**Equals in Keys**: With `delimiter_prefer_spaced`, prefer ` = ` as delimiter when multiple `=` exist. Fall back to first `=` when no spaced delimiter is found.
+
 **Infinite Recursion**: Fixed-point algorithm terminates naturally
 
 **Duplicate Keys**: Merge into object or list based on value types
