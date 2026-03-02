@@ -85,11 +85,15 @@ filter(entries, predicate): entries
 compose(entries1, entries2): entries
 ```
 
+**Parse Variants**:
+- `parse_indented(text)` — strips common leading whitespace (like `textwrap.dedent`) before parsing; useful for indented multi-line string literals in host languages
+- `load(text)` — convenience function combining `parse` + `build_hierarchy` in a single call
+
 See [Library Features](/library-features) for details.
 
 ## Testing
 
-Use [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) (447 assertions, 205 tests):
+Use [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) to validate your implementation:
 
 1. **Core Parsing**: Filter tests by `functions: ["parse"]`
 2. **Object Construction**: Filter by `functions` containing `build_hierarchy`

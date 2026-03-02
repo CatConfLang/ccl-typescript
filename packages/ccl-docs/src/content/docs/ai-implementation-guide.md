@@ -312,7 +312,7 @@ See [Behavior Reference](/behavior-reference) for detailed documentation of each
 
 The official test suite at https://github.com/tylerbutler/ccl-test-data provides comprehensive validation:
 
-- **447 assertions** across **205 tests**
+- **Hundreds of assertions** across a growing test suite
 - **JSON format** in `generated_tests/` directory
 - **Capability-based filtering** by function, feature, and behavior
 
