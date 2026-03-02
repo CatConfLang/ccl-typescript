@@ -314,7 +314,7 @@ The official test suite at https://github.com/tylerbutler/ccl-test-data provides
 
 - **Hundreds of assertions** across a growing test suite
 - **JSON format** in `generated_tests/` directory
-- **Capability-based filtering** by function, feature, and behavior
+- **Capability-based filtering** by function, behavior, and variant
 
 ### Test Format
 

@@ -98,7 +98,7 @@ Use [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) to validate y
 1. **Core Parsing**: Filter tests by `functions: ["parse"]`
 2. **Object Construction**: Filter by `functions` containing `build_hierarchy`
 3. **Typed Access**: Filter by `validation` starting with `get_`
-4. **Optional Features**: Filter by `features` arrays (`comments`, `experimental_dotted_keys`, etc.)
+4. **Behavior conflicts**: Skip tests where `conflicts.behaviors` or `conflicts.variants` matches your choices
 
 See [Test Suite Guide](/test-suite-guide) for complete filtering examples.
 

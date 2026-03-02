@@ -357,7 +357,6 @@ When building a test runner against the CCL test suite, declare your implementat
 ```javascript
 const capabilities = {
   functions: ['parse', 'build_hierarchy', 'get_string', 'get_bool', 'get_list'],
-  features: ['comments'],
   behaviors: [
     'crlf_normalize_to_lf',
     'boolean_strict',
