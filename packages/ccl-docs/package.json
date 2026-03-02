@@ -44,7 +44,13 @@
 	},
 	"nx": {
 		"targets": {
-			"build": {},
+			"build": {
+				"executor": "nx:run-script",
+				"options": {
+					"script": "build:site"
+				},
+				"outputs": ["{projectRoot}/dist"]
+			},
 			"ci": {}
 		}
 	}
