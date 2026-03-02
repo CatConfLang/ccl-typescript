@@ -57,7 +57,7 @@ url = https://example.com?key=value
 ```
 
 :::note[Delimiter Strategy]
-With the default `delimiter_first_equals` strategy, keys cannot contain `=`. With `delimiter_prefer_spaced`, keys can contain `=` when the delimiter uses ` = ` spacing. See [Behavior Reference](/behavior-reference#delimiter-strategy).
+With the default `delimiter_first_equals` strategy, keys cannot contain `=`. With `delimiter_prefer_spaced`, keys can contain `=` when the delimiter uses ` = ` spacing. See [Behavior Reference](/behavior-reference#delimiter-mode).
 :::
 
 **Dots in keys (literal characters):**
