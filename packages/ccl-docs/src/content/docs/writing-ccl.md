@@ -3,8 +3,6 @@ title: Writing CCL
 description: A practical guide to authoring CCL configuration files
 ---
 
-import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
-
 This guide teaches you how to write CCL configuration files from scratch. By the end, you'll be comfortable expressing any configuration structure in CCL.
 
 ## Your First CCL File
@@ -17,6 +15,8 @@ version = 1.0.0
 ```
 
 That's valid CCL. Every value is a string --- there are no special types, no quoting rules, and no escaping needed.
+
+Leading and trailing whitespace is trimmed from both keys and values, so `  name  =   My Application   ` is equivalent to `name = My Application`.
 
 ## Adding Structure with Indentation
 
@@ -45,9 +45,9 @@ logging =
       path = /var/log/app.log
 ```
 
-<Aside type="tip">
+:::tip
 Use consistent indentation (2 spaces is conventional). CCL cares about relative indentation depth, not the exact number of spaces.
-</Aside>
+:::
 
 ## Writing Lists
 
@@ -70,9 +70,9 @@ server = web2.example.com
 server = web3.example.com
 ```
 
-<Aside>
+:::note
 The empty-key style (`= value`) is preferred inside sections. Repeated keys work best at the top level.
-</Aside>
+:::
 
 ## Adding Comments
 
@@ -97,6 +97,10 @@ port = 8080  /= This is NOT a comment
 ```
 
 In this example, the value of `port` is the string `"8080  /= This is NOT a comment"`.
+
+:::note
+Comments are not stripped by the parser. They are stored as entries with `/` as the key. Your application can filter them out or interpret them however it chooses. See the [FAQ](/ccl-faq#are-comments-part-of-the-data) for details.
+:::
 
 ## Writing Multiline Values
 
@@ -148,9 +152,9 @@ app =
 CCL fully supports Unicode in both keys and values:
 
 ```ccl
-greeting = Hello, world!
-author = Rene Descartes
-description = Configuration file
+greeting = Hello, 世界! 🌍
+author = François Müller
+description = Ñoño configuration
 ```
 
 ## Patterns and Recipes
@@ -239,19 +243,22 @@ In the second example, `host` has the value `"localhost\n  port = 8080"`.
 
 ### Forgetting the Equals Sign
 
-Every entry needs an `=`. A line without `=` becomes a key with an empty value:
+Every entry needs an `=`. A line without `=` is a parse error in the reference implementation --- the parser consumes the text looking for `=` and fails when it reaches end of input or the next valid entry:
 
 ```ccl
-/= This creates key "just some text" with an empty value
+/= This is a parse error in strict implementations:
 just some text
-```
 
-Always include `=` even for empty values:
-
-```ccl
+/= Always include = even for empty values:
 section =
   key = value
 ```
+
+:::note
+Some lenient implementations may silently discard a line with no `=` rather than error. Either way, the line will not produce an entry — so the practical rule is the same: **every line must include `=`**.
+
+Note also that a key can span lines if the `=` appears on the next line: `key\n= value` is valid and produces `key = value`.
+:::
 
 ### Inline Comments
 

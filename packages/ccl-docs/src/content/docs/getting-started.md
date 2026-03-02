@@ -66,7 +66,7 @@ The value `mode = sandbox\ncapacity = 2` is **recursively parsed as CCL**.
 
 ## Edge Cases
 
-**Malformed Input**: Missing `=` treats entire line as key with empty value.
+**Malformed Input**: Missing `=` is a parse error in the reference implementation. Some lenient implementations may discard the line instead.
 
 **Unicode**: UTF-8 supported. Keys and values can contain any Unicode characters.
 

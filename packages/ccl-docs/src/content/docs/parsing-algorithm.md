@@ -180,7 +180,7 @@ def recursively_parse(entries):
 ## Error Handling Essentials
 
 **Malformed input**:
-- Line with no '=' → skip or error (implementation choice)
+- Line with no '=' → parse error (reference OCaml implementation errors with "end_of_input"; more lenient implementations may discard the line)
 - Inconsistent indentation → use explicit indentation counting
 - Empty lines → ignore
 

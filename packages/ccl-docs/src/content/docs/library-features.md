@@ -17,7 +17,7 @@ CCL values are always strings. Type conversion is a library convenience, not par
 - `get_string(config, path...)` - Extract string values
 - `get_int(config, path...)` - Parse integers with validation
 - `get_bool(config, path...)` - Parse booleans (true/false, yes/no, 1/0)
-- `get_list(config, path...)` - Extract lists from empty-key entries
+- `get_list(config, path...)` - Extract lists from empty-key entries or duplicate keys
 
 **Example**:
 ```ccl
