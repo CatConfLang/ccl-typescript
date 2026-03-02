@@ -14,7 +14,7 @@ Every CCL implementation needs two operations:
 1. **Parse** - Convert text to flat key-value entries
 2. **Build Hierarchy** - Convert entries to nested structure via recursive parsing
 
-Everything else is optional library convenience.
+`build_hierarchy` internally calls `parse_indented`, which strips common leading whitespace from a multiline value before recursively parsing it. This is a required internal function — it's not typically exposed as a public API.
 
 ## Language Patterns
 
@@ -86,7 +86,6 @@ compose(entries1, entries2): entries
 ```
 
 **Parse Variants**:
-- `parse_indented(text)` — strips common leading whitespace (like `textwrap.dedent`) before parsing; useful for indented multi-line string literals in host languages
 - `load(text)` — convenience function combining `parse` + `build_hierarchy` in a single call
 
 See [Library Features](/library-features) for details.

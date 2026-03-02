@@ -23,7 +23,8 @@ Each test includes:
 ### Test Metadata
 
 **Functions** - CCL functions by category:
-- **Core Parsing**: `parse`, `parse_indented`, `build_hierarchy`
+- **Core Parsing**: `parse`, `build_hierarchy`
+  - `parse_indented` is also required but is typically **internal** — called by `build_hierarchy`, not part of the public API
 - **Convenience**: `load` (combines `parse` + `build_hierarchy`)
 - **Typed Access**: `get_string`, `get_int`, `get_bool`, `get_float`, `get_list`
 - **Processing**: `filter`, `compose`
@@ -59,7 +60,7 @@ See the [Behavior Reference](/behavior-reference/) for detailed documentation of
 tests.filter(t => t.validation === 'parse')
 ```
 
-**`parse_indented`** — Strips common leading whitespace before parsing (like `textwrap.dedent`). Filter tests:
+**`parse_indented`** — Strips common leading whitespace before parsing (like `textwrap.dedent`). Required but typically internal — called by `build_hierarchy`, not exposed as a public API. Filter tests:
 ```javascript
 tests.filter(t => t.validation === 'parse_indented')
 ```
