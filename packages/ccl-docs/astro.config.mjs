@@ -82,6 +82,7 @@ export default defineConfig({
 					items: [
 						{ slug: "ai-quickstart" },
 						{ slug: "ai-implementation-guide" },
+						{ slug: "ai-writing-guide" },
 						{ slug: "ai-prompts" },
 					],
 				},
@@ -89,6 +90,7 @@ export default defineConfig({
 					label: "Learning CCL",
 					items: [
 						{ slug: "getting-started" },
+						{ slug: "writing-ccl" },
 						{ slug: "ccl-examples" },
 						{ slug: "ccl-faq" },
 					],
