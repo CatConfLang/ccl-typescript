@@ -181,9 +181,9 @@ Some implementations provide additional experimental features:
 
 The [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) provides tests for these features:
 
-- **Type-Safe Access**: 381 assertions (99 tests) - `get_string`, `get_int`, `get_bool`, `get_float`, `get_list`
-- **Entry Processing**: 15 assertions (12 tests) - `filter`, `compose`, identity properties
+- **Type-Safe Access**: `get_string`, `get_int`, `get_bool`, `get_float`, `get_list` — covered by tests tagged `optional_typed_accessors`
+- **Entry Processing**: `filter`, `compose`, identity properties
 - **Formatting**: `print` and `round_trip` tests verify isomorphism properties
-- **Experimental Features**: 22 assertions (10 tests) for dotted representation
+- **Experimental Features**: `experimental_dotted_keys` tests for dotted representation
 
-See [Test Suite Guide](/test-suite-guide) for progressive implementation roadmap.
+See [Test Suite Guide](/test-suite-guide) for complete function list and filtering examples.

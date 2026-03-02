@@ -14,7 +14,7 @@ Every CCL implementation needs two operations:
 1. **Parse** - Convert text to flat key-value entries
 2. **Build Hierarchy** - Convert entries to nested structure via recursive parsing
 
-Everything else is optional library convenience.
+`build_hierarchy` internally calls `parse_indented`, which strips common leading whitespace from a multiline value before recursively parsing it. This is a required internal function — it's not typically exposed as a public API.
 
 ## Language Patterns
 
@@ -85,16 +85,19 @@ filter(entries, predicate): entries
 compose(entries1, entries2): entries
 ```
 
+**Parse Variants**:
+- `load(text)` — convenience function combining `parse` + `build_hierarchy` in a single call
+
 See [Library Features](/library-features) for details.
 
 ## Testing
 
-Use [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) (447 assertions, 205 tests):
+Use [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) to validate your implementation:
 
 1. **Core Parsing**: Filter tests by `functions: ["parse"]`
 2. **Object Construction**: Filter by `functions` containing `build_hierarchy`
 3. **Typed Access**: Filter by `validation` starting with `get_`
-4. **Optional Features**: Filter by `features` arrays (`comments`, `experimental_dotted_keys`, etc.)
+4. **Behavior conflicts**: Skip tests where `conflicts.behaviors` or `conflicts.variants` matches your choices
 
 See [Test Suite Guide](/test-suite-guide) for complete filtering examples.
 
