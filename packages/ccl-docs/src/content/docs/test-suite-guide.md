@@ -3,7 +3,7 @@ title: Test Suite Guide
 description: Using the CCL test suite for progressive implementation validation.
 ---
 
-The [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) provides 447 assertions across 205 tests for validating CCL implementations.
+The [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) provides hundreds of assertions across hundreds of tests for validating CCL implementations.
 
 ## Test Format
 
@@ -13,23 +13,28 @@ Implementers use the **flat format** in `generated_tests/` - one test per valida
 
 Each test includes:
 - `validation`: Function being tested (`parse`, `build_hierarchy`, etc.)
-- `functions`: Array of required CCL functions
-- `features`: Array of optional language features
-- `behaviors`: Array of implementation behavior choices
+- `functions`: Array of required CCL functions — **used for filtering**
+- `behaviors`: Array of implementation behavior choices — **used for filtering** (via `conflicts`)
+- `variants`: Array of specification variants — **used for filtering** (via `conflicts`)
+- `features`: Array of language features exercised — **informational only** (for coverage reporting, not filtering)
 - `expected`: Expected result with `count` field for assertion verification
-- `input`: CCL text to parse
+- `inputs`: Array of CCL text strings to parse (typically a 1-element array; composition tests may have 2–3)
 
 ### Test Metadata
 
 **Functions** - CCL functions by category:
-- **Core**: `parse`, `build_hierarchy`
+- **Core Parsing**: `parse`, `build_hierarchy`
+  - `parse_indented` is also required but is typically **internal** — called by `build_hierarchy`, not part of the public API
+- **Convenience**: `load` (combines `parse` + `build_hierarchy`)
 - **Typed Access**: `get_string`, `get_int`, `get_bool`, `get_float`, `get_list`
-- **Processing**: `filter`, `compose`, `expand_dotted`
+- **Processing**: `filter`, `compose`
 - **Formatting**: `print`, `canonical_format`, `round_trip`
 - **Algebraic Properties**: `compose_associative`, `identity_left`, `identity_right`
 
-**Features** - Optional language features:
-- `comments`, `experimental_dotted_keys`, `empty_keys`, `multiline`, `unicode`, `whitespace`
+**Features** - Language features exercised (informational/reporting only, not used for filtering):
+- `comments`, `empty_keys`, `multiline`, `unicode`, `whitespace`
+- `optional_typed_accessors` — typed access functions (`get_string`, `get_int`, etc.) are optional
+- `experimental_dotted_keys` — dotted key expansion (experimental)
 
 **Behaviors** - Implementation choices (exclusivity defined per-test via `conflicts` field):
 
@@ -42,6 +47,7 @@ Each test includes:
 | Indentation | `indent_spaces` vs `indent_tabs` | Output formatting style |
 | List Access | `list_coercion_enabled` vs `list_coercion_disabled` | List access coercion behavior |
 | Array Ordering | `array_order_insertion` vs `array_order_lexicographic` | Preserve insertion order vs sort lexicographically |
+| Delimiter | `delimiter_first_equals` vs `delimiter_prefer_spaced` | Split on first `=` vs prefer ` = ` (space-equals-space) |
 
 See the [Behavior Reference](/behavior-reference/) for detailed documentation of each behavior.
 
@@ -49,14 +55,24 @@ See the [Behavior Reference](/behavior-reference/) for detailed documentation of
 
 ### Core Parsing
 
-**`parse`** - Filter tests:
+**`parse`** — Filter tests:
 ```javascript
 tests.filter(t => t.validation === 'parse')
 ```
 
-**`build_hierarchy`** - Filter tests:
+**`parse_indented`** — Strips common leading whitespace before parsing (like `textwrap.dedent`). Required but typically internal — called by `build_hierarchy`, not exposed as a public API. Filter tests:
+```javascript
+tests.filter(t => t.validation === 'parse_indented')
+```
+
+**`build_hierarchy`** — Filter tests:
 ```javascript
 tests.filter(t => t.validation === 'build_hierarchy')
+```
+
+**`load`** — Convenience function combining `parse` + `build_hierarchy` in one call. Filter tests:
+```javascript
+tests.filter(t => t.validation === 'load')
 ```
 
 ### Typed Access
@@ -84,25 +100,20 @@ tests.filter(t => ['compose_associative', 'identity_left', 'identity_right'].inc
 
 ### Optional Features
 
-Filter by supported features (`comments`, `experimental_dotted_keys`, etc.):
-```javascript
-tests.filter(t => t.features.every(f => supportedFeatures.includes(f)))
-```
+The `features` field is **informational only** — it describes which CCL language features a test exercises but is not used to decide whether to run it. Use it to understand your coverage gaps (e.g. "I have no comment-related tests passing yet") rather than as a filter condition.
 
 ## Test Filtering
 
-Filter tests by implementation capabilities:
+Filter tests by implementation capabilities using `functions`, `behaviors`, and `variants`:
 
 ```javascript
 const supportedTests = tests.filter(test => {
-  // Check functions
+  // Skip tests that require functions you haven't implemented
   if (!test.functions.every(f => implementedFunctions.includes(f))) return false;
 
-  // Check features
-  if (!test.features.every(f => supportedFeatures.includes(f))) return false;
-
-  // Check behavior conflicts
+  // Skip tests that conflict with your behavior/variant choices
   if (test.conflicts?.behaviors?.some(b => chosenBehaviors.includes(b))) return false;
+  if (test.conflicts?.variants?.some(v => chosenVariants.includes(v))) return false;
 
   return true;
 });
@@ -114,7 +125,7 @@ const supportedTests = tests.filter(test => {
 {
   "name": "basic_key_value_pairs_parse",
   "validation": "parse",
-  "input": "name = Alice\nage = 42",
+  "inputs": ["name = Alice\nage = 42"],
   "expected": {
     "count": 2,
     "entries": [
@@ -124,7 +135,9 @@ const supportedTests = tests.filter(test => {
   },
   "functions": ["parse"],
   "features": [],
-  "behaviors": []
+  "behaviors": [],
+  "variants": [],
+  "source_test": "basic_key_value_pairs"
 }
 ```
 

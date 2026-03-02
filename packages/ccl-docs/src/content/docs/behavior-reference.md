@@ -309,6 +309,47 @@ getList(obj, "items")  // → ["apple", "banana", "cherry"]
 
 ---
 
+### Delimiter Mode
+
+**Options:** `delimiter_first_equals` vs `delimiter_prefer_spaced`
+
+Controls how CCL locates the delimiter `=` when a line contains multiple `=` characters (e.g., URLs with query strings, shell assignments).
+
+#### `delimiter_first_equals`
+
+Always split on the **first** `=` character. Keys cannot contain `=`.
+
+```ccl
+a=b = c=d
+```
+
+**Result:**
+```json
+{"a": "b = c=d"}
+```
+
+#### `delimiter_prefer_spaced`
+
+When multiple `=` exist, prefer the one surrounded by spaces (` = `). Falls back to the first bare `=` if no spaced delimiter is found.
+
+```ccl
+https://api.example.com/search?q=test&page=1 = search_results
+```
+
+**Result (spaced delimiter preferred):**
+```json
+{"https://api.example.com/search?q=test&page=1": "search_results"}
+```
+
+Compare with `delimiter_first_equals`:
+```json
+{"https://api.example.com/search?q": "test&page=1 = search_results"}
+```
+
+**Recommendation:** `delimiter_prefer_spaced` handles URLs and key=value style strings more naturally. `delimiter_first_equals` is simpler and matches common tokenizer behavior.
+
+---
+
 ## Declaring Behaviors in Test Runners
 
 When building a test runner against the CCL test suite, declare your implementation's behaviors. Tests in the [generated format](https://github.com/tylerbutler/ccl-test-data/blob/main/schemas/generated-format.json) include a `conflicts` field that specifies incompatible behaviors:
@@ -316,14 +357,14 @@ When building a test runner against the CCL test suite, declare your implementat
 ```javascript
 const capabilities = {
   functions: ['parse', 'build_hierarchy', 'get_string', 'get_bool', 'get_list'],
-  features: ['comments'],
   behaviors: [
     'crlf_normalize_to_lf',
     'boolean_strict',
     'tabs_as_whitespace',
     'indent_spaces',
     'list_coercion_disabled',
-    'array_order_insertion'
+    'array_order_insertion',
+    'delimiter_prefer_spaced'
   ],
   variants: ['reference_compliant']
 };
@@ -351,6 +392,7 @@ const compatibleTests = allTests.filter(test => {
 | List Access | `list_coercion_enabled` | `list_coercion_disabled` | Disabled for type safety |
 | Continuation Baseline | `toplevel_indent_strip` | `toplevel_indent_preserve` | Strip for reference compliance |
 | Array Ordering | `array_order_insertion` | `array_order_lexicographic` | Insertion preserves intent |
+| Delimiter | `delimiter_first_equals` | `delimiter_prefer_spaced` | Spaced preferred for URLs/query strings |
 
 ## See Also
 
