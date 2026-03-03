@@ -48,6 +48,7 @@ import type {
 	AccessError,
 	AnyBuildHierarchyFn,
 	AnyParseFn,
+	CCLList,
 	CCLObject,
 	Entry,
 	ParseError,
@@ -137,7 +138,7 @@ export interface CCLFunctions {
 	get_list?: (
 		obj: CCLObject,
 		...pathParts: string[]
-	) => string[] | undefined | Result<string[], AccessError>;
+	) => CCLList | undefined | Result<CCLList, AccessError>;
 
 	/** Print entries to CCL format */
 	print?: (entries: Entry[]) => string;

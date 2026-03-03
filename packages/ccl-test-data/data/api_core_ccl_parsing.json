@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/tylerbutler/ccl-test-data/v0.3.0/schemas/generated-format.json",
+  "$schema": "https://raw.githubusercontent.com/CatConfLang/ccl-test-data/v0.6.2/schemas/generated-format.json",
   "tests": [
     {
       "behaviors": [],
@@ -31,6 +31,24 @@
     {
       "behaviors": [],
       "expected": {
+        "count": 1,
+        "value": "name = Alice\nage = 42"
+      },
+      "features": [],
+      "functions": [
+        "print"
+      ],
+      "inputs": [
+        "name = Alice\nage = 42"
+      ],
+      "name": "basic_key_value_pairs_print",
+      "source_test": "basic_key_value_pairs",
+      "validation": "print",
+      "variants": []
+    },
+    {
+      "behaviors": [],
+      "expected": {
         "count": 2,
         "entries": [
           {
@@ -53,6 +71,24 @@
       "name": "equals_in_values_parse",
       "source_test": "equals_in_values",
       "validation": "parse",
+      "variants": []
+    },
+    {
+      "behaviors": [],
+      "expected": {
+        "count": 1,
+        "value": "msg = k=v pairs work fine\npath = /bin/app=prod"
+      },
+      "features": [],
+      "functions": [
+        "print"
+      ],
+      "inputs": [
+        "msg = k=v pairs work fine\npath = /bin/app=prod"
+      ],
+      "name": "equals_in_values_print",
+      "source_test": "equals_in_values",
+      "validation": "print",
       "variants": []
     },
     {
@@ -116,6 +152,26 @@
     {
       "behaviors": [],
       "expected": {
+        "count": 1,
+        "value": "description = First line\n  Second line\n  Third line\ndone = yes"
+      },
+      "features": [
+        "multiline"
+      ],
+      "functions": [
+        "print"
+      ],
+      "inputs": [
+        "description = First line\n  Second line\n  Third line\ndone = yes"
+      ],
+      "name": "multiline_values_print",
+      "source_test": "multiline_values",
+      "validation": "print",
+      "variants": []
+    },
+    {
+      "behaviors": [],
+      "expected": {
         "count": 2,
         "entries": [
           {
@@ -146,6 +202,26 @@
       "behaviors": [],
       "expected": {
         "count": 1,
+        "value": "empty =\nother = value"
+      },
+      "features": [
+        "empty_keys"
+      ],
+      "functions": [
+        "print"
+      ],
+      "inputs": [
+        "empty =\nother = value"
+      ],
+      "name": "empty_values_print",
+      "source_test": "empty_values",
+      "validation": "print",
+      "variants": []
+    },
+    {
+      "behaviors": [],
+      "expected": {
+        "count": 1,
         "entries": [
           {
             "key": "database",
@@ -163,6 +239,24 @@
       "name": "nested_structure_parsing_parse",
       "source_test": "nested_structure_parsing",
       "validation": "parse",
+      "variants": []
+    },
+    {
+      "behaviors": [],
+      "expected": {
+        "count": 1,
+        "value": "database =\n  host = localhost\n  port = 5432"
+      },
+      "features": [],
+      "functions": [
+        "print"
+      ],
+      "inputs": [
+        "database =\n  host = localhost\n  port = 5432"
+      ],
+      "name": "nested_structure_parsing_print",
+      "source_test": "nested_structure_parsing",
+      "validation": "print",
       "variants": []
     },
     {
@@ -197,6 +291,26 @@
     {
       "behaviors": [],
       "expected": {
+        "count": 1,
+        "value": "emoji = 😀😃😄\n配置 = config"
+      },
+      "features": [
+        "unicode"
+      ],
+      "functions": [
+        "print"
+      ],
+      "inputs": [
+        "emoji = 😀😃😄\n配置 = config"
+      ],
+      "name": "unicode_parsing_print",
+      "source_test": "unicode_parsing",
+      "validation": "print",
+      "variants": []
+    },
+    {
+      "behaviors": [],
+      "expected": {
         "count": 0
       },
       "features": [],
@@ -209,6 +323,24 @@
       "name": "empty_input_parse",
       "source_test": "empty_input",
       "validation": "parse",
+      "variants": []
+    },
+    {
+      "behaviors": [],
+      "expected": {
+        "count": 1,
+        "value": ""
+      },
+      "features": [],
+      "functions": [
+        "print"
+      ],
+      "inputs": [
+        ""
+      ],
+      "name": "empty_input_print",
+      "source_test": "empty_input",
+      "validation": "print",
       "variants": []
     },
     {

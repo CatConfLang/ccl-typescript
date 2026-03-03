@@ -21,15 +21,23 @@ export interface Entry {
 }
 
 /**
+ * A single item that can appear in a CCL list.
+ * Lists may contain either plain string values or nested objects (from
+ * bare-list syntax with structured children).
+ */
+export type CCLListItem = string | CCLObject;
+export type CCLList = CCLListItem[];
+
+/**
  * Recursive CCL object type representing the output of `buildHierarchy`.
  * Values can be:
  * - string: A leaf value
- * - string[]: An array of values (from duplicate keys)
+ * - Array<string | CCLObject>: A list of values (from duplicate keys or bare lists)
  * - CCLObject: A nested object
  *
  * @beta
  */
-export type CCLValue = string | string[] | CCLObject;
+export type CCLValue = string | CCLList | CCLObject;
 
 /**
  * A CCL object is a record of string keys to CCL values.

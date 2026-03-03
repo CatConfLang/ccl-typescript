@@ -30,6 +30,7 @@ export {
 // CCL types
 export type {
 	AccessError,
+	CCLList,
 	CCLObject,
 	CCLValue,
 	Entry,

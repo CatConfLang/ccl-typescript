@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/tylerbutler/ccl-test-data/v0.3.0/schemas/generated-format.json",
+  "$schema": "https://raw.githubusercontent.com/CatConfLang/ccl-test-data/v0.6.2/schemas/generated-format.json",
   "tests": [
     {
       "behaviors": [],
@@ -397,8 +397,8 @@
       ],
       "conflicts": {
         "behaviors": [
-          "list_coercion_enabled",
-          "array_order_insertion"
+          "array_order_insertion",
+          "list_coercion_enabled"
         ]
       },
       "expected": {
@@ -493,8 +493,8 @@
       ],
       "conflicts": {
         "behaviors": [
-          "list_coercion_enabled",
-          "array_order_insertion"
+          "array_order_insertion",
+          "list_coercion_enabled"
         ]
       },
       "expected": {
@@ -591,8 +591,8 @@
       ],
       "conflicts": {
         "behaviors": [
-          "list_coercion_enabled",
-          "array_order_insertion"
+          "array_order_insertion",
+          "list_coercion_enabled"
         ]
       },
       "expected": {
@@ -693,8 +693,8 @@
       ],
       "conflicts": {
         "behaviors": [
-          "list_coercion_enabled",
-          "array_order_insertion"
+          "array_order_insertion",
+          "list_coercion_enabled"
         ]
       },
       "expected": {
@@ -786,8 +786,8 @@
       ],
       "conflicts": {
         "behaviors": [
-          "list_coercion_enabled",
-          "array_order_insertion"
+          "array_order_insertion",
+          "list_coercion_enabled"
         ]
       },
       "expected": {
@@ -860,8 +860,8 @@
       ],
       "conflicts": {
         "behaviors": [
-          "list_coercion_enabled",
-          "array_order_insertion"
+          "array_order_insertion",
+          "list_coercion_enabled"
         ]
       },
       "expected": {
@@ -1010,6 +1010,8 @@
       },
       "features": [],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -1037,6 +1039,8 @@
       },
       "features": [],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -1059,6 +1063,8 @@
         "unicode"
       ],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -1122,6 +1128,8 @@
       },
       "features": [],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -1142,6 +1150,8 @@
       },
       "features": [],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -1162,6 +1172,8 @@
       },
       "features": [],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [

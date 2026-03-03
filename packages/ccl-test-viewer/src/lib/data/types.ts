@@ -48,6 +48,7 @@ export type CCLFunction =
 	| "parse"
 	| "filter"
 	| "build_hierarchy"
+	| "print"
 	| "get_list"
 	| "parse_indented"
 	| "get_string"
@@ -55,7 +56,6 @@ export type CCLFunction =
 	| "get_int"
 	| "get_float"
 	| "get_bool"
-	| "round_trip"
 	| "compose_associative"
 	| "identity_left"
 	| "identity_right";
@@ -73,11 +73,13 @@ export type CCLBehavior =
 	| "toplevel_indent_strip"
 	| "toplevel_indent_preserve"
 	| "tabs_as_content"
+	| "tabs_as_whitespace"
+	| "delimiter_prefer_spaced"
+	| "delimiter_first_equals"
 	| "list_coercion_enabled"
 	| "crlf_preserve_literal"
 	| "boolean_strict"
 	| "boolean_lenient"
-	| "tabs_as_whitespace"
 	| "indent_spaces"
 	| "crlf_normalize_to_lf";
 
@@ -86,6 +88,7 @@ export const AVAILABLE_FUNCTIONS: CCLFunction[] = [
 	"parse",
 	"filter",
 	"build_hierarchy",
+	"print",
 	"get_list",
 	"parse_indented",
 	"get_string",
@@ -93,7 +96,6 @@ export const AVAILABLE_FUNCTIONS: CCLFunction[] = [
 	"get_int",
 	"get_float",
 	"get_bool",
-	"round_trip",
 	"compose_associative",
 	"identity_left",
 	"identity_right",
@@ -117,11 +119,13 @@ export const AVAILABLE_BEHAVIORS: CCLBehavior[] = [
 	"toplevel_indent_strip",
 	"toplevel_indent_preserve",
 	"tabs_as_content",
+	"tabs_as_whitespace",
+	"delimiter_prefer_spaced",
+	"delimiter_first_equals",
 	"list_coercion_enabled",
 	"crlf_preserve_literal",
 	"boolean_strict",
 	"boolean_lenient",
-	"tabs_as_whitespace",
 	"indent_spaces",
 	"crlf_normalize_to_lf",
 ];
