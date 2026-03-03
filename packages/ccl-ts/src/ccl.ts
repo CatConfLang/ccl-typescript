@@ -11,6 +11,7 @@
 import { err, ok, type Result } from "true-myth/result";
 import type {
 	AccessError,
+	CCLList,
 	CCLObject,
 	CCLValue,
 	Entry,
@@ -303,8 +304,15 @@ export function buildHierarchy(
 		const { key, value } = entry;
 
 		if (key === "") {
-			// Empty key → add to list collection at the empty key
-			addToList(result, "", value);
+			if (containsCCLSyntax(value)) {
+				const listItemResult = parseNestedObjectValue(value);
+				if (listItemResult.isErr) {
+					return listItemResult;
+				}
+				addToList(result, "", listItemResult.value);
+			} else {
+				addToList(result, "", value);
+			}
 		} else if (containsCCLSyntax(value)) {
 			// Value contains "=" → recursively parse as nested CCL
 			const nestedEntriesResult = parse(value);
@@ -383,9 +391,18 @@ function mergeObjects(base: CCLObject, overlay: CCLObject): CCLObject {
 		} else if (Array.isArray(existing) && typeof value === "string") {
 			// Existing is array, new is string - append
 			result[key] = [...existing, value];
+		} else if (Array.isArray(existing) && isPlainObject(value)) {
+			// Existing list with new object entry
+			result[key] = [...existing, value];
 		} else if (typeof existing === "string" && Array.isArray(value)) {
 			// Existing is string, new is array - prepend existing to array
 			result[key] = [existing, ...value];
+		} else if (isPlainObject(existing) && Array.isArray(value)) {
+			result[key] = [existing, ...value];
+		} else if (typeof existing === "string" && isPlainObject(value)) {
+			result[key] = [existing, value];
+		} else if (isPlainObject(existing) && typeof value === "string") {
+			result[key] = [existing, value];
 		} else {
 			// Different types or edge cases - overlay takes precedence
 			result[key] = value;
@@ -417,13 +434,21 @@ function containsCCLSyntax(value: string): boolean {
 	return beforeEquals.includes("\n");
 }
 
+function parseNestedObjectValue(value: string): Result<CCLObject, ParseError> {
+	const nestedEntriesResult = parse(value);
+	if (nestedEntriesResult.isErr) {
+		return err(nestedEntriesResult.error);
+	}
+	return buildHierarchy(nestedEntriesResult.value);
+}
+
 /**
  * Add a value to a list at the given key in the result object.
  * If the key doesn't exist, creates an array with the value.
  * If the key exists and is already an array, appends to it.
- * If the key exists and is a string, converts to array with both values.
+ * If the key exists and is a primitive/object, converts to array preserving both values.
  */
-function addToList(result: CCLObject, key: string, value: string): void {
+function addToList(result: CCLObject, key: string, value: string | CCLObject): void {
 	const existing = result[key];
 
 	if (existing === undefined) {
@@ -435,16 +460,17 @@ function addToList(result: CCLObject, key: string, value: string): void {
 	} else if (typeof existing === "string") {
 		// Was a single string - convert to array
 		result[key] = [existing, value];
+	} else if (isPlainObject(existing)) {
+		// Was a single object - convert to array with both entries
+		result[key] = [existing, value];
 	}
-	// If it's a nested object, we ignore the attempt to add to list
-	// (this shouldn't happen with valid CCL, but handles edge case)
 }
 
 // ============================================================================
 // Typed Access Functions
 // ============================================================================
 // These functions provide type-safe access to CCL values.
-// CCL values are always strings; type conversion is a library convenience.
+// Leaf values are strings, while lists can contain strings or nested objects.
 // Path navigation uses variadic arguments: getString(obj, "server", "host")
 
 /**
@@ -712,7 +738,7 @@ export function getFloat(
  *
  * @param obj - The CCL object to query
  * @param pathParts - Path components to the value
- * @returns A Result containing the array of strings or an access error
+ * @returns A Result containing the array of list items (strings or nested objects) or an access error
  *
  * @example
  * ```ts
@@ -733,6 +759,15 @@ export function getFloat(
  *     console.log(listResult.value); // => ["red", "green", "blue"]
  *   }
  * }
+ *
+ * // Bare list items can also be nested objects
+ * const objResult3 = buildHierarchy(parse("items=\n  =\n    name=first\n    value=1").value);
+ * if (objResult3.isOk) {
+ *   const listResult = getList(objResult3.value, "items");
+ *   if (listResult.isOk) {
+ *     console.log(listResult.value[0]); // => { name: "first", value: "1" }
+ *   }
+ * }
  * ```
  *
  * @beta
@@ -740,7 +775,7 @@ export function getFloat(
 export function getList(
 	obj: CCLObject,
 	...pathParts: string[]
-): Result<string[], AccessError> {
+): Result<CCLList, AccessError> {
 	const value = navigateToValue(obj, pathParts);
 
 	if (value === undefined) {

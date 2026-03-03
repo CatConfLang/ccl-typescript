@@ -25,9 +25,15 @@ export interface Entry {
 }
 
 /**
+ * A single item that can appear inside a CCL list.
+ */
+export type CCLListItem = string | CCLObject;
+export type CCLList = CCLListItem[];
+
+/**
  * Possible values in a CCL object.
  */
-export type CCLValue = string | string[] | CCLObject;
+export type CCLValue = string | CCLList | CCLObject;
 
 /**
  * A nested object structure built from CCL entries.
@@ -102,7 +108,7 @@ export type GetStringFn = (obj: CCLObject, ...pathParts: string[]) => string;
 export type GetIntFn = (obj: CCLObject, ...pathParts: string[]) => number;
 export type GetBoolFn = (obj: CCLObject, ...pathParts: string[]) => boolean;
 export type GetFloatFn = (obj: CCLObject, ...pathParts: string[]) => number;
-export type GetListFn = (obj: CCLObject, ...pathParts: string[]) => string[];
+export type GetListFn = (obj: CCLObject, ...pathParts: string[]) => CCLList;
 
 /**
  * Filter function.

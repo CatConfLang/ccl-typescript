@@ -157,6 +157,31 @@ describe("getList", () => {
 		}
 	});
 
+	it("should return nested objects for bare list entries", () => {
+		const parseResult = parse(
+			"items=\n  =\n    name=first\n    value=1\n  =\n    name=second\n    value=2",
+		);
+		expect(parseResult.isOk).toBe(true);
+		if (!parseResult.isOk) {
+			return;
+		}
+
+		const objResult = buildHierarchy(parseResult.value);
+		expect(objResult.isOk).toBe(true);
+		if (!objResult.isOk) {
+			return;
+		}
+
+		const result = getList(objResult.value, "items");
+		expect(result.isOk).toBe(true);
+		if (result.isOk) {
+			expect(result.value).toEqual([
+				{ name: "first", value: "1" },
+				{ name: "second", value: "2" },
+			]);
+		}
+	});
+
 	it("should return error for missing path", () => {
 		const parseResult = parse("name=Alice");
 		expect(parseResult.isOk).toBe(true);
@@ -292,6 +317,29 @@ describe("buildHierarchy edge cases", () => {
 				server: {
 					host: "localhost",
 					port: "8080",
+				},
+			});
+		}
+	});
+
+	it("should build nested objects inside bare lists", () => {
+		const parseResult = parse(
+			"items=\n  =\n    name=first\n    value=1\n  =\n    name=second\n    value=2",
+		);
+		expect(parseResult.isOk).toBe(true);
+		if (!parseResult.isOk) {
+			return;
+		}
+
+		const result = buildHierarchy(parseResult.value);
+		expect(result.isOk).toBe(true);
+		if (result.isOk) {
+			expect(result.value).toEqual({
+				items: {
+					"": [
+						{ name: "first", value: "1" },
+						{ name: "second", value: "2" },
+					],
 				},
 			});
 		}

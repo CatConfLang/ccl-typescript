@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/tylerbutler/ccl-test-data/v0.3.0/schemas/generated-format.json",
+  "$schema": "https://raw.githubusercontent.com/CatConfLang/ccl-test-data/v0.6.2/schemas/generated-format.json",
   "tests": [
     {
       "behaviors": [
@@ -441,6 +441,8 @@
         "whitespace"
       ],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -468,6 +470,8 @@
         "whitespace"
       ],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -498,6 +502,8 @@
         "multiline"
       ],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -509,7 +515,14 @@
       "variants": []
     },
     {
-      "behaviors": [],
+      "behaviors": [
+        "tabs_as_whitespace"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "tabs_as_content"
+        ]
+      },
       "expected": {
         "count": 1,
         "value": "key = value with tabs"
@@ -518,7 +531,8 @@
         "whitespace"
       ],
       "functions": [
-        "round_trip"
+        "parse",
+        "print"
       ],
       "inputs": [
         "key = \tvalue\twith\ttabs"
@@ -546,6 +560,8 @@
         "whitespace"
       ],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -574,6 +590,8 @@
         "whitespace"
       ],
       "functions": [
+        "parse",
+        "print",
         "canonical_format"
       ],
       "inputs": [
@@ -952,13 +970,503 @@
     },
     {
       "behaviors": [
+        "crlf_normalize_to_lf"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_preserve_literal"
+        ]
+      },
+      "expected": {
+        "count": 1,
+        "entries": [
+          {
+            "key": "/",
+            "value": "this is a comment"
+          }
+        ]
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "parse"
+      ],
+      "inputs": [
+        "/= this is a comment\r\n"
+      ],
+      "name": "crlf_normalize_comment_only_parse",
+      "source_test": "crlf_normalize_comment_only",
+      "validation": "parse",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_normalize_to_lf"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_preserve_literal"
+        ]
+      },
+      "expected": {
+        "count": 0
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "filter"
+      ],
+      "inputs": [
+        "/= this is a comment\r\n"
+      ],
+      "name": "crlf_normalize_comment_only_filter",
+      "source_test": "crlf_normalize_comment_only",
+      "validation": "filter",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_preserve_literal"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_normalize_to_lf"
+        ]
+      },
+      "expected": {
+        "count": 1,
+        "entries": [
+          {
+            "key": "/",
+            "value": "this is a comment\r"
+          }
+        ]
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "parse"
+      ],
+      "inputs": [
+        "/= this is a comment\r\n"
+      ],
+      "name": "crlf_preserve_comment_only_parse",
+      "source_test": "crlf_preserve_comment_only",
+      "validation": "parse",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_preserve_literal"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_normalize_to_lf"
+        ]
+      },
+      "expected": {
+        "count": 0
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "filter"
+      ],
+      "inputs": [
+        "/= this is a comment\r\n"
+      ],
+      "name": "crlf_preserve_comment_only_filter",
+      "source_test": "crlf_preserve_comment_only",
+      "validation": "filter",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_normalize_to_lf"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_preserve_literal"
+        ]
+      },
+      "expected": {
+        "count": 4,
+        "entries": [
+          {
+            "key": "/",
+            "value": "Server config"
+          },
+          {
+            "key": "host",
+            "value": "localhost"
+          },
+          {
+            "key": "/",
+            "value": "Port setting"
+          },
+          {
+            "key": "port",
+            "value": "8080"
+          }
+        ]
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "parse"
+      ],
+      "inputs": [
+        "/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
+      ],
+      "name": "crlf_normalize_comments_and_values_parse",
+      "source_test": "crlf_normalize_comments_and_values",
+      "validation": "parse",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_normalize_to_lf"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_preserve_literal"
+        ]
+      },
+      "expected": {
+        "count": 2,
+        "entries": [
+          {
+            "key": "host",
+            "value": "localhost"
+          },
+          {
+            "key": "port",
+            "value": "8080"
+          }
+        ]
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "filter"
+      ],
+      "inputs": [
+        "/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
+      ],
+      "name": "crlf_normalize_comments_and_values_filter",
+      "source_test": "crlf_normalize_comments_and_values",
+      "validation": "filter",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_normalize_to_lf"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_preserve_literal"
+        ]
+      },
+      "expected": {
+        "count": 1,
+        "object": {
+          "/": [
+            "Server config",
+            "Port setting"
+          ],
+          "host": "localhost",
+          "port": "8080"
+        }
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "build_hierarchy"
+      ],
+      "inputs": [
+        "/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
+      ],
+      "name": "crlf_normalize_comments_and_values_build_hierarchy",
+      "source_test": "crlf_normalize_comments_and_values",
+      "validation": "build_hierarchy",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_preserve_literal"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_normalize_to_lf"
+        ]
+      },
+      "expected": {
+        "count": 4,
+        "entries": [
+          {
+            "key": "/",
+            "value": "Server config\r"
+          },
+          {
+            "key": "host",
+            "value": "localhost\r"
+          },
+          {
+            "key": "/",
+            "value": "Port setting\r"
+          },
+          {
+            "key": "port",
+            "value": "8080\r"
+          }
+        ]
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "parse"
+      ],
+      "inputs": [
+        "/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
+      ],
+      "name": "crlf_preserve_comments_and_values_parse",
+      "source_test": "crlf_preserve_comments_and_values",
+      "validation": "parse",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_preserve_literal"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_normalize_to_lf"
+        ]
+      },
+      "expected": {
+        "count": 2,
+        "entries": [
+          {
+            "key": "host",
+            "value": "localhost\r"
+          },
+          {
+            "key": "port",
+            "value": "8080\r"
+          }
+        ]
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "filter"
+      ],
+      "inputs": [
+        "/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
+      ],
+      "name": "crlf_preserve_comments_and_values_filter",
+      "source_test": "crlf_preserve_comments_and_values",
+      "validation": "filter",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_preserve_literal"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_normalize_to_lf"
+        ]
+      },
+      "expected": {
+        "count": 1,
+        "object": {
+          "/": [
+            "Server config\r",
+            "Port setting\r"
+          ],
+          "host": "localhost\r",
+          "port": "8080\r"
+        }
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "build_hierarchy"
+      ],
+      "inputs": [
+        "/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
+      ],
+      "name": "crlf_preserve_comments_and_values_build_hierarchy",
+      "source_test": "crlf_preserve_comments_and_values",
+      "validation": "build_hierarchy",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_normalize_to_lf"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_preserve_literal"
+        ]
+      },
+      "expected": {
+        "count": 3,
+        "entries": [
+          {
+            "key": "/",
+            "value": "first comment"
+          },
+          {
+            "key": "/",
+            "value": "second comment"
+          },
+          {
+            "key": "/",
+            "value": "third comment"
+          }
+        ]
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "parse"
+      ],
+      "inputs": [
+        "/= first comment\r\n/= second comment\r\n/= third comment\r\n"
+      ],
+      "name": "crlf_normalize_multiple_comments_parse",
+      "source_test": "crlf_normalize_multiple_comments",
+      "validation": "parse",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_normalize_to_lf"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_preserve_literal"
+        ]
+      },
+      "expected": {
+        "count": 0
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "filter"
+      ],
+      "inputs": [
+        "/= first comment\r\n/= second comment\r\n/= third comment\r\n"
+      ],
+      "name": "crlf_normalize_multiple_comments_filter",
+      "source_test": "crlf_normalize_multiple_comments",
+      "validation": "filter",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_preserve_literal"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_normalize_to_lf"
+        ]
+      },
+      "expected": {
+        "count": 3,
+        "entries": [
+          {
+            "key": "/",
+            "value": "first comment\r"
+          },
+          {
+            "key": "/",
+            "value": "second comment\r"
+          },
+          {
+            "key": "/",
+            "value": "third comment\r"
+          }
+        ]
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "parse"
+      ],
+      "inputs": [
+        "/= first comment\r\n/= second comment\r\n/= third comment\r\n"
+      ],
+      "name": "crlf_preserve_multiple_comments_parse",
+      "source_test": "crlf_preserve_multiple_comments",
+      "validation": "parse",
+      "variants": []
+    },
+    {
+      "behaviors": [
+        "crlf_preserve_literal"
+      ],
+      "conflicts": {
+        "behaviors": [
+          "crlf_normalize_to_lf"
+        ]
+      },
+      "expected": {
+        "count": 0
+      },
+      "features": [
+        "comments",
+        "whitespace"
+      ],
+      "functions": [
+        "filter"
+      ],
+      "inputs": [
+        "/= first comment\r\n/= second comment\r\n/= third comment\r\n"
+      ],
+      "name": "crlf_preserve_multiple_comments_filter",
+      "source_test": "crlf_preserve_multiple_comments",
+      "validation": "filter",
+      "variants": []
+    },
+    {
+      "behaviors": [
         "tabs_as_whitespace",
         "crlf_normalize_to_lf"
       ],
       "conflicts": {
         "behaviors": [
-          "tabs_as_content",
-          "crlf_preserve_literal"
+          "crlf_preserve_literal",
+          "tabs_as_content"
         ]
       },
       "expected": {
@@ -991,8 +1499,8 @@
       ],
       "conflicts": {
         "behaviors": [
-          "tabs_as_whitespace",
-          "crlf_preserve_literal"
+          "crlf_preserve_literal",
+          "tabs_as_whitespace"
         ]
       },
       "expected": {
