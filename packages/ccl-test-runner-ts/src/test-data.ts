@@ -266,9 +266,16 @@ export async function loadTestData(
 	const allTests: TestCase[] = [];
 	let skippedCount = 0;
 
-	for (const file of jsonFiles) {
-		const filePath = join(testDataPath, file);
-		const content = await readFile(filePath, "utf-8");
+	// Read all JSON files in parallel
+	const fileContents = await Promise.all(
+		jsonFiles.map(async (file) => {
+			const filePath = join(testDataPath, file);
+			const content = await readFile(filePath, "utf-8");
+			return { file, content };
+		}),
+	);
+
+	for (const { file, content } of fileContents) {
 		const testFile: TestFile = JSON.parse(content);
 
 		const compatibleTests: TestCase[] = [];
