@@ -27,14 +27,15 @@ import { defineCommand, runMain } from "citty";
 import consola from "consola";
 import { download } from "dill-cli";
 import { join } from "pathe";
-import type { Operation, Task } from "./structuredConcurrency.js";
 import {
+	type Operation,
+	type Task,
 	call,
 	createScope,
-	runOperation,
 	spawn,
 	useAbortSignal,
-} from "./structuredConcurrency.js";
+} from "effection";
+import { runOperation } from "./structuredConcurrency.js";
 
 const GITHUB_API_BASE = "https://api.github.com";
 const REPO_OWNER = "tylerbutler";
