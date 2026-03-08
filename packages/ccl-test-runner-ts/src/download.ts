@@ -27,6 +27,15 @@ import { defineCommand, runMain } from "citty";
 import consola from "consola";
 import { download } from "dill-cli";
 import { join } from "pathe";
+import {
+	type Operation,
+	type Task,
+	call,
+	createScope,
+	spawn,
+	useAbortSignal,
+} from "effection";
+import { runOperation } from "./structuredConcurrency.js";
 
 const GITHUB_API_BASE = "https://api.github.com";
 const REPO_OWNER = "tylerbutler";
@@ -78,71 +87,61 @@ export interface DownloadResult {
 	outputDir: string;
 }
 
+// ---------------------------------------------------------------------------
+// Internal: native effection operations
+// ---------------------------------------------------------------------------
+
 /**
- * Get the latest release information from GitHub.
+ * Fetch a URL as JSON with a scope-bound AbortSignal.
  */
-async function getLatestRelease(): Promise<Release> {
-	const url = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
-	const response = await fetch(url, {
-		headers: {
-			Accept: "application/vnd.github.v3+json",
-			"User-Agent": "ccl-test-runner-ts",
-		},
-	});
+function* fetchJson<T>(url: string): Operation<T> {
+	const signal = yield* useAbortSignal();
+	const response = yield* call(() =>
+		fetch(url, {
+			headers: {
+				Accept: "application/vnd.github.v3+json",
+				"User-Agent": "ccl-test-runner-ts",
+			},
+			signal,
+		}),
+	);
 
 	if (!response.ok) {
 		throw new Error(
-			`Failed to fetch latest release: ${response.status} ${response.statusText}`,
+			`Failed to fetch ${url}: ${response.status} ${response.statusText}`,
 		);
 	}
 
-	return response.json() as Promise<Release>;
+	return (yield* call(() => response.json())) as T;
 }
 
-/**
- * Get a specific release by tag from GitHub.
- */
-async function getReleaseByTag(tag: string): Promise<Release> {
-	const url = `${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/releases/tags/${tag}`;
-	const response = await fetch(url, {
-		headers: {
-			Accept: "application/vnd.github.v3+json",
-			"User-Agent": "ccl-test-runner-ts",
-		},
-	});
-
-	if (!response.ok) {
-		throw new Error(
-			`Failed to fetch release ${tag}: ${response.status} ${response.statusText}`,
-		);
-	}
-
-	return response.json() as Promise<Release>;
+function* getLatestReleaseOp(): Operation<Release> {
+	return yield* fetchJson<Release>(
+		`${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`,
+	);
 }
 
-/**
- * Download test data from the ccl-test-data GitHub releases.
- *
- * This function downloads the generated test zip file from the
- * specified release (or latest if not specified) and extracts it using dill.
- */
-export async function downloadTestData(
+function* getReleaseByTagOp(tag: string): Operation<Release> {
+	return yield* fetchJson<Release>(
+		`${GITHUB_API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/releases/tags/${tag}`,
+	);
+}
+
+function* downloadTestDataOp(
 	options: DownloadOptions,
-): Promise<DownloadResult> {
+): Operation<DownloadResult> {
 	const { outputDir, force = false, version } = options;
 
-	// Get release info
 	const release = version
-		? await getReleaseByTag(version)
-		: await getLatestRelease();
+		? yield* getReleaseByTagOp(version)
+		: yield* getLatestReleaseOp();
 
-	// Create output directory
-	await mkdir(outputDir, { recursive: true });
+	yield* call(() => mkdir(outputDir, { recursive: true }));
 
 	// Check if we have a version marker file
 	const versionFile = join(outputDir, ".version");
 	if (!force && existsSync(versionFile)) {
-		const existingVersion = await readFile(versionFile, "utf-8");
+		const existingVersion = yield* call(() => readFile(versionFile, "utf-8"));
 		if (existingVersion.trim() === release.tag_name) {
 			consola.info(`Test data already at version ${release.tag_name}`);
 			return {
@@ -153,7 +152,6 @@ export async function downloadTestData(
 		}
 	}
 
-	// Download individual JSON files using dill
 	const jsonAssets = release.assets.filter(
 		(asset) =>
 			asset.name.endsWith(".json") &&
@@ -165,50 +163,96 @@ export async function downloadTestData(
 		`Downloading ${jsonAssets.length} test files from release ${release.tag_name}...`,
 	);
 
-	let filesDownloaded = 0;
+	// Spawn parallel downloads — if any fails, the scope cancels the rest
+	const tasks: Task<void>[] = [];
 	for (const asset of jsonAssets) {
-		consola.info(`  Downloading ${asset.name}...`);
-		await download(asset.browser_download_url, {
-			downloadDir: outputDir,
-			filename: asset.name,
+		const task = yield* spawn(function* () {
+			consola.info(`  Downloading ${asset.name}...`);
+			yield* call(() =>
+				download(asset.browser_download_url, {
+					downloadDir: outputDir,
+					filename: asset.name,
+				}),
+			);
 		});
-		filesDownloaded++;
+		tasks.push(task);
+	}
+	for (const task of tasks) {
+		yield* task;
 	}
 
-	// Write version marker
-	await writeFile(versionFile, release.tag_name);
+	yield* call(() => writeFile(versionFile, release.tag_name));
 
-	consola.success(`Downloaded ${filesDownloaded} files to ${outputDir}`);
+	consola.success(`Downloaded ${jsonAssets.length} files to ${outputDir}`);
 
 	return {
 		version: release.tag_name,
-		filesDownloaded,
+		filesDownloaded: jsonAssets.length,
 		outputDir,
 	};
+}
+
+function* downloadSchemaOp(outputDir: string): Operation<void> {
+	const release = yield* getLatestReleaseOp();
+
+	const schemaUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${release.tag_name}/schemas/generated-format.json`;
+
+	consola.start(`Downloading schema from release ${release.tag_name}...`);
+
+	yield* call(() => mkdir(outputDir, { recursive: true }));
+	yield* call(() =>
+		download(schemaUrl, {
+			downloadDir: outputDir,
+			filename: "generated-format.json",
+		}),
+	);
+
+	consola.success(`Schema downloaded to ${outputDir}/generated-format.json`);
+}
+
+// ---------------------------------------------------------------------------
+// Public API: thin async wrappers
+// ---------------------------------------------------------------------------
+
+/**
+ * Download test data from the ccl-test-data GitHub releases.
+ *
+ * Downloads the generated test JSON files from the specified release
+ * (or latest if not specified) in parallel using dill.
+ */
+export async function downloadTestData(
+	options: DownloadOptions,
+): Promise<DownloadResult> {
+	return runOperation(function* () {
+		return yield* downloadTestDataOp(options);
+	});
 }
 
 /**
  * Download the JSON schema from the ccl-test-data release.
  */
 export async function downloadSchema(outputDir: string): Promise<void> {
-	const release = await getLatestRelease();
-
-	// Schema is included in the release as a direct file in the repo
-	// We fetch it from the release tag
-	const schemaUrl = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${release.tag_name}/schemas/generated-format.json`;
-
-	consola.start(`Downloading schema from release ${release.tag_name}...`);
-
-	await mkdir(outputDir, { recursive: true });
-	await download(schemaUrl, {
-		downloadDir: outputDir,
-		filename: "generated-format.json",
+	return runOperation(function* () {
+		return yield* downloadSchemaOp(outputDir);
 	});
-
-	consola.success(`Schema downloaded to ${outputDir}/generated-format.json`);
 }
 
-// Schema subcommand
+// ---------------------------------------------------------------------------
+// CLI
+// ---------------------------------------------------------------------------
+
+// CLI-level scope: SIGINT/SIGTERM destroy the scope, which halts all
+// in-flight operations (fetch requests abort, spawned downloads cancel).
+const [cliScope, cliDestroy] = createScope();
+
+process.on("SIGINT", () => {
+	consola.info("\nCancelling...");
+	cliDestroy().catch(() => {});
+});
+process.on("SIGTERM", () => {
+	cliDestroy().catch(() => {});
+});
+
 const schemaCommand = defineCommand({
 	meta: {
 		name: "schema",
@@ -223,11 +267,12 @@ const schemaCommand = defineCommand({
 		},
 	},
 	async run({ args }) {
-		await downloadSchema(args.output);
+		await cliScope.run(function* () {
+			yield* downloadSchemaOp(args.output);
+		});
 	},
 });
 
-// Main command
 const main = defineCommand({
 	meta: {
 		name: "ccl-download-tests",
@@ -257,10 +302,12 @@ const main = defineCommand({
 		schema: schemaCommand,
 	},
 	async run({ args }) {
-		const result = await downloadTestData({
-			outputDir: args.output,
-			force: args.force,
-			...(args.version !== undefined && { version: args.version }),
+		const result = await cliScope.run(function* () {
+			return yield* downloadTestDataOp({
+				outputDir: args.output,
+				force: args.force,
+				...(args.version !== undefined && { version: args.version }),
+			});
 		});
 
 		consola.box(
@@ -269,8 +316,11 @@ const main = defineCommand({
 	},
 });
 
-// Run CLI
-runMain(main).catch((error: unknown) => {
-	consola.error(error);
-	process.exit(1);
-});
+runMain(main)
+	.catch((error: unknown) => {
+		consola.error(error);
+		process.exit(1);
+	})
+	.finally(() => {
+		cliDestroy().catch(() => {});
+	});
