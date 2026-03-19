@@ -42,6 +42,13 @@ export default defineConfig({
 			title: "CCL",
 			description: "CCL (Categorical Configuration Language) documentation",
 			lastUpdated: true,
+			logo: {
+				"light": "./src/assets/ccl-logo.webp",
+				"dark": "./src/assets/ccl-logo-dark.webp",
+				"alt": "CCL Logo",
+				"replacesTitle": true,
+			},
+			favicon: "./src/assets/ccl-favicon.png",
 			customCss: [
 				// Fontsource files for to regular and semi-bold font weights.
 				// "@fontsource/ibm-plex-serif/400.css",
