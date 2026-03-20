@@ -91,7 +91,7 @@ database =
 |------|----------|
 | [Test Suite Guide](/test-suite-guide) | Setting up test filtering, understanding test format |
 
-**Test Suite Repository**: https://github.com/tylerbutler/ccl-test-data
+**Test Suite Repository**: https://github.com/CatConfLang/ccl-test-data
 
 ## Common AI Assistant Pitfalls
 

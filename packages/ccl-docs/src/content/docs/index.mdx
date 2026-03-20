@@ -36,25 +36,33 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 		The CCL core focuses on string-only key-value pairs with a progressive API. Build custom features on this simple foundation.
 	</Card>
 	<Card title="Mathematical foundation" icon="star">
-		Based on Category Theory principles, CCL provides predictable composition and merging behavior.
+		Based on <a href="https://en.wikipedia.org/wiki/Category_theory">Category Theory</a> principles, CCL provides predictable composition and merging behavior.
 	</Card>
 </CardGrid>
 
 ## Quick Example
 
 ```ccl
-app =
-  name = MyWebApp
+/= CCL supports comments and multiline values
+notes =
+  CCL is designed to be simple and composable, with a minimal core and optional features built on top.
+  The CCL Test Suite provides hundreds of tests for validating implementations.
+
+site =
+  /= Indentation creates hierarchy
+  id = abcdef0123456789
+  name = My Site
+
+  /= Keys and values are all strings and escaping and quoting are not needed.
+  /= You'll get a string value exactly as you wrote it.
+  name = Someone's Website About Something
   version = 1.0.0
 
-server =
-  host = 0.0.0.0
-  port = 8080
-
-allowed_origins =
+/= Keys can contain special characters, including spaces and emojis
+allowed origins =
   = https://example.com
   = https://www.example.com
 
-/= Configuration comment
-debug = true
+debug_mode = ☠️
+
 ```

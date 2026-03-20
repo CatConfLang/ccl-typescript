@@ -30,7 +30,7 @@ Build a CCL parser in [language].
 Read https://ccl.tylerbutler.com/ai-implementation-guide/ for the complete
 specification. Start with parse and build_hierarchy, then add typed access.
 
-Use tests from https://github.com/tylerbutler/ccl-test-data to validate.
+Use tests from https://github.com/CatConfLang/ccl-test-data to validate.
 ```
 
 ### With Specific Behaviors
@@ -114,7 +114,7 @@ Follow https://ccl.tylerbutler.com/library-features/
 
 ```
 Set up test integration for my CCL implementation using the test suite at
-https://github.com/tylerbutler/ccl-test-data
+https://github.com/CatConfLang/ccl-test-data
 
 The tests are in generated_tests/*.json format. Filter tests to only run
 those for functions I've implemented: parse, build_hierarchy.
@@ -126,7 +126,7 @@ See https://ccl.tylerbutler.com/test-suite-guide/ for test format details.
 
 ```
 Build a test runner for my [language] CCL implementation that:
-1. Loads JSON tests from https://github.com/tylerbutler/ccl-test-data/generated_tests/
+1. Loads JSON tests from https://github.com/CatConfLang/ccl-test-data/generated_tests/
 2. Filters by my implemented functions: [list your functions]
 3. Runs each test and reports pass/fail
 4. Handles the "expected" format with "count" fields
@@ -218,4 +218,4 @@ Compare my CCL parser to the spec at https://ccl.tylerbutler.com/parsing-algorit
 
 **Include your constraints:** Language version, dependencies, style preferences.
 
-**Mention the test suite:** Always reference https://github.com/tylerbutler/ccl-test-data for validation.
+**Mention the test suite:** Always reference https://github.com/CatConfLang/ccl-test-data for validation.

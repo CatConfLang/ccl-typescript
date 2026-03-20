@@ -38,7 +38,7 @@ let githubSources = $derived(dataSourceManager.getSourcesByType("github"));
 // Popular repositories with CCL test data (examples for users)
 const popularRepositories = [
 	{
-		url: "https://github.com/tylerbutler/ccl-test-data",
+		url: "https://github.com/CatConfLang/ccl-test-data",
 		name: "CCL Test Data",
 		description: "Official CCL test suite",
 		owner: "tylerbutler",

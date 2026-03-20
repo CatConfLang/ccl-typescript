@@ -56,20 +56,24 @@ import { Tabs, TabItem } from '@astrojs/starlight/components';
 
 ```ccl title="config.ccl"
 /= Application Configuration
-app.name = MyApplication
-app.version = 1.2.3
-app.debug = true
+app =
+  name = MyApplication
+  version = 1.2.3
+  debug = true
 
 /= Server Configuration
-server.host = localhost
-server.port = 8080
-server.ssl.enabled = true
-server.ssl.cert_file = /path/to/cert.pem
+server =
+  host = localhost
+  port = 8080
+  ssl =
+    enabled = true
+    cert_file = /path/to/cert.pem
 
 /= Database Configuration
-database.connections =
-  = postgres://db1.example.com/myapp
-  = postgres://db2.example.com/myapp
+database =
+  connections =
+    = postgres://db1.example.com/myapp
+    = postgres://db2.example.com/myapp
 ```
 
 </TabItem>

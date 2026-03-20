@@ -26,11 +26,13 @@ This guide provides everything an AI agent needs to implement CCL (Categorical C
 | Resource | URL |
 |----------|-----|
 | Documentation | https://ccl.tylerbutler.com |
-| Test Suite | https://github.com/tylerbutler/ccl-test-data |
-| Go Implementation | https://github.com/tylerbutler/ccl-go |
+| Test Suite | https://github.com/CatConfLang/ccl-test-data |
+| TypeScript Implementation | https://github.com/CatConfLang/ccl-typescript |
 | Gleam Implementation | https://github.com/tylerbutler/ccl_gleam |
-| OCaml Implementation | https://github.com/tylerbutler/ccl-ocaml |
-
+| OCaml Implementation | https://github.com/chshersh/ccl |
+| Rust (ccl-rs)        | https://github.com/hon-gyu/ccl-rs |
+| Rust (serde_ccl)     | https://github.com/LechintanTudor/serde_ccl |
+| Rust (sickle)        | https://github.com/tylerbutler/santa/tree/main/crates/sickle |
 ---
 
 ## Core Functions (Required)
@@ -310,7 +312,7 @@ See [Behavior Reference](/behavior-reference) for detailed documentation of each
 
 ### Test Suite
 
-The official test suite at https://github.com/tylerbutler/ccl-test-data provides comprehensive validation:
+The official test suite at https://github.com/CatConfLang/ccl-test-data provides comprehensive validation:
 
 - **Hundreds of assertions** across a growing test suite
 - **JSON format** in `generated_tests/` directory

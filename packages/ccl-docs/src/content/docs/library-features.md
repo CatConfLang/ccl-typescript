@@ -179,7 +179,7 @@ Some implementations provide additional experimental features:
 
 ## Test Suite Coverage
 
-The [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) provides tests for these features:
+The [CCL Test Suite](https://github.com/CatConfLang/ccl-test-data) provides tests for these features:
 
 - **Type-Safe Access**: `get_string`, `get_int`, `get_bool`, `get_float`, `get_list` — covered by tests tagged `optional_typed_accessors`
 - **Entry Processing**: `filter`, `compose`, identity properties

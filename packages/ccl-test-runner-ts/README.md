@@ -1,6 +1,6 @@
 # ccl-test-runner-ts
 
-TypeScript test runner for validating CCL implementations against the [ccl-test-data](https://github.com/tylerbutler/ccl-test-data) test suite.
+TypeScript test runner for validating CCL implementations against the [ccl-test-data](https://github.com/CatConfLang/ccl-test-data) test suite.
 
 ## Features
 

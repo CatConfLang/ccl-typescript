@@ -7,7 +7,7 @@ CCL implementations must make choices about how to handle certain parsing and ac
 
 ## How Behaviors Work
 
-Behaviors are tags that describe implementation choices. When running the [CCL test suite](https://github.com/tylerbutler/ccl-test-data), you declare which behaviors your implementation uses, and tests use a `conflicts` field to indicate incompatible behaviors.
+Behaviors are tags that describe implementation choices. When running the [CCL test suite](https://github.com/CatConfLang/ccl-test-data), you declare which behaviors your implementation uses, and tests use a `conflicts` field to indicate incompatible behaviors.
 
 ```javascript
 const capabilities = {
@@ -352,7 +352,7 @@ Compare with `delimiter_first_equals`:
 
 ## Declaring Behaviors in Test Runners
 
-When building a test runner against the CCL test suite, declare your implementation's behaviors. Tests in the [generated format](https://github.com/tylerbutler/ccl-test-data/blob/main/schemas/generated-format.json) include a `conflicts` field that specifies incompatible behaviors:
+When building a test runner against the CCL test suite, declare your implementation's behaviors. Tests in the [generated format](https://github.com/CatConfLang/ccl-test-data/blob/main/schemas/generated-format.json) include a `conflicts` field that specifies incompatible behaviors:
 
 ```javascript
 const capabilities = {
@@ -398,4 +398,4 @@ const compatibleTests = allTests.filter(test => {
 
 - [Test Suite Guide](/test-suite-guide/) - Overview of the CCL test suite
 - [AI Quickstart](/ai-quickstart/) - Quick reference for AI assistants
-- [CCL Test Data Repository](https://github.com/tylerbutler/ccl-test-data) - Full test suite with filtering examples
+- [CCL Test Data Repository](https://github.com/CatConfLang/ccl-test-data) - Full test suite with filtering examples

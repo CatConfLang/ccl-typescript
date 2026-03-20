@@ -3,7 +3,7 @@ title: Test Suite Guide
 description: Using the CCL test suite for progressive implementation validation.
 ---
 
-The [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) provides hundreds of assertions across hundreds of tests for validating CCL implementations.
+The [CCL Test Suite](https://github.com/CatConfLang/ccl-test-data) provides hundreds of assertions across hundreds of tests for validating CCL implementations.
 
 ## Test Format
 
@@ -141,4 +141,4 @@ const supportedTests = tests.filter(test => {
 }
 ```
 
-See [CCL Test Suite](https://github.com/tylerbutler/ccl-test-data) repository for complete test runner and JSON schema.
+See [CCL Test Suite](https://github.com/CatConfLang/ccl-test-data) repository for complete test runner and JSON schema.
