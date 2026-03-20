@@ -2,9 +2,6 @@
 title: AI Writing Guide
 description: Guidance for AI agents generating valid CCL output
 ---
-
-import { Aside } from '@astrojs/starlight/components';
-
 This page is for AI assistants and code generators that need to produce valid CCL. If you're implementing a CCL parser, see the [AI Quickstart](/ai-quickstart/) instead.
 
 ## CCL Output Rules
