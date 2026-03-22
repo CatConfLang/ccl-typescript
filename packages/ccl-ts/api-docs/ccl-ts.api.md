@@ -22,6 +22,11 @@ export function buildHierarchy(entries: Entry[]): Result<CCLObject, ParseError>;
 // @beta
 export function canonicalFormat(input: string): Result<string, ParseError>;
 
+// Warning: (ae-forgotten-export) The symbol "CCLListItem" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type CCLList = CCLListItem[];
+
 // @beta
 export interface CCLObject {
     // (undocumented)
@@ -29,7 +34,7 @@ export interface CCLObject {
 }
 
 // @beta
-export type CCLValue = string | string[] | CCLObject;
+export type CCLValue = string | CCLList | CCLObject;
 
 // @beta
 export interface Entry {
@@ -51,7 +56,7 @@ export function getFloat(obj: CCLObject, ...pathParts: string[]): Result<number,
 export function getInt(obj: CCLObject, ...pathParts: string[]): Result<number, AccessError>;
 
 // @beta
-export function getList(obj: CCLObject, ...pathParts: string[]): Result<string[], AccessError>;
+export function getList(obj: CCLObject, ...pathParts: string[]): Result<CCLList, AccessError>;
 
 // @beta
 export function getString(obj: CCLObject, ...pathParts: string[]): Result<string, AccessError>;
