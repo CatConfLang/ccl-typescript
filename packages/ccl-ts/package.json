@@ -18,6 +18,12 @@
 				"types": "./esm/index.d.ts",
 				"default": "./esm/index.js"
 			}
+		},
+		"./throwing": {
+			"import": {
+				"types": "./esm/throwing.d.ts",
+				"default": "./esm/throwing.js"
+			}
 		}
 	},
 	"types": "./esm/index.d.ts",
