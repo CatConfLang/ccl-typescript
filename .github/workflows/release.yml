@@ -1,0 +1,92 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .changeset/**
+
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CHANGESET_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Process changesets
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: pnpm ci:version
+          title: "🚀 release: Update versions"
+        env:
+          GITHUB_TOKEN: ${{ secrets.CHANGESET_TOKEN }}
+
+      - name: Debug output
+        run: |
+          echo "Published: ${{ steps.changesets.outputs.published }}"
+          echo "Packages: ${{ steps.changesets.outputs.publishedPackages }}"
+          echo "HasChangesets: ${{ steps.changesets.outputs.hasChangesets }}"
+
+      - name: Setup .npmrc for npm
+        if: steps.changesets.outputs.hasChangesets != 'true'
+        run: echo -e "\n//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+
+      - name: Build
+        if: steps.changesets.outputs.hasChangesets != 'true'
+        run: pnpm run build
+
+      - name: Publish to npm
+        if: steps.changesets.outputs.hasChangesets != 'true'
+        id: publish
+        run: |
+          pnpm run ci:publish
+
+          contents=$(if [ -f pnpm-publish-summary.json ]; then cat pnpm-publish-summary.json; else echo ""; fi)
+          compact_contents=$(echo "$contents" | jq -c '.publishedPackages')
+          echo "$compact_contents"
+          echo "report=$compact_contents" >> $GITHUB_OUTPUT
+
+      - name: Version PR created
+        if: steps.changesets.outputs.hasChangesets == 'true'
+        run: |
+          echo "### PR updated :clipboard:" >> $GITHUB_STEP_SUMMARY
+          echo "No packages published. See the release PR for details. Merge it to publish packages." >> $GITHUB_STEP_SUMMARY
+
+      - name: Packages published
+        if: steps.publish.outputs.report != null && steps.publish.outputs.report != '[]'
+        run: |
+          echo "### Packages published! :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo '${{ steps.publish.outputs.report }}' | jq '.' >> $GITHUB_STEP_SUMMARY
+
+      - name: No packages published
+        if: steps.publish.outputs.report == '[]'
+        run: |
+          echo "### No packages to publish" >> $GITHUB_STEP_SUMMARY
+          echo "There were no packages to publish." >> $GITHUB_STEP_SUMMARY
