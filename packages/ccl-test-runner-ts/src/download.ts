@@ -5,6 +5,7 @@
  * @example
  * ```bash
  * # Download to default location (./ccl-test-data)
+ * # Uses version from .version file if it exists, otherwise latest
  * npx ccl-download-tests
  *
  * # Download to custom location
@@ -15,6 +16,9 @@
  *
  * # Download specific version
  * npx ccl-download-tests --version v1.0.0
+ *
+ * # Always download the latest release, ignoring any pinned .version file
+ * npx ccl-download-tests --latest
  *
  * # Download JSON schema only
  * npx ccl-download-tests schema --output ./schemas
@@ -71,8 +75,10 @@ export interface DownloadOptions {
 	outputDir: string;
 	/** Force download even if files exist */
 	force?: boolean;
-	/** Specific version tag to download (default: latest) */
+	/** Specific version tag to download */
 	version?: string;
+	/** Always fetch the latest release, ignoring any .version file */
+	latest?: boolean;
 }
 
 /**
@@ -130,16 +136,33 @@ function* getReleaseByTagOp(tag: string): Operation<Release> {
 function* downloadTestDataOp(
 	options: DownloadOptions,
 ): Operation<DownloadResult> {
-	const { outputDir, force = false, version } = options;
+	const { outputDir, force = false, version, latest = false } = options;
 
-	const release = version
-		? yield* getReleaseByTagOp(version)
-		: yield* getLatestReleaseOp();
+	const versionFile = join(outputDir, ".version");
+
+	// Determine which release to fetch:
+	// 1. Explicit --version tag takes priority
+	// 2. --latest always fetches the latest release
+	// 3. Otherwise, read .version file from the output directory if it exists
+	// 4. Fall back to latest
+	let release: Release;
+	if (version) {
+		release = yield* getReleaseByTagOp(version);
+	} else if (latest) {
+		release = yield* getLatestReleaseOp();
+	} else if (existsSync(versionFile)) {
+		const pinnedVersion = yield* call(() => readFile(versionFile, "utf-8"));
+		consola.info(
+			`Using version ${pinnedVersion.trim()} from ${versionFile}`,
+		);
+		release = yield* getReleaseByTagOp(pinnedVersion.trim());
+	} else {
+		release = yield* getLatestReleaseOp();
+	}
 
 	yield* call(() => mkdir(outputDir, { recursive: true }));
 
-	// Check if we have a version marker file
-	const versionFile = join(outputDir, ".version");
+	// Check if we already have this version
 	if (!force && existsSync(versionFile)) {
 		const existingVersion = yield* call(() => readFile(versionFile, "utf-8"));
 		if (existingVersion.trim() === release.tag_name) {
@@ -295,17 +318,31 @@ const main = defineCommand({
 		version: {
 			type: "string",
 			alias: "v",
-			description: "Specific version tag to download (default: latest)",
+			description:
+				"Specific version tag to download (mutually exclusive with --latest)",
+		},
+		latest: {
+			type: "boolean",
+			alias: "l",
+			description:
+				"Download the latest release, ignoring any pinned .version file (mutually exclusive with --version)",
+			default: false,
 		},
 	},
 	subCommands: {
 		schema: schemaCommand,
 	},
 	async run({ args }) {
+		if (args.version !== undefined && args.latest) {
+			consola.error("--version and --latest are mutually exclusive");
+			process.exit(1);
+		}
+
 		const result = await cliScope.run(function* () {
 			return yield* downloadTestDataOp({
 				outputDir: args.output,
 				force: args.force,
+				latest: args.latest,
 				...(args.version !== undefined && { version: args.version }),
 			});
 		});
