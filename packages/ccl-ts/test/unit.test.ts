@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { buildHierarchy, canonicalFormat, getFloat, getList, parse } from "../src/ccl.js";
+import { buildHierarchy, canonicalFormat, getFloat, getList, parse } from "../src/index.js";
 
 describe("getFloat", () => {
 	it("should return error for empty string value", () => {

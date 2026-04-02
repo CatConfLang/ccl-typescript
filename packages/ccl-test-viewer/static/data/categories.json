@@ -254,9 +254,7 @@
 				},
 				"features": ["empty_keys"],
 				"functions": ["parse"],
-				"inputs": [
-					"== Database Config\nhost = localhost\n=== Server Settings\nport = 8080"
-				],
+				"inputs": ["== Database Config\nhost = localhost\n=== Server Settings\nport = 8080"],
 				"name": "section_headers_no_trailing_equals_parse",
 				"source_test": "section_headers_no_trailing_equals",
 				"validation": "parse",
@@ -296,9 +294,7 @@
 				},
 				"features": ["empty_keys"],
 				"functions": ["parse"],
-				"inputs": [
-					"= = spaced equals\n=  = wide spaces\n== Real Header ==\nkey = value"
-				],
+				"inputs": ["= = spaced equals\n=  = wide spaces\n== Real Header ==\nkey = value"],
 				"name": "spaced_equals_not_section_header_parse",
 				"source_test": "spaced_equals_not_section_header",
 				"validation": "parse",
@@ -456,10 +452,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "name", "value": "Alice" },
-						{ "key": "age", "value": "42" }
-					]
+					"entries": [{ "key": "name", "value": "Alice" }, { "key": "age", "value": "42" }]
 				},
 				"features": [],
 				"functions": ["parse"],
@@ -654,9 +647,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"name = Alice\nconfig =\n  debug = true\n  timeout = 30\nversion = 1.0"
-				],
+				"inputs": ["name = Alice\nconfig =\n  debug = true\n  timeout = 30\nversion = 1.0"],
 				"name": "mixed_flat_and_nested_parse",
 				"source_test": "mixed_flat_and_nested",
 				"validation": "parse",
@@ -674,9 +665,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"name = Alice\nconfig =\n  debug = true\n  timeout = 30\nversion = 1.0"
-				],
+				"inputs": ["name = Alice\nconfig =\n  debug = true\n  timeout = 30\nversion = 1.0"],
 				"name": "mixed_flat_and_nested_build_hierarchy",
 				"source_test": "mixed_flat_and_nested",
 				"validation": "build_hierarchy",
@@ -690,9 +679,7 @@
 				},
 				"features": [],
 				"functions": ["print"],
-				"inputs": [
-					"name = Alice\nconfig =\n  debug = true\n  timeout = 30\nversion = 1.0"
-				],
+				"inputs": ["name = Alice\nconfig =\n  debug = true\n  timeout = 30\nversion = 1.0"],
 				"name": "mixed_flat_and_nested_print",
 				"source_test": "mixed_flat_and_nested",
 				"validation": "print",
@@ -828,10 +815,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "name", "value": "Alice" },
-						{ "key": "age", "value": "42" }
-					]
+					"entries": [{ "key": "name", "value": "Alice" }, { "key": "age", "value": "42" }]
 				},
 				"features": [],
 				"functions": ["parse"],
@@ -876,9 +860,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"database =\n  host = localhost\n  port = 5432\n  enabled = true"
-				],
+				"inputs": ["database =\n  host = localhost\n  port = 5432\n  enabled = true"],
 				"name": "complete_nested_workflow_parse",
 				"source_test": "complete_nested_workflow",
 				"validation": "parse",
@@ -898,9 +880,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"database =\n  host = localhost\n  port = 5432\n  enabled = true"
-				],
+				"inputs": ["database =\n  host = localhost\n  port = 5432\n  enabled = true"],
 				"name": "complete_nested_workflow_build_hierarchy",
 				"source_test": "complete_nested_workflow",
 				"validation": "build_hierarchy",
@@ -914,9 +894,7 @@
 				},
 				"features": [],
 				"functions": ["print"],
-				"inputs": [
-					"database =\n  host = localhost\n  port = 5432\n  enabled = true"
-				],
+				"inputs": ["database =\n  host = localhost\n  port = 5432\n  enabled = true"],
 				"name": "complete_nested_workflow_print",
 				"source_test": "complete_nested_workflow",
 				"validation": "print",
@@ -1255,10 +1233,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "name", "value": "Alice" },
-						{ "key": "age", "value": "42" }
-					]
+					"entries": [{ "key": "name", "value": "Alice" }, { "key": "age", "value": "42" }]
 				},
 				"features": [],
 				"functions": ["parse"],
@@ -1341,9 +1316,7 @@
 				},
 				"features": ["multiline"],
 				"functions": ["parse"],
-				"inputs": [
-					"description = First line\n  Second line\n  Third line\ndone = yes"
-				],
+				"inputs": ["description = First line\n  Second line\n  Third line\ndone = yes"],
 				"name": "multiline_values_parse",
 				"source_test": "multiline_values",
 				"validation": "parse",
@@ -1357,9 +1330,7 @@
 				},
 				"features": ["multiline"],
 				"functions": ["print"],
-				"inputs": [
-					"description = First line\n  Second line\n  Third line\ndone = yes"
-				],
+				"inputs": ["description = First line\n  Second line\n  Third line\ndone = yes"],
 				"name": "multiline_values_print",
 				"source_test": "multiline_values",
 				"validation": "print",
@@ -1369,10 +1340,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "empty", "value": "" },
-						{ "key": "other", "value": "value" }
-					]
+					"entries": [{ "key": "empty", "value": "" }, { "key": "other", "value": "value" }]
 				},
 				"features": ["empty_keys"],
 				"functions": ["parse"],
@@ -1430,10 +1398,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "emoji", "value": "😀😃😄" },
-						{ "key": "配置", "value": "config" }
-					]
+					"entries": [{ "key": "emoji", "value": "😀😃😄" }, { "key": "配置", "value": "config" }]
 				},
 				"features": ["unicode"],
 				"functions": ["parse"],
@@ -1495,10 +1460,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "key1", "value": "value1" },
-						{ "key": "key2", "value": "value2" }
-					]
+					"entries": [{ "key": "key1", "value": "value1" }, { "key": "key2", "value": "value2" }]
 				},
 				"features": ["whitespace"],
 				"functions": ["parse"],
@@ -1513,10 +1475,7 @@
 				"conflicts": { "behaviors": ["toplevel_indent_strip"] },
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "key", "value": "value" },
-						{ "key": "second", "value": "entry" }
-					]
+					"entries": [{ "key": "key", "value": "value" }, { "key": "second", "value": "entry" }]
 				},
 				"features": ["whitespace"],
 				"functions": ["parse"],
@@ -1712,10 +1671,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "key1", "value": "val1" },
-						{ "key": "key2", "value": "val2" }
-					]
+					"entries": [{ "key": "key1", "value": "val1" }, { "key": "key2", "value": "val2" }]
 				},
 				"features": [],
 				"functions": ["parse"],
@@ -1774,9 +1730,7 @@
 				"conflicts": { "behaviors": ["tabs_as_whitespace"] },
 				"expected": {
 					"count": 1,
-					"entries": [
-						{ "key": "text", "value": "First\n   four spaces\n\ttab preserved" }
-					]
+					"entries": [{ "key": "text", "value": "First\n   four spaces\n\ttab preserved" }]
 				},
 				"features": ["whitespace"],
 				"functions": ["parse_indented"],
@@ -1791,9 +1745,7 @@
 				"conflicts": { "behaviors": ["tabs_as_whitespace"] },
 				"expected": {
 					"count": 1,
-					"entries": [
-						{ "key": "text", "value": "First\n   four spaces\n\ttab preserved" }
-					]
+					"entries": [{ "key": "text", "value": "First\n   four spaces\n\ttab preserved" }]
 				},
 				"features": ["whitespace"],
 				"functions": ["parse_indented"],
@@ -1947,9 +1899,7 @@
 				},
 				"features": [],
 				"functions": ["parse_indented"],
-				"inputs": [
-					"key =\n  field1 = value1\n  field2 =\n    subfield = x\n    another = y"
-				],
+				"inputs": ["key =\n  field1 = value1\n  field2 =\n    subfield = x\n    another = y"],
 				"name": "deep_nested_structure_parse_indented",
 				"source_test": "deep_nested_structure",
 				"validation": "parse_indented",
@@ -2116,9 +2066,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"paths =\n  C:\\Users\\config = user_settings\n  D:\\data\\file.txt = backup"
-				],
+				"inputs": ["paths =\n  C:\\Users\\config = user_settings\n  D:\\data\\file.txt = backup"],
 				"name": "backslashes_in_map_keys_parse",
 				"source_test": "backslashes_in_map_keys",
 				"validation": "parse",
@@ -2137,9 +2085,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"paths =\n  C:\\Users\\config = user_settings\n  D:\\data\\file.txt = backup"
-				],
+				"inputs": ["paths =\n  C:\\Users\\config = user_settings\n  D:\\data\\file.txt = backup"],
 				"name": "backslashes_in_map_keys_build_hierarchy",
 				"source_test": "backslashes_in_map_keys",
 				"validation": "build_hierarchy",
@@ -2193,9 +2139,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"packages =\n  my-package-name = 1.0.0\n  another-lib = 2.3.4"
-				],
+				"inputs": ["packages =\n  my-package-name = 1.0.0\n  another-lib = 2.3.4"],
 				"name": "hyphens_in_map_keys_parse",
 				"source_test": "hyphens_in_map_keys",
 				"validation": "parse",
@@ -2211,9 +2155,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"packages =\n  my-package-name = 1.0.0\n  another-lib = 2.3.4"
-				],
+				"inputs": ["packages =\n  my-package-name = 1.0.0\n  another-lib = 2.3.4"],
 				"name": "hyphens_in_map_keys_build_hierarchy",
 				"source_test": "hyphens_in_map_keys",
 				"validation": "build_hierarchy",
@@ -2232,9 +2174,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"emails =\n  user@example.com = primary\n  admin@test.org = secondary"
-				],
+				"inputs": ["emails =\n  user@example.com = primary\n  admin@test.org = secondary"],
 				"name": "at_signs_in_map_keys_parse",
 				"source_test": "at_signs_in_map_keys",
 				"validation": "parse",
@@ -2253,9 +2193,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"emails =\n  user@example.com = primary\n  admin@test.org = secondary"
-				],
+				"inputs": ["emails =\n  user@example.com = primary\n  admin@test.org = secondary"],
 				"name": "at_signs_in_map_keys_build_hierarchy",
 				"source_test": "at_signs_in_map_keys",
 				"validation": "build_hierarchy",
@@ -2597,9 +2535,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"mappings =\n  ../foo = ../bar\n  ../../config = ../../data"
-				],
+				"inputs": ["mappings =\n  ../foo = ../bar\n  ../../config = ../../data"],
 				"name": "relative_path_in_nested_value_parse",
 				"source_test": "relative_path_in_nested_value",
 				"validation": "parse",
@@ -2615,9 +2551,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"mappings =\n  ../foo = ../bar\n  ../../config = ../../data"
-				],
+				"inputs": ["mappings =\n  ../foo = ../bar\n  ../../config = ../../data"],
 				"name": "relative_path_in_nested_value_build_hierarchy",
 				"source_test": "relative_path_in_nested_value",
 				"validation": "build_hierarchy",
@@ -2629,9 +2563,7 @@
 				"expected": { "count": 1, "value": "../bar" },
 				"features": [],
 				"functions": ["get_string"],
-				"inputs": [
-					"mappings =\n  ../foo = ../bar\n  ../../config = ../../data"
-				],
+				"inputs": ["mappings =\n  ../foo = ../bar\n  ../../config = ../../data"],
 				"name": "relative_path_in_nested_value_get_string",
 				"source_test": "relative_path_in_nested_value",
 				"validation": "get_string",
@@ -2683,9 +2615,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"config =\n  build = \n    output = ../../dist\n    cache = ../.cache"
-				],
+				"inputs": ["config =\n  build = \n    output = ../../dist\n    cache = ../.cache"],
 				"name": "relative_paths_deeply_nested_parse",
 				"source_test": "relative_paths_deeply_nested",
 				"validation": "parse",
@@ -2703,9 +2633,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"config =\n  build = \n    output = ../../dist\n    cache = ../.cache"
-				],
+				"inputs": ["config =\n  build = \n    output = ../../dist\n    cache = ../.cache"],
 				"name": "relative_paths_deeply_nested_build_hierarchy",
 				"source_test": "relative_paths_deeply_nested",
 				"validation": "build_hierarchy",
@@ -2717,9 +2645,7 @@
 				"expected": { "count": 1, "value": "../.cache" },
 				"features": [],
 				"functions": ["get_string"],
-				"inputs": [
-					"config =\n  build = \n    output = ../../dist\n    cache = ../.cache"
-				],
+				"inputs": ["config =\n  build = \n    output = ../../dist\n    cache = ../.cache"],
 				"name": "relative_paths_deeply_nested_get_string",
 				"source_test": "relative_paths_deeply_nested",
 				"validation": "get_string",
@@ -2738,9 +2664,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"imports =\n  .. = \n    main = ../src/main\n    test = ../tests"
-				],
+				"inputs": ["imports =\n  .. = \n    main = ../src/main\n    test = ../tests"],
 				"name": "relative_paths_as_nested_keys_parse",
 				"source_test": "relative_paths_as_nested_keys",
 				"validation": "parse",
@@ -2756,9 +2680,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"imports =\n  .. = \n    main = ../src/main\n    test = ../tests"
-				],
+				"inputs": ["imports =\n  .. = \n    main = ../src/main\n    test = ../tests"],
 				"name": "relative_paths_as_nested_keys_build_hierarchy",
 				"source_test": "relative_paths_as_nested_keys",
 				"validation": "build_hierarchy",
@@ -2770,9 +2692,7 @@
 				"expected": { "count": 1, "value": "../src/main" },
 				"features": [],
 				"functions": ["get_string"],
-				"inputs": [
-					"imports =\n  .. = \n    main = ../src/main\n    test = ../tests"
-				],
+				"inputs": ["imports =\n  .. = \n    main = ../src/main\n    test = ../tests"],
 				"name": "relative_paths_as_nested_keys_get_string",
 				"source_test": "relative_paths_as_nested_keys",
 				"validation": "get_string",
@@ -2897,9 +2817,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 1,
-					"entries": [
-						{ "key": "https://api.example.com", "value": "production" }
-					]
+					"entries": [{ "key": "https://api.example.com", "value": "production" }]
 				},
 				"features": [],
 				"functions": ["parse"],
@@ -3000,9 +2918,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 1,
-					"entries": [
-						{ "key": "endpoint", "value": "https://api.example.com/v1/data" }
-					]
+					"entries": [{ "key": "endpoint", "value": "https://api.example.com/v1/data" }]
 				},
 				"features": [],
 				"functions": ["parse"],
@@ -3169,9 +3085,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"https://api.example.com/search?q=test&page=1 = search_results"
-				],
+				"inputs": ["https://api.example.com/search?q=test&page=1 = search_results"],
 				"name": "url_with_query_params_as_key_parse",
 				"source_test": "url_with_query_params_as_key",
 				"validation": "parse",
@@ -3188,9 +3102,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"https://api.example.com/search?q=test&page=1 = search_results"
-				],
+				"inputs": ["https://api.example.com/search?q=test&page=1 = search_results"],
 				"name": "url_with_query_params_as_key_build_hierarchy",
 				"source_test": "url_with_query_params_as_key",
 				"validation": "build_hierarchy",
@@ -3210,9 +3122,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"https://api.example.com/search?q=test&page=1 = search_results"
-				],
+				"inputs": ["https://api.example.com/search?q=test&page=1 = search_results"],
 				"name": "delimiter_first_url_with_query_params_parse",
 				"source_test": "delimiter_first_url_with_query_params",
 				"validation": "parse",
@@ -3229,9 +3139,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"https://api.example.com/search?q=test&page=1 = search_results"
-				],
+				"inputs": ["https://api.example.com/search?q=test&page=1 = search_results"],
 				"name": "delimiter_first_url_with_query_params_build_hierarchy",
 				"source_test": "delimiter_first_url_with_query_params",
 				"validation": "build_hierarchy",
@@ -8359,9 +8267,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 1,
-					"entries": [
-						{ "key": "servers", "value": "\n  = web1\n  = web2\n  = web3" }
-					]
+					"entries": [{ "key": "servers", "value": "\n  = web1\n  = web2\n  = web3" }]
 				},
 				"features": ["empty_keys"],
 				"functions": ["parse"],
@@ -8856,10 +8762,7 @@
 					"count": 1,
 					"object": {
 						"items": {
-							"": [
-								{ "name": "first", "value": "1" },
-								{ "name": "second", "value": "2" }
-							]
+							"": [{ "name": "first", "value": "1" }, { "name": "second", "value": "2" }]
 						}
 					}
 				},
@@ -8878,10 +8781,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"list": [
-						{ "name": "first", "value": "1" },
-						{ "name": "second", "value": "2" }
-					]
+					"list": [{ "name": "first", "value": "1" }, { "name": "second", "value": "2" }]
 				},
 				"features": ["empty_keys"],
 				"functions": ["get_list"],
@@ -9045,11 +8945,7 @@
 					"count": 1,
 					"object": {
 						"items": {
-							"": [
-								"simple_string",
-								{ "name": "nested", "value": "obj" },
-								"another_string"
-							]
+							"": ["simple_string", { "name": "nested", "value": "obj" }, "another_string"]
 						}
 					}
 				},
@@ -9134,9 +9030,7 @@
 				},
 				"features": ["empty_keys", "multiline"],
 				"functions": ["parse_indented"],
-				"inputs": [
-					"== Section Header =\n  This continues the header\nkey = value"
-				],
+				"inputs": ["== Section Header =\n  This continues the header\nkey = value"],
 				"name": "multiline_section_header_value_parse_indented",
 				"source_test": "multiline_section_header_value",
 				"validation": "parse_indented",
@@ -9156,9 +9050,7 @@
 				},
 				"features": ["empty_keys"],
 				"functions": ["parse_indented"],
-				"inputs": [
-					"== Section Header =\nThis continues the header\nkey = value"
-				],
+				"inputs": ["== Section Header =\nThis continues the header\nkey = value"],
 				"name": "unindented_multiline_becomes_continuation_parse_indented",
 				"source_test": "unindented_multiline_becomes_continuation",
 				"validation": "parse_indented",
@@ -9175,9 +9067,7 @@
 				},
 				"features": ["multiline"],
 				"functions": ["parse_indented"],
-				"inputs": [
-					"descriptions = First line\n  second line\ndescriptions = Another item"
-				],
+				"inputs": ["descriptions = First line\n  second line\ndescriptions = Another item"],
 				"name": "indented_line_is_continuation_parse_indented",
 				"source_test": "indented_line_is_continuation",
 				"validation": "parse_indented",
@@ -9193,9 +9083,7 @@
 				},
 				"features": ["multiline"],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"descriptions = First line\n  second line\ndescriptions = Another item"
-				],
+				"inputs": ["descriptions = First line\n  second line\ndescriptions = Another item"],
 				"name": "indented_line_is_continuation_build_hierarchy",
 				"source_test": "indented_line_is_continuation",
 				"validation": "build_hierarchy",
@@ -9211,9 +9099,7 @@
 				},
 				"features": ["multiline"],
 				"functions": ["get_list"],
-				"inputs": [
-					"descriptions = First line\n  second line\ndescriptions = Another item"
-				],
+				"inputs": ["descriptions = First line\n  second line\ndescriptions = Another item"],
 				"name": "indented_line_is_continuation_get_list",
 				"source_test": "indented_line_is_continuation",
 				"validation": "get_list",
@@ -9356,9 +9242,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"
-				],
+				"inputs": ["database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"],
 				"name": "nested_list_access_parse",
 				"source_test": "nested_list_access",
 				"validation": "parse",
@@ -9374,9 +9258,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"
-				],
+				"inputs": ["database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"],
 				"name": "nested_list_access_build_hierarchy",
 				"source_test": "nested_list_access",
 				"validation": "build_hierarchy",
@@ -9389,9 +9271,7 @@
 				"expected": { "count": 1, "list": ["5432"] },
 				"features": [],
 				"functions": ["get_list"],
-				"inputs": [
-					"database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"
-				],
+				"inputs": ["database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"],
 				"name": "nested_list_access_get_list",
 				"source_test": "nested_list_access",
 				"validation": "get_list",
@@ -9586,9 +9466,7 @@
 				},
 				"features": ["unicode"],
 				"functions": ["parse"],
-				"inputs": [
-					"names = 张三\nnames = José\nnames = François\nnames = العربية"
-				],
+				"inputs": ["names = 张三\nnames = José\nnames = François\nnames = العربية"],
 				"name": "list_with_unicode_parse",
 				"source_test": "list_with_unicode",
 				"validation": "parse",
@@ -9602,9 +9480,7 @@
 				},
 				"features": ["unicode"],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"names = 张三\nnames = José\nnames = François\nnames = العربية"
-				],
+				"inputs": ["names = 张三\nnames = José\nnames = François\nnames = العربية"],
 				"name": "list_with_unicode_build_hierarchy",
 				"source_test": "list_with_unicode",
 				"validation": "build_hierarchy",
@@ -9620,9 +9496,7 @@
 				},
 				"features": ["unicode"],
 				"functions": ["get_list"],
-				"inputs": [
-					"names = 张三\nnames = José\nnames = François\nnames = العربية"
-				],
+				"inputs": ["names = 张三\nnames = José\nnames = François\nnames = العربية"],
 				"name": "list_with_unicode_get_list",
 				"source_test": "list_with_unicode",
 				"validation": "get_list",
@@ -9641,9 +9515,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"symbols = @#$%\nsymbols = !^&*()\nsymbols = []{}|\nsymbols = <>=+"
-				],
+				"inputs": ["symbols = @#$%\nsymbols = !^&*()\nsymbols = []{}|\nsymbols = <>=+"],
 				"name": "list_with_special_characters_parse",
 				"source_test": "list_with_special_characters",
 				"validation": "parse",
@@ -9657,9 +9529,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"symbols = @#$%\nsymbols = !^&*()\nsymbols = []{}|\nsymbols = <>=+"
-				],
+				"inputs": ["symbols = @#$%\nsymbols = !^&*()\nsymbols = []{}|\nsymbols = <>=+"],
 				"name": "list_with_special_characters_build_hierarchy",
 				"source_test": "list_with_special_characters",
 				"validation": "build_hierarchy",
@@ -9672,9 +9542,7 @@
 				"expected": { "count": 4, "list": ["@#$%", "!^&*()", "[]{}|", "<>=+"] },
 				"features": [],
 				"functions": ["get_list"],
-				"inputs": [
-					"symbols = @#$%\nsymbols = !^&*()\nsymbols = []{}|\nsymbols = <>=+"
-				],
+				"inputs": ["symbols = @#$%\nsymbols = !^&*()\nsymbols = []{}|\nsymbols = <>=+"],
 				"name": "list_with_special_characters_get_list",
 				"source_test": "list_with_special_characters",
 				"validation": "get_list",
@@ -9985,9 +9853,7 @@
 				},
 				"features": [],
 				"functions": ["parse"],
-				"inputs": [
-					"database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"
-				],
+				"inputs": ["database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"],
 				"name": "nested_list_access_reference_parse",
 				"source_test": "nested_list_access_reference",
 				"validation": "parse",
@@ -10003,9 +9869,7 @@
 				},
 				"features": [],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"
-				],
+				"inputs": ["database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"],
 				"name": "nested_list_access_reference_build_hierarchy",
 				"source_test": "nested_list_access_reference",
 				"validation": "build_hierarchy",
@@ -10018,9 +9882,7 @@
 				"expected": { "count": 0 },
 				"features": [],
 				"functions": ["get_list"],
-				"inputs": [
-					"database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"
-				],
+				"inputs": ["database =\n  hosts = primary\n  hosts = secondary\n  port = 5432"],
 				"name": "nested_list_access_reference_get_list",
 				"source_test": "nested_list_access_reference",
 				"validation": "get_list",
@@ -10220,9 +10082,7 @@
 				},
 				"features": ["unicode"],
 				"functions": ["parse"],
-				"inputs": [
-					"names = 张三\nnames = José\nnames = François\nnames = العربية"
-				],
+				"inputs": ["names = 张三\nnames = José\nnames = François\nnames = العربية"],
 				"name": "list_with_unicode_reference_parse",
 				"source_test": "list_with_unicode_reference",
 				"validation": "parse",
@@ -10237,9 +10097,7 @@
 				},
 				"features": ["unicode"],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"names = 张三\nnames = José\nnames = François\nnames = العربية"
-				],
+				"inputs": ["names = 张三\nnames = José\nnames = François\nnames = العربية"],
 				"name": "list_with_unicode_reference_build_hierarchy",
 				"source_test": "list_with_unicode_reference",
 				"validation": "build_hierarchy",
@@ -10254,9 +10112,7 @@
 				"expected": { "count": 0 },
 				"features": ["unicode"],
 				"functions": ["get_list"],
-				"inputs": [
-					"names = 张三\nnames = José\nnames = François\nnames = العربية"
-				],
+				"inputs": ["names = 张三\nnames = José\nnames = François\nnames = العربية"],
 				"name": "list_with_unicode_reference_get_list",
 				"source_test": "list_with_unicode_reference",
 				"validation": "get_list",
@@ -11128,9 +10984,7 @@
 				},
 				"features": ["optional_typed_accessors"],
 				"functions": ["parse"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_parse",
 				"source_test": "parse_mixed_types",
 				"validation": "parse",
@@ -11150,9 +11004,7 @@
 				},
 				"features": ["optional_typed_accessors"],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_build_hierarchy",
 				"source_test": "parse_mixed_types",
 				"validation": "build_hierarchy",
@@ -11164,9 +11016,7 @@
 				"expected": { "count": 1, "value": "localhost" },
 				"features": ["optional_typed_accessors"],
 				"functions": ["get_string"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_get_string",
 				"source_test": "parse_mixed_types",
 				"validation": "get_string",
@@ -11178,9 +11028,7 @@
 				"expected": { "count": 1, "value": 8080 },
 				"features": ["optional_typed_accessors"],
 				"functions": ["get_int"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_get_int",
 				"source_test": "parse_mixed_types",
 				"validation": "get_int",
@@ -11193,9 +11041,7 @@
 				"expected": { "count": 1, "value": true },
 				"features": ["optional_typed_accessors"],
 				"functions": ["get_bool"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_get_bool",
 				"source_test": "parse_mixed_types",
 				"validation": "get_bool",
@@ -11207,9 +11053,7 @@
 				"expected": { "count": 1, "value": 30.5 },
 				"features": ["optional_typed_accessors"],
 				"functions": ["get_float"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_get_float",
 				"source_test": "parse_mixed_types",
 				"validation": "get_float",
@@ -11229,9 +11073,7 @@
 				},
 				"features": ["optional_typed_accessors"],
 				"functions": ["parse"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_strict_literal_parse",
 				"source_test": "parse_mixed_types_strict_literal",
 				"validation": "parse",
@@ -11251,9 +11093,7 @@
 				},
 				"features": ["optional_typed_accessors"],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_strict_literal_build_hierarchy",
 				"source_test": "parse_mixed_types_strict_literal",
 				"validation": "build_hierarchy",
@@ -11265,9 +11105,7 @@
 				"expected": { "count": 1, "value": "localhost" },
 				"features": ["optional_typed_accessors"],
 				"functions": ["get_string"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_strict_literal_get_string",
 				"source_test": "parse_mixed_types_strict_literal",
 				"validation": "get_string",
@@ -11279,9 +11117,7 @@
 				"expected": { "count": 1, "value": 8080 },
 				"features": ["optional_typed_accessors"],
 				"functions": ["get_int"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_strict_literal_get_int",
 				"source_test": "parse_mixed_types_strict_literal",
 				"validation": "get_int",
@@ -11294,9 +11130,7 @@
 				"expected": { "count": 1, "value": true },
 				"features": ["optional_typed_accessors"],
 				"functions": ["get_bool"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_strict_literal_get_bool",
 				"source_test": "parse_mixed_types_strict_literal",
 				"validation": "get_bool",
@@ -11308,9 +11142,7 @@
 				"expected": { "count": 1, "value": 30.5 },
 				"features": ["optional_typed_accessors"],
 				"functions": ["get_float"],
-				"inputs": [
-					"host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"
-				],
+				"inputs": ["host = localhost\nport = 8080\nssl = true\ntimeout = 30.5\ndebug = off"],
 				"name": "parse_mixed_types_strict_literal_get_float",
 				"source_test": "parse_mixed_types_strict_literal",
 				"validation": "get_float",
@@ -11320,10 +11152,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "number", "value": "42" },
-						{ "key": "flag", "value": "true" }
-					]
+					"entries": [{ "key": "number", "value": "42" }, { "key": "flag", "value": "true" }]
 				},
 				"features": ["whitespace", "optional_typed_accessors"],
 				"functions": ["parse"],
@@ -11646,10 +11475,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "upper_yes", "value": "YES" },
-						{ "key": "upper_no", "value": "NO" }
-					]
+					"entries": [{ "key": "upper_yes", "value": "YES" }, { "key": "upper_no", "value": "NO" }]
 				},
 				"features": ["optional_typed_accessors"],
 				"functions": ["parse"],
@@ -11676,10 +11502,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "one", "value": "1" },
-						{ "key": "zero", "value": "0" }
-					]
+					"entries": [{ "key": "one", "value": "1" }, { "key": "zero", "value": "0" }]
 				},
 				"features": ["optional_typed_accessors"],
 				"functions": ["parse"],
@@ -11755,9 +11578,7 @@
 				},
 				"features": ["optional_typed_accessors"],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"config =\n  debug = true\n  verbose = false\n  experimental = yes"
-				],
+				"inputs": ["config =\n  debug = true\n  verbose = false\n  experimental = yes"],
 				"name": "boolean_nested_object_build_hierarchy",
 				"source_test": "boolean_nested_object",
 				"validation": "build_hierarchy",
@@ -12064,9 +11885,7 @@
 				"conflicts": { "behaviors": ["tabs_as_content"] },
 				"expected": {
 					"count": 1,
-					"entries": [
-						{ "key": "section", "value": "\nindented_with_tabs\nanother_line" }
-					]
+					"entries": [{ "key": "section", "value": "\nindented_with_tabs\nanother_line" }]
 				},
 				"features": ["whitespace", "multiline"],
 				"functions": ["parse"],
@@ -12081,9 +11900,7 @@
 				"conflicts": { "behaviors": ["tabs_as_content"] },
 				"expected": {
 					"count": 1,
-					"entries": [
-						{ "key": "section", "value": "\nmixed_indent\nanother_line" }
-					]
+					"entries": [{ "key": "section", "value": "\nmixed_indent\nanother_line" }]
 				},
 				"features": ["whitespace", "multiline"],
 				"functions": ["parse"],
@@ -12178,10 +11995,7 @@
 				"conflicts": { "behaviors": ["crlf_preserve_literal"] },
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "key1", "value": "value1" },
-						{ "key": "key2", "value": "value2" }
-					]
+					"entries": [{ "key": "key1", "value": "value1" }, { "key": "key2", "value": "value2" }]
 				},
 				"features": ["whitespace"],
 				"functions": ["parse"],
@@ -12282,9 +12096,7 @@
 				},
 				"features": ["whitespace"],
 				"functions": ["parse"],
-				"inputs": [
-					"lf_line = value1\ncrlf_line = value2\r\nlf_again = value3\n"
-				],
+				"inputs": ["lf_line = value1\ncrlf_line = value2\r\nlf_again = value3\n"],
 				"name": "crlf_mixed_line_endings_parse",
 				"source_test": "crlf_mixed_line_endings",
 				"validation": "parse",
@@ -12295,9 +12107,7 @@
 				"conflicts": { "behaviors": ["crlf_preserve_literal"] },
 				"expected": {
 					"count": 1,
-					"entries": [
-						{ "key": "config", "value": "\n  host = localhost\n  port = 8080" }
-					]
+					"entries": [{ "key": "config", "value": "\n  host = localhost\n  port = 8080" }]
 				},
 				"features": ["whitespace"],
 				"functions": ["parse"],
@@ -12425,9 +12235,7 @@
 				},
 				"features": ["comments", "whitespace"],
 				"functions": ["parse"],
-				"inputs": [
-					"/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
-				],
+				"inputs": ["/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"],
 				"name": "crlf_normalize_comments_and_values_parse",
 				"source_test": "crlf_normalize_comments_and_values",
 				"validation": "parse",
@@ -12438,16 +12246,11 @@
 				"conflicts": { "behaviors": ["crlf_preserve_literal"] },
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "host", "value": "localhost" },
-						{ "key": "port", "value": "8080" }
-					]
+					"entries": [{ "key": "host", "value": "localhost" }, { "key": "port", "value": "8080" }]
 				},
 				"features": ["comments", "whitespace"],
 				"functions": ["filter"],
-				"inputs": [
-					"/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
-				],
+				"inputs": ["/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"],
 				"name": "crlf_normalize_comments_and_values_filter",
 				"source_test": "crlf_normalize_comments_and_values",
 				"validation": "filter",
@@ -12466,9 +12269,7 @@
 				},
 				"features": ["comments", "whitespace"],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
-				],
+				"inputs": ["/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"],
 				"name": "crlf_normalize_comments_and_values_build_hierarchy",
 				"source_test": "crlf_normalize_comments_and_values",
 				"validation": "build_hierarchy",
@@ -12488,9 +12289,7 @@
 				},
 				"features": ["comments", "whitespace"],
 				"functions": ["parse"],
-				"inputs": [
-					"/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
-				],
+				"inputs": ["/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"],
 				"name": "crlf_preserve_comments_and_values_parse",
 				"source_test": "crlf_preserve_comments_and_values",
 				"validation": "parse",
@@ -12508,9 +12307,7 @@
 				},
 				"features": ["comments", "whitespace"],
 				"functions": ["filter"],
-				"inputs": [
-					"/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
-				],
+				"inputs": ["/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"],
 				"name": "crlf_preserve_comments_and_values_filter",
 				"source_test": "crlf_preserve_comments_and_values",
 				"validation": "filter",
@@ -12529,9 +12326,7 @@
 				},
 				"features": ["comments", "whitespace"],
 				"functions": ["build_hierarchy"],
-				"inputs": [
-					"/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"
-				],
+				"inputs": ["/= Server config\r\nhost = localhost\r\n/= Port setting\r\nport = 8080\r\n"],
 				"name": "crlf_preserve_comments_and_values_build_hierarchy",
 				"source_test": "crlf_preserve_comments_and_values",
 				"validation": "build_hierarchy",
@@ -12550,9 +12345,7 @@
 				},
 				"features": ["comments", "whitespace"],
 				"functions": ["parse"],
-				"inputs": [
-					"/= first comment\r\n/= second comment\r\n/= third comment\r\n"
-				],
+				"inputs": ["/= first comment\r\n/= second comment\r\n/= third comment\r\n"],
 				"name": "crlf_normalize_multiple_comments_parse",
 				"source_test": "crlf_normalize_multiple_comments",
 				"validation": "parse",
@@ -12564,9 +12357,7 @@
 				"expected": { "count": 0 },
 				"features": ["comments", "whitespace"],
 				"functions": ["filter"],
-				"inputs": [
-					"/= first comment\r\n/= second comment\r\n/= third comment\r\n"
-				],
+				"inputs": ["/= first comment\r\n/= second comment\r\n/= third comment\r\n"],
 				"name": "crlf_normalize_multiple_comments_filter",
 				"source_test": "crlf_normalize_multiple_comments",
 				"validation": "filter",
@@ -12585,9 +12376,7 @@
 				},
 				"features": ["comments", "whitespace"],
 				"functions": ["parse"],
-				"inputs": [
-					"/= first comment\r\n/= second comment\r\n/= third comment\r\n"
-				],
+				"inputs": ["/= first comment\r\n/= second comment\r\n/= third comment\r\n"],
 				"name": "crlf_preserve_multiple_comments_parse",
 				"source_test": "crlf_preserve_multiple_comments",
 				"validation": "parse",
@@ -12599,9 +12388,7 @@
 				"expected": { "count": 0 },
 				"features": ["comments", "whitespace"],
 				"functions": ["filter"],
-				"inputs": [
-					"/= first comment\r\n/= second comment\r\n/= third comment\r\n"
-				],
+				"inputs": ["/= first comment\r\n/= second comment\r\n/= third comment\r\n"],
 				"name": "crlf_preserve_multiple_comments_filter",
 				"source_test": "crlf_preserve_multiple_comments",
 				"validation": "filter",
@@ -12764,10 +12551,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "key", "value": "value" },
-						{ "key": "another", "value": "test" }
-					]
+					"entries": [{ "key": "key", "value": "value" }, { "key": "another", "value": "test" }]
 				},
 				"features": [],
 				"functions": ["parse"],
@@ -12956,9 +12740,7 @@
 				"conflicts": { "behaviors": ["toplevel_indent_preserve"] },
 				"expected": {
 					"count": 1,
-					"entries": [
-						{ "key": "key", "value": "value  \n  nested  = \n    sub  =  val" }
-					]
+					"entries": [{ "key": "key", "value": "value  \n  nested  = \n    sub  =  val" }]
 				},
 				"features": ["whitespace"],
 				"functions": ["parse"],
@@ -13302,10 +13084,7 @@
 				"behaviors": [],
 				"expected": {
 					"count": 2,
-					"entries": [
-						{ "key": "empty_section", "value": "" },
-						{ "key": "other", "value": "value" }
-					]
+					"entries": [{ "key": "empty_section", "value": "" }, { "key": "other", "value": "value" }]
 				},
 				"features": ["empty_keys", "multiline"],
 				"functions": ["parse"],
