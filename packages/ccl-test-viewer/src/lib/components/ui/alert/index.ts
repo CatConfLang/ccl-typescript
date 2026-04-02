@@ -18,15 +18,15 @@ type TitleProps = HTMLAttributes<HTMLHeadingElement> & {
 type DescriptionProps = HTMLAttributes<HTMLDivElement>;
 
 export {
-	Root,
 	AlertDescription,
-	type Props,
-	type TitleProps,
+	alertVariants,
 	type DescriptionProps,
+	type DescriptionProps as AlertDescriptionProps,
+	type Props,
+	type Props as AlertProps,
+	Root,
 	//
 	Root as Alert,
-	type Props as AlertProps,
+	type TitleProps,
 	type TitleProps as AlertTitleProps,
-	type DescriptionProps as AlertDescriptionProps,
-	alertVariants,
 };

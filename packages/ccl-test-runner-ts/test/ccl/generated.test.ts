@@ -14,11 +14,7 @@ import {
 } from "../../src/capabilities.js";
 import { getImplementedFunctions, parse } from "../../src/ccl.js";
 import type { TestCase } from "../../src/schema-validation.js";
-import {
-	groupTestsByFunction,
-	loadAllTests,
-	shouldRunTest,
-} from "../../src/test-data.js";
+import { groupTestsByFunction, loadAllTests, shouldRunTest } from "../../src/test-data.js";
 import type { CCLTestResult } from "../../src/vitest.js";
 import { STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH } from "./test-config.js";
 
@@ -172,8 +168,7 @@ function executeTestCase(testCase: TestCase): CCLTestResult {
 			if (
 				passed &&
 				testCase.expected.entries !== undefined &&
-				JSON.stringify(processedEntries) !==
-					JSON.stringify(testCase.expected.entries)
+				JSON.stringify(processedEntries) !== JSON.stringify(testCase.expected.entries)
 			) {
 				passed = false;
 				error = "Entries mismatch";
@@ -225,9 +220,7 @@ describe("CCL", async () => {
 
 				// Check if all required functions for this test are supported
 				const requiredFunctions = testCase.functions ?? [];
-				const unsupportedFunctions = requiredFunctions.filter(
-					(fn) => !isFunctionSupported(fn),
-				);
+				const unsupportedFunctions = requiredFunctions.filter((fn) => !isFunctionSupported(fn));
 
 				if (unsupportedFunctions.length > 0) {
 					test.skip(testCase.name, () => {});
@@ -242,9 +235,7 @@ describe("CCL", async () => {
 				}
 
 				// Check if all required functions are implemented
-				const unimplementedFunctions = requiredFunctions.filter(
-					(fn) => !isFunctionImplemented(fn),
-				);
+				const unimplementedFunctions = requiredFunctions.filter((fn) => !isFunctionImplemented(fn));
 
 				if (unimplementedFunctions.length > 0) {
 					// Required functions not implemented - mark as todo

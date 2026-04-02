@@ -1,5 +1,3 @@
-
-
 /** @type {import('tailwindcss').Config} */
 const config = {
 	// Content scanning still needed for v4

@@ -1,7 +1,7 @@
-import { expect, test } from "@playwright/test";
 import { unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { expect, test } from "@playwright/test";
 
 test.describe("Upload and Data Persistence", () => {
 	// Test data that matches the CCL test format
@@ -74,22 +74,16 @@ test.describe("Upload and Data Persistence", () => {
 	test("complete upload → persist → browse workflow", async ({ page }) => {
 		// Step 1: Start at upload page
 		await page.goto("/upload");
-		await expect(
-			page.getByRole("heading", { name: "Load Test Data" }),
-		).toBeVisible();
+		await expect(page.getByRole("heading", { name: "Load Test Data" })).toBeVisible();
 
 		// Step 2: Upload JSON file
-		await page
-			.getByRole("button", { name: /upload json files by dragging/i })
-			.click();
+		await page.getByRole("button", { name: /upload json files by dragging/i }).click();
 		await page.setInputFiles('input[type="file"]', testFilePath);
 
 		// Step 3: Verify upload success
 		await expect(page.getByText("Uploaded Files (1)")).toBeVisible();
 		await expect(
-			page
-				.locator(".inline-flex.items-center.rounded-full.border")
-				.filter({ hasText: "success" }),
+			page.locator(".inline-flex.items-center.rounded-full.border").filter({ hasText: "success" }),
 		).toBeVisible();
 		await expect(page.getByText("2 tests, test-upload")).toBeVisible();
 
@@ -99,23 +93,17 @@ test.describe("Upload and Data Persistence", () => {
 		await expect(page.getByText("3", { exact: true }).first()).toBeVisible(); // Total Assertions
 
 		// Step 5: Navigate to Browse page
-		await page
-			.getByRole("button", { name: /browse and filter test cases/i })
-			.click();
+		await page.getByRole("button", { name: /browse and filter test cases/i }).click();
 
 		// Step 6: Verify data persisted and displays correctly
-		await expect(
-			page.getByRole("heading", { name: "Browse Tests" }),
-		).toBeVisible();
+		await expect(page.getByRole("heading", { name: "Browse Tests" })).toBeVisible();
 
 		// Wait for data loading by checking for specific elements that indicate data is loaded
 		await page.waitForTimeout(2000); // Give time for initialization
 
 		// Verify test count shows uploaded data (more specific selector)
 		await expect(
-			page
-				.locator("p.text-muted-foreground")
-				.filter({ hasText: /2 of 2 tests/ }),
+			page.locator("p.text-muted-foreground").filter({ hasText: /2 of 2 tests/ }),
 		).toBeVisible();
 
 		// Verify "Uploaded Data" badge appears
@@ -139,9 +127,7 @@ test.describe("Upload and Data Persistence", () => {
 		await expect(page.getByText(/test-upload.*Test Upload/)).toBeVisible();
 
 		// Step 9: Test that a specific test can be viewed
-		await page
-			.getByRole("button", { name: /view test case.*test-basic-parsing/i })
-			.click();
+		await page.getByRole("button", { name: /view test case.*test-basic-parsing/i }).click();
 		await expect(page.getByText("key=value")).toBeVisible();
 		await expect(page.getByText("other=data")).toBeVisible();
 	});
@@ -149,26 +135,18 @@ test.describe("Upload and Data Persistence", () => {
 	test("data persists across page refresh", async ({ page }) => {
 		// Upload data first
 		await page.goto("/upload");
-		await page
-			.getByRole("button", { name: /upload json files by dragging/i })
-			.click();
+		await page.getByRole("button", { name: /upload json files by dragging/i }).click();
 		await page.setInputFiles('input[type="file"]', testFilePath);
 
 		// Verify upload success
 		await expect(
-			page
-				.locator(".inline-flex.items-center.rounded-full.border")
-				.filter({ hasText: "success" }),
+			page.locator(".inline-flex.items-center.rounded-full.border").filter({ hasText: "success" }),
 		).toBeVisible();
 
 		// Navigate to browse page
-		await page
-			.getByRole("button", { name: /browse and filter test cases/i })
-			.click();
+		await page.getByRole("button", { name: /browse and filter test cases/i }).click();
 		await expect(
-			page
-				.locator("p.text-muted-foreground")
-				.filter({ hasText: /2 of 2 tests/ }),
+			page.locator("p.text-muted-foreground").filter({ hasText: /2 of 2 tests/ }),
 		).toBeVisible();
 
 		// Refresh the page
@@ -176,9 +154,7 @@ test.describe("Upload and Data Persistence", () => {
 
 		// Verify data still persists after refresh
 		await expect(
-			page
-				.locator("p.text-muted-foreground")
-				.filter({ hasText: /2 of 2 tests/ }),
+			page.locator("p.text-muted-foreground").filter({ hasText: /2 of 2 tests/ }),
 		).toBeVisible();
 		await expect(page.getByText("Uploaded Data")).toBeVisible();
 		await expect(
@@ -186,35 +162,23 @@ test.describe("Upload and Data Persistence", () => {
 		).toBeVisible();
 	});
 
-	test("data persists when navigating back to upload page", async ({
-		page,
-	}) => {
+	test("data persists when navigating back to upload page", async ({ page }) => {
 		// Upload data
 		await page.goto("/upload");
-		await page
-			.getByRole("button", { name: /upload json files by dragging/i })
-			.click();
+		await page.getByRole("button", { name: /upload json files by dragging/i }).click();
 		await page.setInputFiles('input[type="file"]', testFilePath);
 		await expect(
-			page
-				.locator(".inline-flex.items-center.rounded-full.border")
-				.filter({ hasText: "success" }),
+			page.locator(".inline-flex.items-center.rounded-full.border").filter({ hasText: "success" }),
 		).toBeVisible();
 
 		// Navigate to browse page
-		await page
-			.getByRole("button", { name: /browse and filter test cases/i })
-			.click();
+		await page.getByRole("button", { name: /browse and filter test cases/i }).click();
 		await expect(
-			page
-				.locator("p.text-muted-foreground")
-				.filter({ hasText: /2 of 2 tests/ }),
+			page.locator("p.text-muted-foreground").filter({ hasText: /2 of 2 tests/ }),
 		).toBeVisible();
 
 		// Navigate back to upload page
-		await page
-			.getByRole("button", { name: /upload json test data files/i })
-			.click();
+		await page.getByRole("button", { name: /upload json test data files/i }).click();
 
 		// Verify data summary still shows on upload page
 		await expect(page.getByText("Combined Data Summary")).toBeVisible();
@@ -247,16 +211,12 @@ test.describe("Upload and Data Persistence", () => {
 			await page.goto("/upload");
 
 			// Upload first file
-			await page
-				.getByRole("button", { name: /upload json files by dragging/i })
-				.click();
+			await page.getByRole("button", { name: /upload json files by dragging/i }).click();
 			await page.setInputFiles('input[type="file"]', testFilePath);
 			await expect(page.getByText("Uploaded Files (1)")).toBeVisible();
 
 			// Upload second file
-			await page
-				.getByRole("button", { name: /upload json files by dragging/i })
-				.click();
+			await page.getByRole("button", { name: /upload json files by dragging/i }).click();
 			await page.setInputFiles('input[type="file"]', secondFilePath);
 			await expect(page.getByText("Uploaded Files (2)")).toBeVisible();
 
@@ -264,14 +224,10 @@ test.describe("Upload and Data Persistence", () => {
 			await expect(page.getByText("3", { exact: true }).first()).toBeVisible(); // Total Tests (2 + 1)
 
 			// Navigate to browse and verify all tests
-			await page
-				.getByRole("button", { name: /browse and filter test cases/i })
-				.click();
+			await page.getByRole("button", { name: /browse and filter test cases/i }).click();
 			await page.waitForTimeout(2000); // Give time for initialization
 			await expect(
-				page
-					.locator("p.text-muted-foreground")
-					.filter({ hasText: /3 of 3 tests/ }),
+				page.locator("p.text-muted-foreground").filter({ hasText: /3 of 3 tests/ }),
 			).toBeVisible();
 		} finally {
 			// Clean up second file
@@ -286,14 +242,10 @@ test.describe("Upload and Data Persistence", () => {
 	test("localStorage data structure is correct", async ({ page }) => {
 		// Upload data
 		await page.goto("/upload");
-		await page
-			.getByRole("button", { name: /upload json files by dragging/i })
-			.click();
+		await page.getByRole("button", { name: /upload json files by dragging/i }).click();
 		await page.setInputFiles('input[type="file"]', testFilePath);
 		await expect(
-			page
-				.locator(".inline-flex.items-center.rounded-full.border")
-				.filter({ hasText: "success" }),
+			page.locator(".inline-flex.items-center.rounded-full.border").filter({ hasText: "success" }),
 		).toBeVisible();
 
 		// Wait for data to be processed and saved to localStorage
@@ -324,29 +276,21 @@ test.describe("Upload and Data Persistence", () => {
 	test("clear all data functionality works", async ({ page }) => {
 		// Upload data
 		await page.goto("/upload");
-		await page
-			.getByRole("button", { name: /upload json files by dragging/i })
-			.click();
+		await page.getByRole("button", { name: /upload json files by dragging/i }).click();
 		await page.setInputFiles('input[type="file"]', testFilePath);
 		await expect(
-			page
-				.locator(".inline-flex.items-center.rounded-full.border")
-				.filter({ hasText: "success" }),
+			page.locator(".inline-flex.items-center.rounded-full.border").filter({ hasText: "success" }),
 		).toBeVisible();
 
 		// Clear all data
-		await page
-			.getByRole("button", { name: /clear all imported data/i })
-			.click();
+		await page.getByRole("button", { name: /clear all imported data/i }).click();
 
 		// Verify data is cleared on upload page
 		await expect(page.getByText("Combined Data Summary")).not.toBeVisible();
 		await expect(page.getByText("Getting Started")).toBeVisible();
 
 		// Navigate to browse page and verify no data
-		await page
-			.getByRole("button", { name: /browse and filter test cases/i })
-			.click();
+		await page.getByRole("button", { name: /browse and filter test cases/i }).click();
 		await expect(page.getByText("No data available")).toBeVisible();
 	});
 
@@ -357,9 +301,7 @@ test.describe("Upload and Data Persistence", () => {
 
 		try {
 			await page.goto("/upload");
-			await page
-				.getByRole("button", { name: /upload json files by dragging/i })
-				.click();
+			await page.getByRole("button", { name: /upload json files by dragging/i }).click();
 			await page.setInputFiles('input[type="file"]', invalidFilePath);
 
 			// Should show error status

@@ -9,13 +9,7 @@ import type { Reporter, TestCase, TestModule } from "vitest/node";
 /**
  * Categories for skip reasons.
  */
-type SkipCategory =
-	| "function"
-	| "feature"
-	| "behavior"
-	| "variant"
-	| "conflict"
-	| "other";
+type SkipCategory = "function" | "feature" | "behavior" | "variant" | "conflict" | "other";
 
 /**
  * Parsed skip reason with category and detail.
@@ -108,10 +102,7 @@ export default class SkipSummaryReporter implements Reporter {
 					const note = result.note ?? "No reason provided";
 					const { category, detail } = parseSkipNote(note);
 					const key = `${category}:${detail}`;
-					this.skippedByReason.set(
-						key,
-						(this.skippedByReason.get(key) ?? 0) + 1,
-					);
+					this.skippedByReason.set(key, (this.skippedByReason.get(key) ?? 0) + 1);
 				}
 				break;
 			default:
@@ -147,42 +138,21 @@ export default class SkipSummaryReporter implements Reporter {
 	/**
 	 * Print a single category section.
 	 */
-	private printCategorySection(
-		label: string,
-		details: Map<string, number>,
-	): void {
-		const categoryTotal = [...details.values()].reduce(
-			(sum, count) => sum + count,
-			0,
-		);
+	private printCategorySection(label: string, details: Map<string, number>): void {
+		const categoryTotal = [...details.values()].reduce((sum, count) => sum + count, 0);
 
-		console.log(
-			`│${`  ${label}`.padEnd(50)}${`${categoryTotal}`.padStart(10)}  │`,
-		);
+		console.log(`│${`  ${label}`.padEnd(50)}${`${categoryTotal}`.padStart(10)}  │`);
 
 		// Sort by count descending, show top items
-		const sortedDetails = [...details.entries()]
-			.sort((a, b) => b[1] - a[1])
-			.slice(0, 5);
+		const sortedDetails = [...details.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 
 		for (const [detail, count] of sortedDetails) {
-			const truncatedDetail =
-				detail.length > 40 ? `${detail.slice(0, 37)}...` : detail;
-			console.log(
-				"│" +
-					`    └─ ${truncatedDetail}`.padEnd(50) +
-					`${count}`.padStart(10) +
-					"  │",
-			);
+			const truncatedDetail = detail.length > 40 ? `${detail.slice(0, 37)}...` : detail;
+			console.log(`│${`    └─ ${truncatedDetail}`.padEnd(50)}${`${count}`.padStart(10)}  │`);
 		}
 
 		if (details.size > 5) {
-			console.log(
-				"│" +
-					`    └─ ... and ${details.size - 5} more`.padEnd(50) +
-					"".padStart(10) +
-					"  │",
-			);
+			console.log(`│${`    └─ ... and ${details.size - 5} more`.padEnd(50)}${"".padStart(10)}  │`);
 		}
 	}
 
@@ -191,25 +161,13 @@ export default class SkipSummaryReporter implements Reporter {
 	 */
 	private printTotals(): void {
 		console.log(`├${"─".repeat(62)}┤`);
-		console.log(
-			`│${"  Passed".padEnd(50)}${`${this.passedCount}`.padStart(10)}  │`,
-		);
-		console.log(
-			`│${"  Failed".padEnd(50)}${`${this.failedCount}`.padStart(10)}  │`,
-		);
-		console.log(
-			"│" +
-				"  Skipped".padEnd(50) +
-				`${this.skippedCount}`.padStart(10) +
-				"  │",
-		);
-		console.log(
-			`│${"  Todo".padEnd(50)}${`${this.todoCount}`.padStart(10)}  │`,
-		);
+		console.log(`│${"  Passed".padEnd(50)}${`${this.passedCount}`.padStart(10)}  │`);
+		console.log(`│${"  Failed".padEnd(50)}${`${this.failedCount}`.padStart(10)}  │`);
+		console.log(`│${"  Skipped".padEnd(50)}${`${this.skippedCount}`.padStart(10)}  │`);
+		console.log(`│${"  Todo".padEnd(50)}${`${this.todoCount}`.padStart(10)}  │`);
 		console.log(`├${"─".repeat(62)}┤`);
 
-		const total =
-			this.passedCount + this.failedCount + this.skippedCount + this.todoCount;
+		const total = this.passedCount + this.failedCount + this.skippedCount + this.todoCount;
 		console.log(`│${"  Total".padEnd(50)}${`${total}`.padStart(10)}  │`);
 		console.log(`└${"─".repeat(62)}┘`);
 		console.log("");
@@ -258,10 +216,7 @@ export default class SkipSummaryReporter implements Reporter {
 
 		if (!hasSkipDetails && this.skippedCount > 0) {
 			console.log(
-				"│" +
-					"  Skipped (no reason)".padEnd(50) +
-					`${this.skippedCount}`.padStart(10) +
-					"  │",
+				`│${"  Skipped (no reason)".padEnd(50)}${`${this.skippedCount}`.padStart(10)}  │`,
 			);
 		}
 

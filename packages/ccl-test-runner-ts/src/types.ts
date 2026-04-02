@@ -113,10 +113,7 @@ export type GetListFn = (obj: CCLObject, ...pathParts: string[]) => CCLList;
 /**
  * Filter function.
  */
-export type FilterFn = (
-	entries: Entry[],
-	predicate: (entry: Entry) => boolean,
-) => Entry[];
+export type FilterFn = (entries: Entry[], predicate: (entry: Entry) => boolean) => Entry[];
 
 /**
  * Compose function.
@@ -136,9 +133,7 @@ export type ParseResultFn = (input: string) => Result<Entry[], ParseError>;
 /**
  * Build hierarchy function that returns a true-myth Result.
  */
-export type BuildHierarchyResultFn = (
-	entries: Entry[],
-) => Result<CCLObject, ParseError>;
+export type BuildHierarchyResultFn = (entries: Entry[]) => Result<CCLObject, ParseError>;
 
 // ============================================================================
 // Legacy Result-Returning Function Types (custom result objects)
@@ -155,9 +150,7 @@ export type LegacyParseResultFn = (input: string) => ParseResult;
  * Build hierarchy function that returns a legacy HierarchyResult.
  * @deprecated Use BuildHierarchyResultFn (true-myth Result) instead
  */
-export type LegacyBuildHierarchyResultFn = (
-	entries: Entry[],
-) => HierarchyResult;
+export type LegacyBuildHierarchyResultFn = (entries: Entry[]) => HierarchyResult;
 
 // ============================================================================
 // Union Types (Accept Any Pattern)
@@ -208,9 +201,7 @@ export function isLegacyParseResult(value: unknown): value is ParseResult {
 /**
  * Check if a value is a legacy HierarchyResult.
  */
-export function isLegacyHierarchyResult(
-	value: unknown,
-): value is HierarchyResult {
+export function isLegacyHierarchyResult(value: unknown): value is HierarchyResult {
 	return (
 		typeof value === "object" &&
 		value !== null &&

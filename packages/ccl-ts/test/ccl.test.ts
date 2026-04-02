@@ -38,9 +38,7 @@ const require = createRequire(import.meta.url);
  * Uses require.resolve to find the workspace package.
  */
 function resolveTestDataPath(): string {
-	const packageJsonPath = require.resolve(
-		"@tylerbu/ccl-test-data/package.json",
-	);
+	const packageJsonPath = require.resolve("@tylerbu/ccl-test-data/package.json");
 	return join(dirname(packageJsonPath), "data");
 }
 

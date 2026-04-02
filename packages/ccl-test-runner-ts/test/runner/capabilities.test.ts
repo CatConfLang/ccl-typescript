@@ -113,12 +113,7 @@ describe("validateCapabilities", () => {
 			version: "1.0.0",
 			functions: [],
 			features: [],
-			behaviors: [
-				"boolean_strict",
-				"boolean_lenient",
-				"tabs_preserve",
-				"tabs_to_spaces",
-			] as const,
+			behaviors: ["boolean_strict", "boolean_lenient", "tabs_preserve", "tabs_to_spaces"] as const,
 			variant: "proposed_behavior" as const,
 		};
 
@@ -142,12 +137,8 @@ describe("getConflictingBehavior", () => {
 	});
 
 	it("should return conflicting behavior for crlf options", () => {
-		expect(getConflictingBehavior("crlf_preserve_literal")).toBe(
-			"crlf_normalize_to_lf",
-		);
-		expect(getConflictingBehavior("crlf_normalize_to_lf")).toBe(
-			"crlf_preserve_literal",
-		);
+		expect(getConflictingBehavior("crlf_preserve_literal")).toBe("crlf_normalize_to_lf");
+		expect(getConflictingBehavior("crlf_normalize_to_lf")).toBe("crlf_preserve_literal");
 	});
 
 	it("should return conflicting behavior for tab options", () => {
@@ -161,21 +152,13 @@ describe("getConflictingBehavior", () => {
 	});
 
 	it("should return conflicting behavior for list coercion options", () => {
-		expect(getConflictingBehavior("list_coercion_enabled")).toBe(
-			"list_coercion_disabled",
-		);
-		expect(getConflictingBehavior("list_coercion_disabled")).toBe(
-			"list_coercion_enabled",
-		);
+		expect(getConflictingBehavior("list_coercion_enabled")).toBe("list_coercion_disabled");
+		expect(getConflictingBehavior("list_coercion_disabled")).toBe("list_coercion_enabled");
 	});
 
 	it("should return conflicting behavior for array order options", () => {
-		expect(getConflictingBehavior("array_order_insertion")).toBe(
-			"array_order_lexicographic",
-		);
-		expect(getConflictingBehavior("array_order_lexicographic")).toBe(
-			"array_order_insertion",
-		);
+		expect(getConflictingBehavior("array_order_insertion")).toBe("array_order_lexicographic");
+		expect(getConflictingBehavior("array_order_lexicographic")).toBe("array_order_insertion");
 	});
 });
 
@@ -222,10 +205,7 @@ describe("Constants exports", () => {
 	});
 
 	it("should export BEHAVIOR_CONFLICTS", () => {
-		expect(BEHAVIOR_CONFLICTS.boolean).toEqual([
-			"boolean_strict",
-			"boolean_lenient",
-		]);
+		expect(BEHAVIOR_CONFLICTS.boolean).toEqual(["boolean_strict", "boolean_lenient"]);
 		expect(BEHAVIOR_CONFLICTS.crlf_handling).toEqual([
 			"crlf_preserve_literal",
 			"crlf_normalize_to_lf",

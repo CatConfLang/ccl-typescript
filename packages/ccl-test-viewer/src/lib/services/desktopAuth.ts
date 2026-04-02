@@ -71,9 +71,7 @@ class DesktopAuthService {
 		}
 
 		// Simulate OAuth flow for development
-		throw new Error(
-			"OAuth implementation not yet available - requires Tauri deep linking setup",
-		);
+		throw new Error("OAuth implementation not yet available - requires Tauri deep linking setup");
 
 		// Future implementation would look like:
 		/*

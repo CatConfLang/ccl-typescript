@@ -52,11 +52,7 @@ function finalizeEntry(state: ParseState): void {
 /**
  * Start a new entry from a line containing `=`.
  */
-function startNewEntry(
-	state: ParseState,
-	trimmed: string,
-	indent: number,
-): void {
+function startNewEntry(state: ParseState, trimmed: string, indent: number): void {
 	finalizeEntry(state);
 
 	const eqPos = trimmed.indexOf("=");
@@ -72,11 +68,7 @@ function startNewEntry(
 /**
  * Handle a standalone key (no `=` sign).
  */
-function handleStandaloneKey(
-	state: ParseState,
-	trimmed: string,
-	indent: number,
-): void {
+function handleStandaloneKey(state: ParseState, trimmed: string, indent: number): void {
 	finalizeEntry(state);
 
 	state.currentKey = trimmed;
@@ -87,12 +79,7 @@ function handleStandaloneKey(
 /**
  * Process a single non-empty line during parsing.
  */
-function processLine(
-	state: ParseState,
-	line: string,
-	trimmed: string,
-	indent: number,
-): void {
+function processLine(state: ParseState, line: string, trimmed: string, indent: number): void {
 	// Set base indentation from first non-empty line
 	if (state.baseIndent === null) {
 		state.baseIndent = indent;
@@ -140,11 +127,7 @@ export function parse(text: string): ParseResult {
 		const trimmed = line.trim();
 
 		// Skip leading empty lines before first content
-		if (
-			trimmed === "" &&
-			state.currentKey === null &&
-			state.entries.length === 0
-		) {
+		if (trimmed === "" && state.currentKey === null && state.entries.length === 0) {
 			continue;
 		}
 

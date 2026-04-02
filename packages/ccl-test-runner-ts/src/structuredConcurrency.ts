@@ -2,7 +2,7 @@
  * Structured concurrency utilities built on effection v4.
  */
 
-import { type Operation, createScope } from "effection";
+import { createScope, type Operation } from "effection";
 
 /**
  * Run an effection operation from async code. Creates a temporary scope,

@@ -34,9 +34,7 @@ describe("TestCard", () => {
 		expect(getByText("test-basic-parsing")).toBeInTheDocument();
 		expect(getByText("parse")).toBeInTheDocument();
 		expect(getByText("2 entries")).toBeInTheDocument();
-		expect(
-			getByLabelText("View test case: test-basic-parsing"),
-		).toBeInTheDocument();
+		expect(getByLabelText("View test case: test-basic-parsing")).toBeInTheDocument();
 	});
 
 	it("calls onView when clicked", async () => {

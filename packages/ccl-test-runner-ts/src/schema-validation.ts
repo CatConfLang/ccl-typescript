@@ -10,15 +10,7 @@ import type { FromSchema, JSONSchema } from "json-schema-to-ts";
 // We define it inline with `as const` for proper type inference
 const testCaseSchema = {
 	type: "object",
-	required: [
-		"name",
-		"inputs",
-		"validation",
-		"expected",
-		"behaviors",
-		"variants",
-		"features",
-	],
+	required: ["name", "inputs", "validation", "expected", "behaviors", "variants", "features"],
 	properties: {
 		name: {
 			type: "string",
