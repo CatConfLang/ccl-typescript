@@ -1,0 +1,14 @@
+functions:
+  - parse
+  - build_hierarchy
+  - get_string
+
+features:
+  - comments
+
+behaviors:
+  - boolean_lenient
+  - crlf_normalize_to_lf
+
+variants:
+  - proposed_behavior

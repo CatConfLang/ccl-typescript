@@ -18,6 +18,10 @@
  * ```
  */
 
+// Config file loading
+export type { CCLConfigFile } from "./config.js";
+export { configFileToCapabilities, loadConfigFile, loadConfigFileSync } from "./config.js";
+
 // Capabilities configuration
 export type {
 	CCLBehavior,
