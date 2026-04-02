@@ -97,3 +97,31 @@ export interface ParseOptions {
 	 */
 	tabHandling?: TabHandling;
 }
+
+/**
+ * Options for configuring boolean access behavior.
+ *
+ * @beta
+ */
+export interface GetBoolOptions {
+	/**
+	 * When true, only "true" and "false" (case-insensitive) are valid.
+	 * When false (default), also accepts "yes"/"no" and "1"/"0".
+	 * @defaultValue `false`
+	 */
+	strict?: boolean;
+}
+
+/**
+ * Options for configuring list access behavior.
+ *
+ * @beta
+ */
+export interface GetListOptions {
+	/**
+	 * When true, single string values are coerced to a one-element list.
+	 * When false (default), accessing a non-list value throws an error.
+	 * @defaultValue `false`
+	 */
+	coercion?: boolean;
+}

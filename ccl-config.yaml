@@ -34,6 +34,11 @@ behaviors:
   - delimiter_first_equals
   - list_coercion_disabled
 
+# Optional: Additional behaviors supported via function options
+optional_behaviors:
+  - boolean_strict
+  - list_coercion_enabled
+
 # Optional: Specification variant
 variants:
   - proposed_behavior

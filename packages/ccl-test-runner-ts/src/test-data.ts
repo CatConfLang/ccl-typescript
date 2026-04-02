@@ -102,13 +102,15 @@ function checkBehaviors(
 	test: TestCase,
 	capabilities: ImplementationCapabilities,
 ): TestFilterResult | null {
+	const allBehaviors = [...capabilities.behaviors, ...(capabilities.optionalBehaviors ?? [])];
+
 	for (const requiredBehavior of test.behaviors) {
-		const implHasBehavior = capabilities.behaviors.includes(requiredBehavior as CCLBehavior);
+		const implHasBehavior = allBehaviors.includes(requiredBehavior as CCLBehavior);
 
 		if (!implHasBehavior) {
 			// Test requires a behavior the implementation doesn't have
 			const conflicting = getConflictingBehavior(requiredBehavior as CCLBehavior);
-			if (conflicting && capabilities.behaviors.includes(conflicting)) {
+			if (conflicting && allBehaviors.includes(conflicting)) {
 				return {
 					shouldRun: false,
 					skipReason: `Behavior conflict: test requires ${requiredBehavior}, implementation uses ${conflicting}`,
@@ -167,15 +169,22 @@ function checkConflicts(
 		}
 	}
 
-	// Check behavior conflicts
+	// Check behavior conflicts — only against primary behaviors, not optionalBehaviors.
+	// Optional behaviors represent alternate modes the implementation can handle via options,
+	// so a test conflicting with an optional behavior should still run.
 	if (test.conflicts.behaviors) {
 		const conflictingBehaviors = test.conflicts.behaviors.filter((b) =>
 			capabilities.behaviors.includes(b as CCLBehavior),
 		);
-		if (conflictingBehaviors.length > 0) {
+		// Exclude conflicts where the required behavior is in optionalBehaviors
+		const actualConflicts = conflictingBehaviors.filter((b) => {
+			const conflicting = getConflictingBehavior(b as CCLBehavior);
+			return !(conflicting && capabilities.optionalBehaviors?.includes(conflicting as CCLBehavior));
+		});
+		if (actualConflicts.length > 0) {
 			return {
 				shouldRun: false,
-				skipReason: `Behavior conflict: test conflicts with ${conflictingBehaviors.join(", ")}`,
+				skipReason: `Behavior conflict: test conflicts with ${actualConflicts.join(", ")}`,
 			};
 		}
 	}

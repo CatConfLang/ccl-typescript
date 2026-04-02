@@ -6,8 +6,8 @@
  * capability comparison and schema validation.
  */
 
-import { readFile } from "node:fs/promises";
 import { readFileSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { parse as parseYaml } from "yaml";
 import type {
 	CCLBehavior,
@@ -25,6 +25,7 @@ export interface CCLConfigFile {
 	functions: string[];
 	features?: string[];
 	behaviors?: string[];
+	optional_behaviors?: string[];
 	variants?: string[];
 	skip_tests?: string[];
 }
@@ -79,6 +80,10 @@ export function configFileToCapabilities(
 		behaviors: (config.behaviors ?? []) as CCLBehavior[],
 		variant: (config.variants?.[0] ?? "proposed_behavior") as CCLVariant,
 	};
+
+	if (config.optional_behaviors) {
+		capabilities.optionalBehaviors = config.optional_behaviors as CCLBehavior[];
+	}
 
 	if (config.skip_tests) {
 		capabilities.skipTests = config.skip_tests;

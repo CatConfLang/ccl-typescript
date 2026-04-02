@@ -48,6 +48,8 @@ import type {
 	CCLList,
 	CCLObject,
 	Entry,
+	GetBoolOptions,
+	GetListOptions,
 	ParseError,
 } from "./types.js";
 import { isResult, normalizeBuildHierarchyFunction, normalizeParseFunction } from "./types.js";
@@ -118,7 +120,8 @@ export interface CCLFunctions {
 	/** Get boolean value at path (returns value, Result, throws, or returns undefined) */
 	get_bool?: (
 		obj: CCLObject,
-		...pathParts: string[]
+		pathParts: string[],
+		options?: GetBoolOptions,
 	) => boolean | undefined | Result<boolean, AccessError>;
 
 	/** Get float value at path (returns value, Result, throws, or returns undefined) */
@@ -130,7 +133,8 @@ export interface CCLFunctions {
 	/** Get list value at path (returns value, Result, throws, or returns undefined) */
 	get_list?: (
 		obj: CCLObject,
-		...pathParts: string[]
+		pathParts: string[],
+		options?: GetListOptions,
 	) => CCLList | undefined | Result<CCLList, AccessError>;
 
 	/** Print entries to CCL format */
@@ -170,6 +174,13 @@ export interface CCLTestConfig {
 
 	/** Behavioral choices (defaults to DefaultBehaviors) */
 	behaviors?: CCLBehavior[];
+
+	/**
+	 * Additional behaviors supported via function options.
+	 * These represent alternate modes from behavior conflict groups
+	 * that the implementation can handle when options are passed.
+	 */
+	optionalBehaviors?: CCLBehavior[];
 
 	/** Specification variant (defaults to ProposedBehavior) */
 	variant?: CCLVariant;
@@ -310,9 +321,9 @@ function getImplementedFunctionNames(functions: CCLFunctions): CCLFunction[] {
 		{ name: "build_hierarchy", key: "build_hierarchy", probeArgs: [[]] },
 		{ name: "get_string", key: "get_string", probeArgs: [{}, ""] },
 		{ name: "get_int", key: "get_int", probeArgs: [{}, ""] },
-		{ name: "get_bool", key: "get_bool", probeArgs: [{}, ""] },
+		{ name: "get_bool", key: "get_bool", probeArgs: [{}, [""]] },
 		{ name: "get_float", key: "get_float", probeArgs: [{}, ""] },
-		{ name: "get_list", key: "get_list", probeArgs: [{}, ""] },
+		{ name: "get_list", key: "get_list", probeArgs: [{}, [""]] },
 		{ name: "print", key: "print", probeArgs: [[]] },
 		{ name: "canonical_format", key: "canonical_format", probeArgs: [""] },
 		{ name: "load", key: "load", probeArgs: [""] },
@@ -393,9 +404,7 @@ function buildCapabilities(config: CCLTestConfig): ImplementationCapabilities {
 	const allDeclaredFunctions = [
 		...declaredFunctions,
 		...todoFunctions.filter((fn) => !declaredFunctions.includes(fn)),
-		...fileFunctions.filter(
-			(fn) => !declaredFunctions.includes(fn) && !todoFunctions.includes(fn),
-		),
+		...fileFunctions.filter((fn) => !declaredFunctions.includes(fn) && !todoFunctions.includes(fn)),
 	];
 
 	// Inline config values take precedence over YAML file values.
@@ -408,6 +417,11 @@ function buildCapabilities(config: CCLTestConfig): ImplementationCapabilities {
 		behaviors: config.behaviors ?? fileCapabilities?.behaviors ?? [...DefaultBehaviors],
 		variant: config.variant ?? fileCapabilities?.variant ?? Variant.ProposedBehavior,
 	};
+
+	const optionalBehaviors = config.optionalBehaviors ?? fileCapabilities?.optionalBehaviors;
+	if (optionalBehaviors) {
+		capabilities.optionalBehaviors = optionalBehaviors;
+	}
 
 	// Merge skipTests: combine YAML file skip_tests with inline skipTests
 	const fileSkipTests = fileCapabilities?.skipTests ?? [];
@@ -817,10 +831,16 @@ function handleGetBoolValidation(
 	const obj = buildObjectFromInput(input, functions);
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
+	// Derive options from test case behaviors
+	const options: GetBoolOptions = {};
+	if (testCase.behaviors.includes("boolean_strict")) {
+		options.strict = true;
+	}
+
 	// Check if we expect an error
 	if (testCase.expected.error === true) {
 		try {
-			const rawResult = fn(obj, ...pathArgs);
+			const rawResult = fn(obj, pathArgs, options);
 			const unwrapped = unwrapTypedAccessResult(rawResult);
 			if (unwrapped.isError) {
 				return {
@@ -848,7 +868,7 @@ function handleGetBoolValidation(
 	}
 
 	try {
-		const rawResult = fn(obj, ...pathArgs);
+		const rawResult = fn(obj, pathArgs, options);
 		const unwrapped = unwrapTypedAccessResult(rawResult);
 		if (unwrapped.isError) {
 			return {
@@ -977,10 +997,16 @@ function handleGetListValidation(
 	const obj = buildObjectFromInput(input, functions);
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
+	// Derive options from test case behaviors
+	const options: GetListOptions = {};
+	if (testCase.behaviors.includes("list_coercion_enabled")) {
+		options.coercion = true;
+	}
+
 	// Check if we expect an error
 	if (testCase.expected.error === true) {
 		try {
-			const rawResult = fn(obj, ...pathArgs);
+			const rawResult = fn(obj, pathArgs, options);
 			const unwrapped = unwrapTypedAccessResult(rawResult);
 			if (unwrapped.isError) {
 				return {
@@ -1008,7 +1034,7 @@ function handleGetListValidation(
 	}
 
 	try {
-		const rawResult = fn(obj, ...pathArgs);
+		const rawResult = fn(obj, pathArgs, options);
 		const unwrapped = unwrapTypedAccessResult(rawResult);
 		if (unwrapped.isError) {
 			return {
@@ -1200,13 +1226,7 @@ export function runCCLTest(
 				break;
 
 			case "parse_indented":
-				result = handleParseValidation(
-					testCase,
-					input,
-					functions,
-					capabilities,
-					"parse_indented",
-				);
+				result = handleParseValidation(testCase, input, functions, capabilities, "parse_indented");
 				break;
 
 			case "build_hierarchy":

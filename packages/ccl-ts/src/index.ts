@@ -19,11 +19,20 @@ import {
 	getInt as getIntInternal,
 	getList as getListInternal,
 	getString as getStringInternal,
-	parse as parseInternal,
 	parseIndented as parseIndentedInternal,
+	parse as parseInternal,
 } from "./ccl.js";
 import { CCLAccessError, CCLParseError } from "./errors.js";
-import type { AccessError, CCLList, CCLObject, Entry, ParseError, ParseOptions } from "./types.js";
+import type {
+	AccessError,
+	CCLList,
+	CCLObject,
+	Entry,
+	GetBoolOptions,
+	GetListOptions,
+	ParseError,
+	ParseOptions,
+} from "./types.js";
 
 // Result types from true-myth
 export type { Err, Ok } from "true-myth/result";
@@ -42,6 +51,8 @@ export type {
 	CCLObject,
 	CCLValue,
 	Entry,
+	GetBoolOptions,
+	GetListOptions,
 	ParseError,
 	ParseOptions,
 	TabHandling,
@@ -96,10 +107,7 @@ export function parse(text: string, options?: ParseOptions): Result<Entry[], Par
  *
  * @beta
  */
-export function parseIndented(
-	text: string,
-	options?: ParseOptions,
-): Result<Entry[], ParseError> {
+export function parseIndented(text: string, options?: ParseOptions): Result<Entry[], ParseError> {
 	return wrapResult(() => parseIndentedInternal(text, options), toParseError);
 }
 
@@ -138,8 +146,12 @@ export function getInt(obj: CCLObject, ...pathParts: string[]): Result<number, A
  *
  * @beta
  */
-export function getBool(obj: CCLObject, ...pathParts: string[]): Result<boolean, AccessError> {
-	return wrapResult(() => getBoolInternal(obj, ...pathParts), toAccessError);
+export function getBool(
+	obj: CCLObject,
+	pathParts: string[],
+	options?: GetBoolOptions,
+): Result<boolean, AccessError> {
+	return wrapResult(() => getBoolInternal(obj, pathParts, options), toAccessError);
 }
 
 /**
@@ -156,8 +168,12 @@ export function getFloat(obj: CCLObject, ...pathParts: string[]): Result<number,
  *
  * @beta
  */
-export function getList(obj: CCLObject, ...pathParts: string[]): Result<CCLList, AccessError> {
-	return wrapResult(() => getListInternal(obj, ...pathParts), toAccessError);
+export function getList(
+	obj: CCLObject,
+	pathParts: string[],
+	options?: GetListOptions,
+): Result<CCLList, AccessError> {
+	return wrapResult(() => getListInternal(obj, pathParts, options), toAccessError);
 }
 
 /**

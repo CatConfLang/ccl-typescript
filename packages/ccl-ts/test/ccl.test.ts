@@ -119,6 +119,9 @@ const cclConfig = defineCCLTests({
 		Behavior.ToplevelIndentPreserve,
 	],
 
+	// Additional behaviors supported via function options
+	optionalBehaviors: [Behavior.BooleanStrict, Behavior.ListCoercionEnabled],
+
 	// Specification variant
 	// Using ReferenceCompliant because the parser keeps nested content as the value
 	// (rather than flattening to individual entries as in ProposedBehavior)

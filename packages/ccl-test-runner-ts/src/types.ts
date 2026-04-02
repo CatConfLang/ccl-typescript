@@ -59,6 +59,28 @@ export interface AccessError {
 	path: string[];
 }
 
+/**
+ * Options for configuring boolean access behavior.
+ */
+export interface GetBoolOptions {
+	/**
+	 * When true, only "true" and "false" (case-insensitive) are valid.
+	 * When false (default), also accepts "yes"/"no" and "1"/"0".
+	 */
+	strict?: boolean;
+}
+
+/**
+ * Options for configuring list access behavior.
+ */
+export interface GetListOptions {
+	/**
+	 * When true, single string values are coerced to a one-element list.
+	 * When false (default), accessing a non-list value throws an error.
+	 */
+	coercion?: boolean;
+}
+
 // ============================================================================
 // Legacy Result Types (for backwards compatibility)
 // ============================================================================
@@ -106,9 +128,9 @@ export type BuildHierarchyFn = (entries: Entry[]) => CCLObject;
  */
 export type GetStringFn = (obj: CCLObject, ...pathParts: string[]) => string;
 export type GetIntFn = (obj: CCLObject, ...pathParts: string[]) => number;
-export type GetBoolFn = (obj: CCLObject, ...pathParts: string[]) => boolean;
+export type GetBoolFn = (obj: CCLObject, pathParts: string[], options?: GetBoolOptions) => boolean;
 export type GetFloatFn = (obj: CCLObject, ...pathParts: string[]) => number;
-export type GetListFn = (obj: CCLObject, ...pathParts: string[]) => CCLList;
+export type GetListFn = (obj: CCLObject, pathParts: string[], options?: GetListOptions) => CCLList;
 
 /**
  * Filter function.
