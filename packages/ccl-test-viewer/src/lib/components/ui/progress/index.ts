@@ -7,9 +7,9 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 };
 
 export {
-	Root,
 	type Props,
+	type Props as ProgressProps,
+	Root,
 	//
 	Root as Progress,
-	type Props as ProgressProps,
 };

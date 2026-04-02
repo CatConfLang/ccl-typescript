@@ -30,15 +30,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { defineCommand, runMain } from "citty";
 import consola from "consola";
 import { download } from "dill-cli";
+import { call, createScope, type Operation, spawn, type Task, useAbortSignal } from "effection";
 import { join } from "pathe";
-import {
-	type Operation,
-	type Task,
-	call,
-	createScope,
-	spawn,
-	useAbortSignal,
-} from "effection";
 import { runOperation } from "./structuredConcurrency.js";
 
 const GITHUB_API_BASE = "https://api.github.com";
@@ -113,9 +106,7 @@ function* fetchJson<T>(url: string): Operation<T> {
 	);
 
 	if (!response.ok) {
-		throw new Error(
-			`Failed to fetch ${url}: ${response.status} ${response.statusText}`,
-		);
+		throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
 	}
 
 	return (yield* call(() => response.json())) as T;
@@ -133,9 +124,7 @@ function* getReleaseByTagOp(tag: string): Operation<Release> {
 	);
 }
 
-function* downloadTestDataOp(
-	options: DownloadOptions,
-): Operation<DownloadResult> {
+function* downloadTestDataOp(options: DownloadOptions): Operation<DownloadResult> {
 	const { outputDir, force = false, version, latest = false } = options;
 
 	const versionFile = join(outputDir, ".version");
@@ -152,9 +141,7 @@ function* downloadTestDataOp(
 		release = yield* getLatestReleaseOp();
 	} else if (existsSync(versionFile)) {
 		const pinnedVersion = yield* call(() => readFile(versionFile, "utf-8"));
-		consola.info(
-			`Using version ${pinnedVersion.trim()} from ${versionFile}`,
-		);
+		consola.info(`Using version ${pinnedVersion.trim()} from ${versionFile}`);
 		release = yield* getReleaseByTagOp(pinnedVersion.trim());
 	} else {
 		release = yield* getLatestReleaseOp();
@@ -177,14 +164,10 @@ function* downloadTestDataOp(
 
 	const jsonAssets = release.assets.filter(
 		(asset) =>
-			asset.name.endsWith(".json") &&
-			!asset.name.includes("zip") &&
-			asset.name !== "SHA256SUMS",
+			asset.name.endsWith(".json") && !asset.name.includes("zip") && asset.name !== "SHA256SUMS",
 	);
 
-	consola.start(
-		`Downloading ${jsonAssets.length} test files from release ${release.tag_name}...`,
-	);
+	consola.start(`Downloading ${jsonAssets.length} test files from release ${release.tag_name}...`);
 
 	// Spawn parallel downloads — if any fails, the scope cancels the rest
 	const tasks: Task<void>[] = [];
@@ -243,9 +226,7 @@ function* downloadSchemaOp(outputDir: string): Operation<void> {
  * Downloads the generated test JSON files from the specified release
  * (or latest if not specified) in parallel using dill.
  */
-export async function downloadTestData(
-	options: DownloadOptions,
-): Promise<DownloadResult> {
+export async function downloadTestData(options: DownloadOptions): Promise<DownloadResult> {
 	return runOperation(function* () {
 		return yield* downloadTestDataOp(options);
 	});
@@ -318,8 +299,7 @@ const main = defineCommand({
 		version: {
 			type: "string",
 			alias: "v",
-			description:
-				"Specific version tag to download (mutually exclusive with --latest)",
+			description: "Specific version tag to download (mutually exclusive with --latest)",
 		},
 		latest: {
 			type: "boolean",

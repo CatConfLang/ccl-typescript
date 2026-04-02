@@ -8,11 +8,7 @@ import {
 	mergeDataSources,
 	validateTestData,
 } from "../utils/dataMerger.js";
-import type {
-	DataSource,
-	DataSourceSummary,
-	FileProcessingResult,
-} from "./dataSource.js";
+import type { DataSource, DataSourceSummary, FileProcessingResult } from "./dataSource.js";
 
 /**
  * Data source manager class using Svelte 5 runes for reactive state management
@@ -88,20 +84,14 @@ class DataSourceManager {
 			const staticStats = await this.loadStaticStats();
 
 			if (staticCategories && staticStats) {
-				const staticSource = createStaticDataSource(
-					staticCategories,
-					staticStats,
-				);
+				const staticSource = createStaticDataSource(staticCategories, staticStats);
 				this.dataSources = [staticSource];
 			}
 
 			this.lastError = null;
 			return true;
 		} catch (error) {
-			this.lastError =
-				error instanceof Error
-					? error.message
-					: "Failed to initialize data sources";
+			this.lastError = error instanceof Error ? error.message : "Failed to initialize data sources";
 			return false;
 		}
 	}
@@ -128,10 +118,7 @@ class DataSourceManager {
 			this.lastError = null;
 			return true;
 		} catch (error) {
-			this.lastError =
-				error instanceof Error
-					? error.message
-					: "Failed to initialize data sources";
+			this.lastError = error instanceof Error ? error.message : "Failed to initialize data sources";
 			return false;
 		}
 	}
@@ -157,8 +144,7 @@ class DataSourceManager {
 				}
 			}
 		} catch (error) {
-			this.lastError =
-				error instanceof Error ? error.message : "Failed to process files";
+			this.lastError = error instanceof Error ? error.message : "Failed to process files";
 		} finally {
 			this.isProcessing = false;
 			this.processingFiles = [];
@@ -192,11 +178,7 @@ class DataSourceManager {
 			const testsArray = jsonData.tests;
 
 			// Create data source
-			const dataSource = createDataSourceFromUpload(
-				file,
-				testsArray,
-				validationResult,
-			);
+			const dataSource = createDataSourceFromUpload(file, testsArray, validationResult);
 
 			return {
 				success: true,
@@ -206,8 +188,7 @@ class DataSourceManager {
 		} catch (error) {
 			return {
 				success: false,
-				error:
-					error instanceof Error ? error.message : "Failed to process file",
+				error: error instanceof Error ? error.message : "Failed to process file",
 			};
 		}
 	}
@@ -218,8 +199,7 @@ class DataSourceManager {
 	toggleSource(sourceId: string) {
 		const sourceIndex = this.dataSources.findIndex((s) => s.id === sourceId);
 		if (sourceIndex >= 0) {
-			this.dataSources[sourceIndex].active =
-				!this.dataSources[sourceIndex].active;
+			this.dataSources[sourceIndex].active = !this.dataSources[sourceIndex].active;
 			// Force reactivity update
 			this.dataSources = [...this.dataSources];
 			// Auto-save will trigger from the reactive effect
@@ -284,9 +264,7 @@ class DataSourceManager {
 			};
 		} catch (error) {
 			const errorMessage =
-				error instanceof Error
-					? error.message
-					: "Failed to process GitHub repository";
+				error instanceof Error ? error.message : "Failed to process GitHub repository";
 			this.lastError = errorMessage;
 
 			return {
@@ -403,10 +381,7 @@ class DataSourceManager {
 			const staticStats = await this.loadStaticStats();
 
 			if (staticCategories && staticStats) {
-				const staticSource = createStaticDataSource(
-					staticCategories,
-					staticStats,
-				);
+				const staticSource = createStaticDataSource(staticCategories, staticStats);
 				this.dataSources = [...this.dataSources, staticSource];
 
 				// Ensure auto-save is enabled and trigger save
@@ -423,8 +398,7 @@ class DataSourceManager {
 				message: "Failed to load built-in data files",
 			};
 		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : "Failed to load built-in data";
+			const errorMessage = error instanceof Error ? error.message : "Failed to load built-in data";
 			this.lastError = errorMessage;
 
 			return {
@@ -460,10 +434,7 @@ class DataSourceManager {
 				dataSources: $state.snapshot(this.dataSources),
 				timestamp: new Date().toISOString(),
 			};
-			localStorage.setItem(
-				"ccl-test-viewer-data-sources",
-				JSON.stringify(dataToSave),
-			);
+			localStorage.setItem("ccl-test-viewer-data-sources", JSON.stringify(dataToSave));
 		} catch (_error) {
 			// QuotaExceededError or storage access denied - silently fail
 		}
@@ -485,11 +456,7 @@ class DataSourceManager {
 			}
 
 			const data = JSON.parse(saved);
-			if (
-				data.dataSources &&
-				Array.isArray(data.dataSources) &&
-				data.dataSources.length > 0
-			) {
+			if (data.dataSources && Array.isArray(data.dataSources) && data.dataSources.length > 0) {
 				// Restore Date objects from serialized strings
 				const restoredDataSources = data.dataSources.map((source: any) => ({
 					...source,

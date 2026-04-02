@@ -16,10 +16,7 @@ const scriptUrl = new URL(import.meta.url);
 const rootDir = new URL("../..", import.meta.url).pathname;
 
 const cclGrammar = JSON.parse(
-	fs.readFileSync(
-		path.join(path.dirname(scriptUrl.pathname), "ccl.tmLanguage.json"),
-		"utf-8",
-	),
+	fs.readFileSync(path.join(path.dirname(scriptUrl.pathname), "ccl.tmLanguage.json"), "utf-8"),
 );
 
 // https://astro.build/config
@@ -43,10 +40,10 @@ export default defineConfig({
 			description: "CCL (Categorical Configuration Language) documentation",
 			lastUpdated: true,
 			logo: {
-				"light": "./src/assets/ccl-logo.webp",
-				"dark": "./src/assets/ccl-logo-dark.webp",
-				"alt": "CCL Logo",
-				"replacesTitle": true,
+				light: "./src/assets/ccl-logo.webp",
+				dark: "./src/assets/ccl-logo-dark.webp",
+				alt: "CCL Logo",
+				replacesTitle: true,
 			},
 			favicon: "./src/assets/ccl-favicon.png",
 			customCss: [
@@ -115,18 +112,12 @@ export default defineConfig({
 				},
 				{
 					label: "Reference",
-					items: [
-						{ slug: "syntax-reference" },
-						{ slug: "dotted-keys-explained" },
-					],
+					items: [{ slug: "syntax-reference" }, { slug: "dotted-keys-explained" }],
 				},
 			],
 		}),
 	],
 	markdown: {
-		remarkPlugins: [
-			a11yEmoji,
-			[includeMarkdown, { resolveMdx: true, resolveFrom: rootDir }],
-		],
+		remarkPlugins: [a11yEmoji, [includeMarkdown, { resolveMdx: true, resolveFrom: rootDir }]],
 	},
 });

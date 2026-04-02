@@ -146,9 +146,7 @@ function formatValueDiff(actual: string, expected: string): string {
 		wsIssues.push(`tabs: expected ${expectedWs.tabs}, got ${actualWs.tabs}`);
 	}
 	if (actualWs.newlines !== expectedWs.newlines) {
-		wsIssues.push(
-			`newlines: expected ${expectedWs.newlines}, got ${actualWs.newlines}`,
-		);
+		wsIssues.push(`newlines: expected ${expectedWs.newlines}, got ${actualWs.newlines}`);
 	}
 	if (actualWs.trailingSpaces !== expectedWs.trailingSpaces) {
 		wsIssues.push(
@@ -171,11 +169,7 @@ function formatValueDiff(actual: string, expected: string): string {
 /**
  * Format object differences for hierarchy comparison.
  */
-function formatObjectDiff(
-	actual: unknown,
-	expected: unknown,
-	path = "",
-): string[] {
+function formatObjectDiff(actual: unknown, expected: unknown, path = ""): string[] {
 	const lines: string[] = [];
 
 	if (
@@ -192,10 +186,7 @@ function formatObjectDiff(
 
 	const actualObj = actual as Record<string, unknown>;
 	const expectedObj = expected as Record<string, unknown>;
-	const allKeys = new Set([
-		...Object.keys(actualObj),
-		...Object.keys(expectedObj),
-	]);
+	const allKeys = new Set([...Object.keys(actualObj), ...Object.keys(expectedObj)]);
 
 	for (const key of allKeys) {
 		const currentPath = path ? `${path}.${key}` : key;
@@ -206,9 +197,7 @@ function formatObjectDiff(
 		} else if (!(key in expectedObj)) {
 			lines.push(`  ${currentPath}: extra key`);
 			lines.push(`    Actual: ${JSON.stringify(actualObj[key])}`);
-		} else if (
-			JSON.stringify(actualObj[key]) !== JSON.stringify(expectedObj[key])
-		) {
+		} else if (JSON.stringify(actualObj[key]) !== JSON.stringify(expectedObj[key])) {
 			const actualVal = actualObj[key];
 			const expectedVal = expectedObj[key];
 
@@ -253,9 +242,7 @@ function formatDiffEntry(diff: EntryDiff): string[] {
 			lines.push(`    Actual key:   "${diff.actual?.key}"`);
 			break;
 		case "value":
-			lines.push(
-				`  [${diff.index}] VALUE MISMATCH for key "${diff.expected?.key}"`,
-			);
+			lines.push(`  [${diff.index}] VALUE MISMATCH for key "${diff.expected?.key}"`);
 			if (diff.actual && diff.expected) {
 				lines.push(formatValueDiff(diff.actual.value, diff.expected.value));
 			}
@@ -286,14 +273,13 @@ export const cclMatchers = {
 	 * expect(result).toPassCCLTest();
 	 * ```
 	 */
-		toPassCCLTest(received: CCLTestResult) {
+	toPassCCLTest(received: CCLTestResult) {
 		const { testCase, input, output, expected, passed, error } = received;
 
 		if (passed) {
 			return {
 				pass: true,
-				message: () =>
-					`Expected CCL test "${testCase.name}" to fail, but it passed`,
+				message: () => `Expected CCL test "${testCase.name}" to fail, but it passed`,
 			};
 		}
 
@@ -329,9 +315,7 @@ export const cclMatchers = {
 
 			// Count comparison
 			if (testCase.expected.count !== undefined) {
-				lines.push(
-					`Count: expected ${testCase.expected.count}, got ${actualEntries.length}`,
-				);
+				lines.push(`Count: expected ${testCase.expected.count}, got ${actualEntries.length}`);
 				lines.push("");
 			}
 
@@ -368,14 +352,10 @@ export const cclMatchers = {
 
 			// Show full objects
 			lines.push("Expected object:");
-			lines.push(
-				`  ${JSON.stringify(expected, null, 2).split("\n").join("\n  ")}`,
-			);
+			lines.push(`  ${JSON.stringify(expected, null, 2).split("\n").join("\n  ")}`);
 			lines.push("");
 			lines.push("Actual object:");
-			lines.push(
-				`  ${JSON.stringify(output, null, 2).split("\n").join("\n  ")}`,
-			);
+			lines.push(`  ${JSON.stringify(output, null, 2).split("\n").join("\n  ")}`);
 		}
 
 		// Add test metadata
@@ -445,14 +425,12 @@ export const cclMatchers = {
 		const { output, testCase, input } = received;
 		const actualEntries = Array.isArray(output) ? (output as Entry[]) : [];
 
-		const matches =
-			JSON.stringify(actualEntries) === JSON.stringify(expectedEntries);
+		const matches = JSON.stringify(actualEntries) === JSON.stringify(expectedEntries);
 
 		if (matches) {
 			return {
 				pass: true,
-				message: () =>
-					`Expected CCL test "${testCase.name}" entries to NOT match, but they do`,
+				message: () => `Expected CCL test "${testCase.name}" entries to NOT match, but they do`,
 			};
 		}
 
@@ -503,8 +481,7 @@ export const cclMatchers = {
 		if (matches) {
 			return {
 				pass: true,
-				message: () =>
-					`Expected CCL test "${testCase.name}" object to NOT match, but it does`,
+				message: () => `Expected CCL test "${testCase.name}" object to NOT match, but it does`,
 			};
 		}
 
@@ -529,14 +506,10 @@ export const cclMatchers = {
 				}
 
 				lines.push("Expected:");
-				lines.push(
-					`  ${JSON.stringify(expectedObject, null, 2).split("\n").join("\n  ")}`,
-				);
+				lines.push(`  ${JSON.stringify(expectedObject, null, 2).split("\n").join("\n  ")}`);
 				lines.push("");
 				lines.push("Actual:");
-				lines.push(
-					`  ${JSON.stringify(output, null, 2).split("\n").join("\n  ")}`,
-				);
+				lines.push(`  ${JSON.stringify(output, null, 2).split("\n").join("\n  ")}`);
 
 				return lines.join("\n");
 			},

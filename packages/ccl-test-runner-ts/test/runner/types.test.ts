@@ -1,11 +1,6 @@
 import { err, ok } from "true-myth/result";
 import { describe, expect, it } from "vitest";
-import type {
-	CCLObject,
-	Entry,
-	HierarchyResult,
-	ParseResult,
-} from "../../src/types.js";
+import type { CCLObject, Entry, HierarchyResult, ParseResult } from "../../src/types.js";
 import {
 	isHierarchyResult,
 	isLegacyHierarchyResult,
@@ -203,8 +198,7 @@ describe("Type Guard Functions", () => {
 describe("Normalization Functions", () => {
 	describe("normalizeParseFunction", () => {
 		it("should pass through true-myth Result from result-returning function", () => {
-			const resultFn = (_input: string) =>
-				ok([{ key: "test", value: "value" }]);
+			const resultFn = (_input: string) => ok([{ key: "test", value: "value" }]);
 
 			const normalized = normalizeParseFunction(resultFn);
 			const result = normalized("any input");
@@ -216,8 +210,7 @@ describe("Normalization Functions", () => {
 		});
 
 		it("should pass through true-myth err Result", () => {
-			const resultFn = (_input: string) =>
-				err({ message: "Test error", line: 5 });
+			const resultFn = (_input: string) => err({ message: "Test error", line: 5 });
 
 			const normalized = normalizeParseFunction(resultFn);
 			const result = normalized("any input");
@@ -333,8 +326,7 @@ describe("Normalization Functions", () => {
 		});
 
 		it("should pass through true-myth err Result", () => {
-			const resultFn = (_entries: Entry[]) =>
-				err({ message: "Key conflict", line: 3 });
+			const resultFn = (_entries: Entry[]) => err({ message: "Key conflict", line: 3 });
 
 			const normalized = normalizeBuildHierarchyFunction(resultFn);
 			const result = normalized([]);

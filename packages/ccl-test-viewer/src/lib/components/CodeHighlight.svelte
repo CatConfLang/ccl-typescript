@@ -16,12 +16,7 @@ interface Props extends Omit<HTMLAttributes<HTMLElement>, "class"> {
 	class?: string;
 }
 
-const {
-	code,
-	language = "ccl",
-	class: className = "",
-	...restProps
-}: Props = $props();
+const { code, language = "ccl", class: className = "", ...restProps }: Props = $props();
 
 let codeElement: HTMLElement;
 

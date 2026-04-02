@@ -37,11 +37,7 @@ import type {
 	CCLVariant,
 	ImplementationCapabilities,
 } from "./capabilities.js";
-import {
-	DefaultBehaviors,
-	Variant,
-	validateCapabilities,
-} from "./capabilities.js";
+import { DefaultBehaviors, Variant, validateCapabilities } from "./capabilities.js";
 import type { TestCase } from "./schema-validation.js";
 import { loadAllTests, shouldRunTest } from "./test-data.js";
 import type {
@@ -53,11 +49,7 @@ import type {
 	Entry,
 	ParseError,
 } from "./types.js";
-import {
-	isResult,
-	normalizeBuildHierarchyFunction,
-	normalizeParseFunction,
-} from "./types.js";
+import { isResult, normalizeBuildHierarchyFunction, normalizeParseFunction } from "./types.js";
 
 // Pre-compiled regex patterns for performance
 const LEADING_TABS_REGEX = /^[\t]+/;
@@ -408,10 +400,7 @@ function buildCapabilities(config: CCLTestConfig): ImplementationCapabilities {
 /**
  * Preprocess input based on implementation behaviors.
  */
-function preprocessInput(
-	input: string,
-	capabilities: ImplementationCapabilities,
-): string {
+function preprocessInput(input: string, capabilities: ImplementationCapabilities): string {
 	let result = input;
 
 	if (capabilities.behaviors.includes("crlf_normalize_to_lf")) {
@@ -424,10 +413,7 @@ function preprocessInput(
 /**
  * Post-process entry values based on implementation behaviors.
  */
-function postprocessValue(
-	value: string,
-	capabilities: ImplementationCapabilities,
-): string {
+function postprocessValue(value: string, capabilities: ImplementationCapabilities): string {
 	let result = value;
 
 	if (capabilities.behaviors.includes("loose_spacing")) {
@@ -514,8 +500,7 @@ function checkParseExpectations(
 
 	if (testCase.expected.entries !== undefined) {
 		const entriesMatch =
-			JSON.stringify(processedEntries) ===
-			JSON.stringify(testCase.expected.entries);
+			JSON.stringify(processedEntries) === JSON.stringify(testCase.expected.entries);
 		if (!entriesMatch) {
 			return { passed: false, error: "Entries mismatch" };
 		}
@@ -558,9 +543,7 @@ function handleBuildHierarchyValidation(
 		};
 	}
 
-	const passed =
-		JSON.stringify(hierarchyResult.value) ===
-		JSON.stringify(testCase.expected.object);
+	const passed = JSON.stringify(hierarchyResult.value) === JSON.stringify(testCase.expected.object);
 
 	return {
 		rawOutput: hierarchyResult,
@@ -575,10 +558,7 @@ function handleBuildHierarchyValidation(
  * Build a CCL object from input using parse and build_hierarchy.
  * Helper for typed access validation handlers.
  */
-function buildObjectFromInput(
-	input: string,
-	functions: CCLFunctions,
-): CCLObject {
+function buildObjectFromInput(input: string, functions: CCLFunctions): CCLObject {
 	const rawParseFn = functions.parse;
 	const rawBuildFn = functions.build_hierarchy;
 	if (!(rawParseFn && rawBuildFn)) {
@@ -1190,12 +1170,7 @@ export function runCCLTest(
 
 		switch (testCase.validation) {
 			case "parse":
-				result = handleParseValidation(
-					testCase,
-					input,
-					functions,
-					capabilities,
-				);
+				result = handleParseValidation(testCase, input, functions, capabilities);
 				break;
 
 			case "build_hierarchy":
@@ -1311,10 +1286,7 @@ function checkFunctionStatus(
 /**
  * Check if a composite function's dependencies are all implemented.
  */
-function areCompositeDepsImplemented(
-	fn: string,
-	implementedFunctions: Set<string>,
-): boolean {
+function areCompositeDepsImplemented(fn: string, implementedFunctions: Set<string>): boolean {
 	const compositeDeps = compositeValidations[fn];
 	if (!compositeDeps) {
 		return false;
@@ -1364,12 +1336,7 @@ function checkRequiredFunctions(
 			continue; // Composite requirements satisfied
 		}
 
-		const result = checkFunctionStatus(
-			fn,
-			implementedFunctions,
-			capabilities,
-			"required",
-		);
+		const result = checkFunctionStatus(fn, implementedFunctions, capabilities, "required");
 		if (result.status !== "implemented") {
 			return result;
 		}
@@ -1380,10 +1347,7 @@ function checkRequiredFunctions(
 /**
  * Categorize a test case based on implementation capabilities.
  */
-export function categorizeTest(
-	testCase: TestCase,
-	context: TestContext,
-): TestCategorization {
+export function categorizeTest(testCase: TestCase, context: TestContext): TestCategorization {
 	const { capabilities, implementedFunctions } = context;
 
 	// Check if test is explicitly skipped
@@ -1439,16 +1403,12 @@ export function categorizeTest(
 /**
  * Get test suite information and statistics.
  */
-export async function getCCLTestSuiteInfo(
-	config: CCLTestConfig,
-): Promise<CCLTestSuiteInfo> {
+export async function getCCLTestSuiteInfo(config: CCLTestConfig): Promise<CCLTestSuiteInfo> {
 	const capabilities = buildCapabilities(config);
 	const implementedFunctions = getImplementedFunctionNames(config.functions);
 	const implementedSet = new Set(implementedFunctions);
 
-	const declaredButNotImplemented = capabilities.functions.filter(
-		(fn) => !implementedSet.has(fn),
-	);
+	const declaredButNotImplemented = capabilities.functions.filter((fn) => !implementedSet.has(fn));
 
 	const data = await loadAllTests(config.testDataPath);
 	const context: TestContext = {
@@ -1541,15 +1501,10 @@ export async function createCCLTestCases(config: CCLTestConfig): Promise<{
 		run: () => CCLTestResult;
 	}>;
 	context: TestContext;
-	byFunction: Map<
-		string,
-		Array<{ categorization: TestCategorization; run: () => CCLTestResult }>
-	>;
+	byFunction: Map<string, Array<{ categorization: TestCategorization; run: () => CCLTestResult }>>;
 }> {
 	const capabilities = buildCapabilities(config);
-	const implementedFunctions = new Set(
-		getImplementedFunctionNames(config.functions),
-	);
+	const implementedFunctions = new Set(getImplementedFunctionNames(config.functions));
 
 	const context: TestContext = {
 		config,

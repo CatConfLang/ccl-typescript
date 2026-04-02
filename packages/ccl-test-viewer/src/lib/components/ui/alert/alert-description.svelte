@@ -4,7 +4,8 @@ import type { AlertDescriptionProps } from "./index.js";
 
 type $$Props = AlertDescriptionProps;
 
-let className: $$Props["class"] ;
+let className: $$Props["class"];
+
 export { className as class };
 </script>
 

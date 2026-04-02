@@ -104,8 +104,7 @@ async function handleImportCollection() {
 			}
 		}, 150);
 
-		const importedSources =
-			await tauriDataSourceManager.importSourceCollection();
+		const importedSources = await tauriDataSourceManager.importSourceCollection();
 
 		clearInterval(progressInterval);
 		importProgress = 100;
@@ -145,8 +144,7 @@ async function handleClearAllData() {
 		operationSuccess = "All local data sources cleared";
 		lastOperation = `Data cleared at ${new Date().toLocaleTimeString()}`;
 	} catch (error) {
-		operationError =
-			error instanceof Error ? error.message : "Failed to clear data";
+		operationError = error instanceof Error ? error.message : "Failed to clear data";
 	}
 }
 

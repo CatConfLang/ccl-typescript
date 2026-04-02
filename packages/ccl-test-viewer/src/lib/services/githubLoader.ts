@@ -128,9 +128,7 @@ export class GitHubLoader {
 	/**
 	 * Load repository contents from GitHub API
 	 */
-	async loadRepository(
-		repository: GitHubRepository,
-	): Promise<GitHubLoadResult> {
+	async loadRepository(repository: GitHubRepository): Promise<GitHubLoadResult> {
 		const { owner, repo, branch = "main", path = "" } = repository;
 
 		try {
@@ -145,18 +143,10 @@ export class GitHubLoader {
 
 			if (!response.ok) {
 				if (response.status === 404) {
-					throw new GitHubAPIError(
-						"Repository, branch, or path not found",
-						404,
-						response,
-					);
+					throw new GitHubAPIError("Repository, branch, or path not found", 404, response);
 				}
 				if (response.status === 403) {
-					throw new GitHubAPIError(
-						"Rate limit exceeded or repository is private",
-						403,
-						response,
-					);
+					throw new GitHubAPIError("Rate limit exceeded or repository is private", 403, response);
 				}
 				throw new GitHubAPIError(
 					`GitHub API error: ${response.statusText}`,
@@ -181,8 +171,7 @@ export class GitHubLoader {
 
 			// Filter for JSON files only
 			const jsonFiles = data.filter(
-				(item: GitHubFileInfo) =>
-					item.type === "file" && item.name.endsWith(".json"),
+				(item: GitHubFileInfo) => item.type === "file" && item.name.endsWith(".json"),
 			);
 
 			return {
@@ -210,9 +199,7 @@ export class GitHubLoader {
 			files.map(async (file) => {
 				const response = await fetch(file.download_url);
 				if (!response.ok) {
-					throw new Error(
-						`Failed to download ${file.name}: ${response.statusText}`,
-					);
+					throw new Error(`Failed to download ${file.name}: ${response.statusText}`);
 				}
 
 				const text = await response.text();
@@ -238,10 +225,7 @@ export class GitHubLoader {
 			.map((result) => result.value);
 
 		const failed = results
-			.filter(
-				(result): result is PromiseRejectedResult =>
-					result.status === "rejected",
-			)
+			.filter((result): result is PromiseRejectedResult => result.status === "rejected")
 			.map((result) => result.reason);
 
 		if (failed.length > 0) {
@@ -268,10 +252,9 @@ export class GitHubLoader {
 			throw new GitHubAPIError(validation.error || "Invalid URL");
 		}
 
+		// biome-ignore lint/style/noNonNullAssertion: guarded by throw above
 		const repositoryResult = await this.loadRepository(validation.repository!);
-		const downloadedFiles = await this.downloadJsonFiles(
-			repositoryResult.files,
-		);
+		const downloadedFiles = await this.downloadJsonFiles(repositoryResult.files);
 
 		return {
 			files: downloadedFiles,
@@ -298,6 +281,7 @@ export class GitHubLoader {
 			throw new GitHubAPIError(validation.error || "Invalid URL");
 		}
 
+		// biome-ignore lint/style/noNonNullAssertion: guarded by throw above
 		const result = await this.loadRepository(validation.repository!);
 
 		return {
