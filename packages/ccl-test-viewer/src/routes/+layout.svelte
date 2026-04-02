@@ -40,8 +40,7 @@ onMount(() => {
 
 		// Get theme values from localStorage or defaults
 		const storedTheme = localStorage.getItem("theme") || "dark";
-		const storedBase16 =
-			localStorage.getItem("base16Theme") || "base16-tomorrow-night";
+		const storedBase16 = localStorage.getItem("base16Theme") || "base16-tomorrow-night";
 
 		// Remove any existing theme classes
 		const existingClasses = Array.from(root.classList).filter(

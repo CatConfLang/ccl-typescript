@@ -19,9 +19,7 @@ function createTestCase(overrides: Partial<TestCase> = {}): TestCase {
 }
 
 // Helper to create CCLTestResult
-function createTestResult(
-	overrides: Partial<CCLTestResult> = {},
-): CCLTestResult {
+function createTestResult(overrides: Partial<CCLTestResult> = {}): CCLTestResult {
 	return {
 		testCase: createTestCase(),
 		input: "key = value",

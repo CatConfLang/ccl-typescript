@@ -63,9 +63,7 @@ describe("Schema Type Validation", () => {
 
 	it("should validate TestExpected structure for hierarchy tests", async () => {
 		const data = await loadAllTests(TEST_DATA_PATH);
-		const hierarchyTest = data.tests.find(
-			(t) => t.validation === "build_hierarchy",
-		);
+		const hierarchyTest = data.tests.find((t) => t.validation === "build_hierarchy");
 
 		expect(hierarchyTest).toBeDefined();
 		if (!hierarchyTest) {
@@ -108,9 +106,7 @@ describe("Schema Type Validation", () => {
 		}
 
 		if (unknownValidations.size > 0) {
-			console.warn(
-				`Unknown validation functions found: ${[...unknownValidations].join(", ")}`,
-			);
+			console.warn(`Unknown validation functions found: ${[...unknownValidations].join(", ")}`);
 		}
 		// Allow unknown validations but warn about them
 		expect(unknownValidations.size).toBeLessThanOrEqual(5);

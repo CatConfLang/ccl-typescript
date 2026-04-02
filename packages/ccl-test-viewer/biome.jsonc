@@ -24,22 +24,22 @@
 			"!src/lib/components/TestDetail.svelte",
 			"!src/lib/components/WhitespaceCodeHighlight.svelte",
 			"!src/routes/browse/+page.svelte",
-			"!src/routes/data/+page.svelte",
-		],
+			"!src/routes/data/+page.svelte"
+		]
 	},
 	"linter": {
 		"rules": {
 			"complexity": {
 				// ccl-test-viewer uses void for fire-and-forget promises
-				"noVoid": "off",
+				"noVoid": "off"
 			},
 			"suspicious": {
 				// Development app - console logging is useful
 				"noConsole": "off",
 				// Dynamic CCL test data has various shapes; any is intentional in types.ts
-				"noExplicitAny": "off",
-			},
-		},
+				"noExplicitAny": "off"
+			}
+		}
 	},
 	"overrides": [
 		{
@@ -48,10 +48,10 @@
 			"linter": {
 				"rules": {
 					"correctness": {
-						"useImportExtensions": "off",
-					},
-				},
-			},
-		},
-	],
+						"useImportExtensions": "off"
+					}
+				}
+			}
+		}
+	]
 }

@@ -1,12 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-import {
-	BaseDirectory,
-	create,
-	exists,
-	readTextFile,
-	writeTextFile,
-} from "@tauri-apps/plugin-fs";
+import { BaseDirectory, create, exists, readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
 
 /**
  * Tauri-specific file service for desktop application functionality
@@ -102,9 +96,7 @@ export async function openMultiFileDialog(): Promise<TauriFileResult[]> {
 /**
  * Save data source configuration to local storage
  */
-export async function saveDataSourceToLocal(
-	dataSource: LocalDataSource,
-): Promise<void> {
+export async function saveDataSourceToLocal(dataSource: LocalDataSource): Promise<void> {
 	if (!isTauriEnvironment()) {
 		throw new Error("Local file persistence only available in desktop app");
 	}
@@ -142,15 +134,11 @@ export async function saveDataSourceToLocal(
 			files: filesWithHashes,
 		};
 
-		await writeTextFile(
-			`${dirPath}/${fileName}`,
-			JSON.stringify(saveData, null, 2),
-			{ baseDir: BaseDirectory.AppLocalData },
-		);
+		await writeTextFile(`${dirPath}/${fileName}`, JSON.stringify(saveData, null, 2), {
+			baseDir: BaseDirectory.AppLocalData,
+		});
 	} catch (error) {
-		throw new Error(
-			`Save failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-		);
+		throw new Error(`Save failed: ${error instanceof Error ? error.message : "Unknown error"}`);
 	}
 }
 
@@ -221,9 +209,7 @@ export async function exportDataCollection(
 			await writeTextFile(savePath, JSON.stringify(exportData, null, 2));
 		}
 	} catch (error) {
-		throw new Error(
-			`Export failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-		);
+		throw new Error(`Export failed: ${error instanceof Error ? error.message : "Unknown error"}`);
 	}
 }
 
@@ -261,9 +247,7 @@ export async function importDataCollection(): Promise<LocalDataSource[]> {
 
 		return importData.sources as LocalDataSource[];
 	} catch (error) {
-		throw new Error(
-			`Import failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-		);
+		throw new Error(`Import failed: ${error instanceof Error ? error.message : "Unknown error"}`);
 	}
 }
 

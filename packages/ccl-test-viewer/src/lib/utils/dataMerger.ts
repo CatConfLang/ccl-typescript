@@ -1,10 +1,6 @@
 // Data merging utilities for combining multiple data sources
 import type { GeneratedTest, TestCategory, TestStats } from "../data/types.js";
-import type {
-	DataSource,
-	MergedDataStats,
-	UploadValidationResult,
-} from "../stores/dataSource.js";
+import type { DataSource, MergedDataStats, UploadValidationResult } from "../stores/dataSource.js";
 
 // Security limits to prevent DoS attacks from malicious/corrupt files
 const MAX_TESTS = 10_000;
@@ -27,10 +23,7 @@ const EMPTY_UPLOAD_STATS: UploadValidationResult["stats"] = {
 	behaviors: [],
 };
 
-function createErrorResult(
-	errors: string[],
-	warnings: string[] = [],
-): UploadValidationResult {
+function createErrorResult(errors: string[], warnings: string[] = []): UploadValidationResult {
 	return {
 		isValid: false,
 		errors,
@@ -46,9 +39,7 @@ function validateSchemaStructure(jsonData: unknown): {
 	const errors: string[] = [];
 
 	if (!jsonData || typeof jsonData !== "object" || Array.isArray(jsonData)) {
-		errors.push(
-			"JSON must be a CCL schema format object with $schema and tests properties",
-		);
+		errors.push("JSON must be a CCL schema format object with $schema and tests properties");
 		return { errors, testsArray: null };
 	}
 
@@ -66,11 +57,7 @@ function validateSchemaStructure(jsonData: unknown): {
 	return { errors, testsArray: data.tests };
 }
 
-function validateTestObject(
-	test: unknown,
-	index: number,
-	errors: string[],
-): boolean {
+function validateTestObject(test: unknown, index: number, errors: string[]): boolean {
 	if (!test || typeof test !== "object") {
 		errors.push(`Test at index ${index} is not a valid object`);
 		return false;
@@ -88,9 +75,7 @@ function validateTestObject(
 		!testObj.expected ||
 		typeof (testObj.expected as Record<string, unknown>).count !== "number"
 	) {
-		errors.push(
-			`Test at index ${index} missing or invalid 'expected.count' field`,
-		);
+		errors.push(`Test at index ${index} missing or invalid 'expected.count' field`);
 	}
 
 	return true;
@@ -109,17 +94,13 @@ function processArrayField(
 	}
 
 	if (!Array.isArray(fieldValue)) {
-		warnings.push(
-			`Test ${testName} has invalid '${fieldName}' field - should be array`,
-		);
+		warnings.push(`Test ${testName} has invalid '${fieldName}' field - should be array`);
 		return;
 	}
 
 	// Security: Limit array sizes
 	if (fieldValue.length > MAX_ARRAY_ITEMS) {
-		warnings.push(
-			`Test ${testName} has excessive ${fieldName} (max ${MAX_ARRAY_ITEMS})`,
-		);
+		warnings.push(`Test ${testName} has excessive ${fieldName} (max ${MAX_ARRAY_ITEMS})`);
 		return;
 	}
 
@@ -137,41 +118,19 @@ function collectTestArrays(
 		behaviors: Set<string>;
 	},
 ): void {
-	processArrayField(
-		"functions",
-		test.functions,
-		sets.functions,
-		test.name,
-		warnings,
-	);
-	processArrayField(
-		"features",
-		test.features,
-		sets.features,
-		test.name,
-		warnings,
-	);
-	processArrayField(
-		"behaviors",
-		test.behaviors,
-		sets.behaviors,
-		test.name,
-		warnings,
-	);
+	processArrayField("functions", test.functions, sets.functions, test.name, warnings);
+	processArrayField("features", test.features, sets.features, test.name, warnings);
+	processArrayField("behaviors", test.behaviors, sets.behaviors, test.name, warnings);
 }
 
 /**
  * Validates uploaded JSON data to ensure it matches expected test format
  */
-export function validateTestData(
-	jsonData: unknown,
-	_filename: string,
-): UploadValidationResult {
+export function validateTestData(jsonData: unknown, _filename: string): UploadValidationResult {
 	const errors: string[] = [];
 	const warnings: string[] = [];
 
-	const { errors: schemaErrors, testsArray } =
-		validateSchemaStructure(jsonData);
+	const { errors: schemaErrors, testsArray } = validateSchemaStructure(jsonData);
 	errors.push(...schemaErrors);
 
 	if (!testsArray) {
@@ -229,10 +188,7 @@ export function validateTestData(
  */
 const JSON_EXTENSION_REGEX = /\.json$/i;
 
-export function jsonToTestCategory(
-	jsonData: GeneratedTest[],
-	filename: string,
-): TestCategory {
+export function jsonToTestCategory(jsonData: GeneratedTest[], filename: string): TestCategory {
 	const categoryName = filename
 		.replace(JSON_EXTENSION_REGEX, "")
 		.replace(/[-_]/g, " ")
@@ -326,14 +282,8 @@ export function mergeDataSources(dataSources: DataSource[]): {
 		// Add source prefix to category names to avoid conflicts
 		const prefixedCategories = source.categories.map((category) => ({
 			...category,
-			name:
-				source.type === "static"
-					? category.name
-					: `${source.name}: ${category.name}`,
-			file:
-				source.type === "static"
-					? category.file
-					: `${source.name}/${category.file}`,
+			name: source.type === "static" ? category.name : `${source.name}: ${category.name}`,
+			file: source.type === "static" ? category.file : `${source.name}/${category.file}`,
 		}));
 		allCategories.push(...prefixedCategories);
 	}
@@ -424,17 +374,13 @@ export function createDataSourceFromGitHub(repositoryData: {
 			const category = jsonToTestCategory(file.content, file.name);
 			categories.push(category);
 			_totalTests += validationResult.stats.testCount;
-			_totalAssertions += file.content.reduce(
-				(sum, test) => sum + (test.expected?.count || 0),
-				0,
-			);
+			_totalAssertions += file.content.reduce((sum, test) => sum + (test.expected?.count || 0), 0);
 		}
 	}
 
 	const stats = calculateStats(categories);
 	const repoName = `${repository.owner}/${repository.repo}`;
-	const branchPath =
-		repository.branch !== "main" ? `@${repository.branch}` : "";
+	const branchPath = repository.branch !== "main" ? `@${repository.branch}` : "";
 	const pathSuffix = repository.path ? `/${repository.path}` : "";
 	const sourceName = `${repoName}${branchPath}${pathSuffix}`;
 
@@ -459,10 +405,7 @@ export function createDataSourceFromGitHub(repositoryData: {
 /**
  * Creates the default static data source entry
  */
-export function createStaticDataSource(
-	categories: TestCategory[],
-	stats: TestStats,
-): DataSource {
+export function createStaticDataSource(categories: TestCategory[], stats: TestStats): DataSource {
 	return {
 		id: "static_default",
 		name: "Built-in Test Data",

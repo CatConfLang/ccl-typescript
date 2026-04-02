@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+
 /**
  * CCL Test Data Sync Pipeline
  *
@@ -7,13 +8,13 @@
  * creates search indices, and optimizes the data structure for the web application.
  */
 
-// @biomejs/js-api is currently in alpha, but provides programmatic formatting
-// See: https://github.com/biomejs/biome/tree/main/packages/@biomejs/js-api
-import { Biome } from "@biomejs/js-api/nodejs";
 import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+// @biomejs/js-api is currently in alpha, but provides programmatic formatting
+// See: https://github.com/biomejs/biome/tree/main/packages/@biomejs/js-api
+import { Biome } from "@biomejs/js-api/nodejs";
 
 const require = createRequire(import.meta.url);
 
@@ -23,16 +24,11 @@ const DATA_TARGET = resolve(PROJECT_ROOT, "src/lib/data");
 const STATIC_TARGET = resolve(PROJECT_ROOT, "static/data");
 
 // Legacy fallback paths for local development
-const LEGACY_DATA_SOURCE = resolve(
-	PROJECT_ROOT,
-	"../../../ccl-test-data/generated_tests",
-);
+const LEGACY_DATA_SOURCE = resolve(PROJECT_ROOT, "../../../ccl-test-data/generated_tests");
 
 // Resolve path to @tylerbu/ccl-test-data workspace package
 function getWorkspaceDataPath(): string {
-	const packageJsonPath = require.resolve(
-		"@tylerbu/ccl-test-data/package.json",
-	);
+	const packageJsonPath = require.resolve("@tylerbu/ccl-test-data/package.json");
 	return join(dirname(packageJsonPath), "data");
 }
 
@@ -128,10 +124,7 @@ async function fetchFromGitHub(path: string, token?: string): Promise<string> {
 	}
 }
 
-async function listGitHubDirectory(
-	path: string,
-	token?: string,
-): Promise<string[]> {
+async function listGitHubDirectory(path: string, token?: string): Promise<string[]> {
 	const url = `${GITHUB_API_BASE}/contents/${path}?ref=${GITHUB_BRANCH}`;
 	try {
 		const headers: Record<string, string> = {
@@ -157,9 +150,7 @@ async function listGitHubDirectory(
 	}
 }
 
-async function loadTestFile(
-	filePath: string,
-): Promise<{ tests: GeneratedTest[] }> {
+async function loadTestFile(filePath: string): Promise<{ tests: GeneratedTest[] }> {
 	try {
 		const content = await readFile(filePath, "utf-8");
 		return JSON.parse(content);
@@ -343,9 +334,7 @@ function generateSearchIndex(categories: TestCategory[]): SearchIndex {
 	return index;
 }
 
-async function generateTypeDefinitions(
-	categories: TestCategory[],
-): Promise<string> {
+async function generateTypeDefinitions(categories: TestCategory[]): Promise<string> {
 	const allFunctions = new Set<string>();
 	const allFeatures = new Set<string>();
 	const allBehaviors = new Set<string>();
@@ -452,12 +441,8 @@ async function main(): Promise<void> {
 			// Check if generated data already exists
 			const categoriesPath = join(DATA_TARGET, "categories.json");
 			await stat(categoriesPath);
-			const reason = isCI
-				? "CI environment detected"
-				: "CCL_SKIP_SYNC_IF_EXISTS=true";
-			console.log(
-				`✅ Generated data already exists, skipping sync (${reason})`,
-			);
+			const reason = isCI ? "CI environment detected" : "CCL_SKIP_SYNC_IF_EXISTS=true";
+			console.log(`✅ Generated data already exists, skipping sync (${reason})`);
 			return;
 		} catch {
 			// Data doesn't exist, continue with sync
@@ -505,15 +490,14 @@ async function main(): Promise<void> {
 		dataSource = LEGACY_DATA_SOURCE;
 		console.log(`📁 Loading test data from legacy local path`);
 		const testFiles = await getAllTestFiles();
+		// biome-ignore lint/style/noNonNullAssertion: dataSource is set above
 		testFilenames = testFiles.map((path) => relative(dataSource!, path));
 	}
 
 	console.log(`📁 Found ${testFilenames.length} test files`);
 
 	if (testFilenames.length === 0) {
-		console.error(
-			"❌ No test files found. Make sure ccl-test-data is available.",
-		);
+		console.error("❌ No test files found. Make sure ccl-test-data is available.");
 		process.exit(1);
 	}
 
@@ -524,7 +508,8 @@ async function main(): Promise<void> {
 		const { name, description } = createCategoryFromFilename(filename);
 		const { tests } = useGitHub
 			? await loadTestFileFromGitHub(filename, githubToken)
-			: await loadTestFile(join(dataSource!, filename));
+			: // biome-ignore lint/style/noNonNullAssertion: dataSource is set above
+				await loadTestFile(join(dataSource!, filename));
 
 		categories.push({
 			name,
@@ -538,9 +523,7 @@ async function main(): Promise<void> {
 
 	// Generate statistics
 	const stats = generateTestStats(categories);
-	console.log(
-		`📈 Generated stats: ${stats.totalTests} tests, ${stats.totalAssertions} assertions`,
-	);
+	console.log(`📈 Generated stats: ${stats.totalTests} tests, ${stats.totalAssertions} assertions`);
 
 	// Generate search index
 	const searchIndex = generateSearchIndex(categories);
@@ -565,15 +548,9 @@ async function main(): Promise<void> {
 	};
 
 	// Write processed data files
-	await writeFile(
-		join(DATA_TARGET, "categories.json"),
-		formatJson(categories, "categories.json"),
-	);
+	await writeFile(join(DATA_TARGET, "categories.json"), formatJson(categories, "categories.json"));
 
-	await writeFile(
-		join(DATA_TARGET, "stats.json"),
-		formatJson(stats, "stats.json"),
-	);
+	await writeFile(join(DATA_TARGET, "stats.json"), formatJson(stats, "stats.json"));
 
 	await writeFile(
 		join(DATA_TARGET, "search-index.json"),
@@ -588,10 +565,7 @@ async function main(): Promise<void> {
 		formatJson(categories, "categories.json"),
 	);
 
-	await writeFile(
-		join(STATIC_TARGET, "stats.json"),
-		formatJson(stats, "stats.json"),
-	);
+	await writeFile(join(STATIC_TARGET, "stats.json"), formatJson(stats, "stats.json"));
 
 	await writeFile(
 		join(STATIC_TARGET, "search-index.json"),
@@ -616,10 +590,7 @@ async function main(): Promise<void> {
 		},
 	};
 
-	await writeFile(
-		join(DATA_TARGET, "sync-summary.json"),
-		formatJson(summary, "sync-summary.json"),
-	);
+	await writeFile(join(DATA_TARGET, "sync-summary.json"), formatJson(summary, "sync-summary.json"));
 
 	console.log("✅ Data sync completed successfully!");
 	console.log(`📦 Generated files in: ${relative(process.cwd(), DATA_TARGET)}`);

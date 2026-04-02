@@ -16,6 +16,8 @@
 		"check": "biome check .",
 		"check:deps": "syncpack lint",
 		"ci": "nx run-many -t ci",
+		"ci:publish": "pnpm publish -r --access public --report-summary --no-git-checks",
+		"ci:version": "changeset version && pnpm install --no-frozen-lockfile && pnpm format",
 		"clean": "nx run-many -t clean",
 		"format": "biome check . --write",
 		"lint": "biome lint",

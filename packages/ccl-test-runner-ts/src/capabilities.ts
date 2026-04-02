@@ -178,10 +178,7 @@ export const Variant = {
 /**
  * All valid CCL variants.
  */
-export const ALL_VARIANTS: CCLVariant[] = [
-	"proposed_behavior",
-	"reference_compliant",
-];
+export const ALL_VARIANTS: CCLVariant[] = ["proposed_behavior", "reference_compliant"];
 
 /**
  * Default behaviors for a typical CCL implementation.
@@ -248,22 +245,14 @@ export class CapabilityValidationError extends Error {
 /**
  * Validate implementation capabilities for conflicts.
  */
-export function validateCapabilities(
-	capabilities: ImplementationCapabilities,
-): void {
+export function validateCapabilities(capabilities: ImplementationCapabilities): void {
 	const errors: string[] = [];
 
 	// Check for conflicting behaviors
-	for (const [group, conflictingBehaviors] of Object.entries(
-		BEHAVIOR_CONFLICTS,
-	)) {
-		const selected = capabilities.behaviors.filter((b) =>
-			conflictingBehaviors.includes(b),
-		);
+	for (const [group, conflictingBehaviors] of Object.entries(BEHAVIOR_CONFLICTS)) {
+		const selected = capabilities.behaviors.filter((b) => conflictingBehaviors.includes(b));
 		if (selected.length > 1) {
-			errors.push(
-				`Conflicting behaviors in ${group}: ${selected.join(", ")} (pick only one)`,
-			);
+			errors.push(`Conflicting behaviors in ${group}: ${selected.join(", ")} (pick only one)`);
 		}
 	}
 
@@ -276,9 +265,7 @@ export function validateCapabilities(
  * Get the conflicting behavior for a given behavior.
  * Returns undefined if no conflict exists.
  */
-export function getConflictingBehavior(
-	behavior: CCLBehavior,
-): CCLBehavior | undefined {
+export function getConflictingBehavior(behavior: CCLBehavior): CCLBehavior | undefined {
 	for (const conflictingBehaviors of Object.values(BEHAVIOR_CONFLICTS)) {
 		if (conflictingBehaviors.includes(behavior)) {
 			return conflictingBehaviors.find((b) => b !== behavior);

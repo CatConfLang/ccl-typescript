@@ -73,9 +73,7 @@ $effect(() => {
 				tooltip: {
 					callbacks: {
 						label: (context) => {
-							const percentage = Math.round(
-								(context.parsed / stats.totalTests) * 100,
-							);
+							const percentage = Math.round((context.parsed / stats.totalTests) * 100);
 							return `${context.label}: ${context.parsed} tests (${percentage}%)`;
 						},
 					},
@@ -149,17 +147,11 @@ $effect(() => {
 // Calculate some derived statistics
 const totalCategories = $derived(Object.keys(stats.categories).length);
 const totalFunctions = $derived(Object.keys(stats.functions).length);
-const avgTestsPerCategory = $derived(
-	Math.round(stats.totalTests / totalCategories),
-);
-const avgAssertionsPerTest = $derived(
-	(stats.totalAssertions / stats.totalTests).toFixed(1),
-);
+const avgTestsPerCategory = $derived(Math.round(stats.totalTests / totalCategories));
+const avgAssertionsPerTest = $derived((stats.totalAssertions / stats.totalTests).toFixed(1));
 
 // Find most/least tested categories
-const categoryEntries = $derived(
-	Object.entries(stats.categories).sort((a, b) => b[1] - a[1]),
-);
+const categoryEntries = $derived(Object.entries(stats.categories).sort((a, b) => b[1] - a[1]));
 const mostTestedCategory = $derived(categoryEntries[0]);
 const leastTestedCategory = $derived(categoryEntries.at(-1));
 </script>

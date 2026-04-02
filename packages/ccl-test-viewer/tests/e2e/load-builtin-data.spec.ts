@@ -9,14 +9,10 @@ test.describe("Load Built-in Data Button", () => {
 		});
 	});
 
-	test("loads built-in data on first click and shows success message", async ({
-		page,
-	}) => {
+	test("loads built-in data on first click and shows success message", async ({ page }) => {
 		// Step 1: Navigate to upload page
 		await page.goto("/upload");
-		await expect(
-			page.getByRole("heading", { name: "Load Test Data" }),
-		).toBeVisible();
+		await expect(page.getByRole("heading", { name: "Load Test Data" })).toBeVisible();
 
 		// Step 2: Verify initial state - no data summary should be visible
 		await expect(page.getByText("Combined Data Summary")).not.toBeVisible();
@@ -40,15 +36,9 @@ test.describe("Load Built-in Data Button", () => {
 		await expect(page.getByText("Combined Data Summary")).toBeVisible();
 
 		// Step 6: Verify the expected data counts in the data summary section
-		await expect(
-			page.getByText("366").and(page.locator(".text-2xl")),
-		).toBeVisible(); // Total Tests
-		await expect(
-			page.getByText("630").and(page.locator(".text-2xl")),
-		).toBeVisible(); // Total Assertions
-		await expect(
-			page.getByText("12").and(page.locator(".text-2xl")),
-		).toBeVisible(); // Categories
+		await expect(page.getByText("366").and(page.locator(".text-2xl"))).toBeVisible(); // Total Tests
+		await expect(page.getByText("630").and(page.locator(".text-2xl"))).toBeVisible(); // Total Assertions
+		await expect(page.getByText("12").and(page.locator(".text-2xl"))).toBeVisible(); // Categories
 		await expect(page.getByText("1 of 1 source active")).toBeVisible(); // Active Sources
 
 		// Step 7: The Getting Started section may still be visible as it's shown for guidance
@@ -61,9 +51,7 @@ test.describe("Load Built-in Data Button", () => {
 		});
 	});
 
-	test("shows 'already loaded' message on subsequent clicks", async ({
-		page,
-	}) => {
+	test("shows 'already loaded' message on subsequent clicks", async ({ page }) => {
 		// Step 1: Navigate to upload page and load data first
 		await page.goto("/upload");
 		const loadBuiltinButton = page.getByRole("button", {
@@ -83,32 +71,24 @@ test.describe("Load Built-in Data Button", () => {
 		await loadBuiltinButton.click();
 
 		// Step 4: Verify the "already loaded" message appears
-		await expect(page.getByText("Built-in data is already loaded")).toBeVisible(
-			{
-				timeout: 1000,
-			},
-		);
+		await expect(page.getByText("Built-in data is already loaded")).toBeVisible({
+			timeout: 1000,
+		});
 
 		// Step 5: Verify data summary is still present and unchanged
 		await expect(page.getByText("Combined Data Summary")).toBeVisible();
-		await expect(
-			page.getByText("366").and(page.locator(".text-2xl")),
-		).toBeVisible(); // Total Tests count unchanged
+		await expect(page.getByText("366").and(page.locator(".text-2xl"))).toBeVisible(); // Total Tests count unchanged
 
 		// Step 6: Wait for the "already loaded" message to disappear
-		await expect(
-			page.getByText("Built-in data is already loaded"),
-		).not.toBeVisible({
+		await expect(page.getByText("Built-in data is already loaded")).not.toBeVisible({
 			timeout: 4000,
 		});
 
 		// Step 7: Click the button a third time to ensure consistent behavior
 		await loadBuiltinButton.click();
-		await expect(page.getByText("Built-in data is already loaded")).toBeVisible(
-			{
-				timeout: 1000,
-			},
-		);
+		await expect(page.getByText("Built-in data is already loaded")).toBeVisible({
+			timeout: 1000,
+		});
 	});
 
 	test("button is disabled during processing", async ({ page }) => {
@@ -151,12 +131,8 @@ test.describe("Load Built-in Data Button", () => {
 		await expect(page.getByText("Combined Data Summary")).toBeVisible();
 
 		// Step 2: Navigate to browse page
-		await page
-			.getByRole("button", { name: /browse and filter test cases/i })
-			.click();
-		await expect(
-			page.getByRole("heading", { name: "Browse Tests" }),
-		).toBeVisible();
+		await page.getByRole("button", { name: /browse and filter test cases/i }).click();
+		await expect(page.getByRole("heading", { name: "Browse Tests" })).toBeVisible();
 
 		// Step 3: Wait for data to load and verify built-in tests are visible
 		await expect(page.getByText("Loading test data...")).not.toBeVisible({
@@ -164,9 +140,7 @@ test.describe("Load Built-in Data Button", () => {
 		});
 
 		// Verify we can see test cards (should be many from the built-in data)
-		const testCards = page.locator(
-			'[role="button"][aria-label*="View test case"]',
-		);
+		const testCards = page.locator('[role="button"][aria-label*="View test case"]');
 		await expect(testCards.first()).toBeVisible({ timeout: 5000 });
 
 		// Step 4: Navigate back to upload page
@@ -176,18 +150,14 @@ test.describe("Load Built-in Data Button", () => {
 			await overlay.click();
 		}
 
-		await page
-			.getByRole("button", { name: /upload json test data files/i })
-			.click();
+		await page.getByRole("button", { name: /upload json test data files/i }).click();
 
 		// Step 5: Verify data is still loaded (Combined Data Summary visible)
 		await expect(page.getByText("Combined Data Summary")).toBeVisible();
 
 		// Step 6: Verify clicking the button again shows "already loaded"
 		await loadBuiltinButton.click();
-		await expect(
-			page.getByText("Built-in data is already loaded"),
-		).toBeVisible();
+		await expect(page.getByText("Built-in data is already loaded")).toBeVisible();
 	});
 
 	test("button has proper accessibility attributes", async ({ page }) => {
@@ -254,10 +224,7 @@ test.describe("Load Built-in Data Button", () => {
 		});
 
 		// Step 6: Verify mobile layout doesn't break
-		const buttonContainer = page
-			.locator("div")
-			.filter({ hasText: "Load Built-in Data" })
-			.first();
+		const buttonContainer = page.locator("div").filter({ hasText: "Load Built-in Data" }).first();
 		await expect(buttonContainer).toBeVisible();
 	});
 
@@ -277,21 +244,15 @@ test.describe("Load Built-in Data Button", () => {
 		await expect(page.getByText("Combined Data Summary")).toBeVisible();
 
 		// Should either show initial success message or "already loaded" message
-		const successMessage = page.getByText(
-			"Loaded built-in data: 366 tests across 12 categories",
-		);
-		const alreadyLoadedMessage = page.getByText(
-			"Built-in data is already loaded",
-		);
+		const successMessage = page.getByText("Loaded built-in data: 366 tests across 12 categories");
+		const alreadyLoadedMessage = page.getByText("Built-in data is already loaded");
 
 		await expect(successMessage.or(alreadyLoadedMessage)).toBeVisible({
 			timeout: 5000,
 		});
 
 		// Step 4: Verify data count is correct (not duplicated)
-		await expect(
-			page.getByText("366").and(page.locator(".text-2xl")),
-		).toBeVisible(); // Total Tests
+		await expect(page.getByText("366").and(page.locator(".text-2xl"))).toBeVisible(); // Total Tests
 		await expect(page.getByText("1 of 1 source active")).toBeVisible(); // Active Sources (should be 1, not 3)
 	});
 });

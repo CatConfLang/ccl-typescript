@@ -5,6 +5,7 @@
  * @example
  * ```bash
  * # Download to default location (./ccl-test-data)
+ * # Uses version from .version file if it exists, otherwise latest
  * npx ccl-download-tests
  *
  * # Download to custom location
@@ -16,6 +17,9 @@
  * # Download specific version
  * npx ccl-download-tests --version v1.0.0
  *
+ * # Always download the latest release, ignoring any pinned .version file
+ * npx ccl-download-tests --latest
+ *
  * # Download JSON schema only
  * npx ccl-download-tests schema --output ./schemas
  * ```
@@ -26,15 +30,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { defineCommand, runMain } from "citty";
 import consola from "consola";
 import { download } from "dill-cli";
+import { call, createScope, type Operation, spawn, type Task, useAbortSignal } from "effection";
 import { join } from "pathe";
-import {
-	type Operation,
-	type Task,
-	call,
-	createScope,
-	spawn,
-	useAbortSignal,
-} from "effection";
 import { runOperation } from "./structuredConcurrency.js";
 
 const GITHUB_API_BASE = "https://api.github.com";
@@ -71,8 +68,10 @@ export interface DownloadOptions {
 	outputDir: string;
 	/** Force download even if files exist */
 	force?: boolean;
-	/** Specific version tag to download (default: latest) */
+	/** Specific version tag to download */
 	version?: string;
+	/** Always fetch the latest release, ignoring any .version file */
+	latest?: boolean;
 }
 
 /**
@@ -107,9 +106,7 @@ function* fetchJson<T>(url: string): Operation<T> {
 	);
 
 	if (!response.ok) {
-		throw new Error(
-			`Failed to fetch ${url}: ${response.status} ${response.statusText}`,
-		);
+		throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
 	}
 
 	return (yield* call(() => response.json())) as T;
@@ -127,19 +124,32 @@ function* getReleaseByTagOp(tag: string): Operation<Release> {
 	);
 }
 
-function* downloadTestDataOp(
-	options: DownloadOptions,
-): Operation<DownloadResult> {
-	const { outputDir, force = false, version } = options;
+function* downloadTestDataOp(options: DownloadOptions): Operation<DownloadResult> {
+	const { outputDir, force = false, version, latest = false } = options;
 
-	const release = version
-		? yield* getReleaseByTagOp(version)
-		: yield* getLatestReleaseOp();
+	const versionFile = join(outputDir, ".version");
+
+	// Determine which release to fetch:
+	// 1. Explicit --version tag takes priority
+	// 2. --latest always fetches the latest release
+	// 3. Otherwise, read .version file from the output directory if it exists
+	// 4. Fall back to latest
+	let release: Release;
+	if (version) {
+		release = yield* getReleaseByTagOp(version);
+	} else if (latest) {
+		release = yield* getLatestReleaseOp();
+	} else if (existsSync(versionFile)) {
+		const pinnedVersion = yield* call(() => readFile(versionFile, "utf-8"));
+		consola.info(`Using version ${pinnedVersion.trim()} from ${versionFile}`);
+		release = yield* getReleaseByTagOp(pinnedVersion.trim());
+	} else {
+		release = yield* getLatestReleaseOp();
+	}
 
 	yield* call(() => mkdir(outputDir, { recursive: true }));
 
-	// Check if we have a version marker file
-	const versionFile = join(outputDir, ".version");
+	// Check if we already have this version
 	if (!force && existsSync(versionFile)) {
 		const existingVersion = yield* call(() => readFile(versionFile, "utf-8"));
 		if (existingVersion.trim() === release.tag_name) {
@@ -154,14 +164,10 @@ function* downloadTestDataOp(
 
 	const jsonAssets = release.assets.filter(
 		(asset) =>
-			asset.name.endsWith(".json") &&
-			!asset.name.includes("zip") &&
-			asset.name !== "SHA256SUMS",
+			asset.name.endsWith(".json") && !asset.name.includes("zip") && asset.name !== "SHA256SUMS",
 	);
 
-	consola.start(
-		`Downloading ${jsonAssets.length} test files from release ${release.tag_name}...`,
-	);
+	consola.start(`Downloading ${jsonAssets.length} test files from release ${release.tag_name}...`);
 
 	// Spawn parallel downloads — if any fails, the scope cancels the rest
 	const tasks: Task<void>[] = [];
@@ -220,9 +226,7 @@ function* downloadSchemaOp(outputDir: string): Operation<void> {
  * Downloads the generated test JSON files from the specified release
  * (or latest if not specified) in parallel using dill.
  */
-export async function downloadTestData(
-	options: DownloadOptions,
-): Promise<DownloadResult> {
+export async function downloadTestData(options: DownloadOptions): Promise<DownloadResult> {
 	return runOperation(function* () {
 		return yield* downloadTestDataOp(options);
 	});
@@ -295,17 +299,30 @@ const main = defineCommand({
 		version: {
 			type: "string",
 			alias: "v",
-			description: "Specific version tag to download (default: latest)",
+			description: "Specific version tag to download (mutually exclusive with --latest)",
+		},
+		latest: {
+			type: "boolean",
+			alias: "l",
+			description:
+				"Download the latest release, ignoring any pinned .version file (mutually exclusive with --version)",
+			default: false,
 		},
 	},
 	subCommands: {
 		schema: schemaCommand,
 	},
 	async run({ args }) {
+		if (args.version !== undefined && args.latest) {
+			consola.error("--version and --latest are mutually exclusive");
+			process.exit(1);
+		}
+
 		const result = await cliScope.run(function* () {
 			return yield* downloadTestDataOp({
 				outputDir: args.output,
 				force: args.force,
+				latest: args.latest,
 				...(args.version !== undefined && { version: args.version }),
 			});
 		});

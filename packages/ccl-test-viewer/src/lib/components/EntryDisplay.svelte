@@ -17,12 +17,8 @@ function visualizeWhitespace(s: string): string {
 		.replace(/(?<!\r)\n/g, "¶\n"); // LF
 }
 
-const displayKey = $derived(
-	entry.key ? visualizeWhitespace(entry.key) : "(empty)",
-);
-const displayValue = $derived(
-	entry.value ? visualizeWhitespace(entry.value) : "(empty)",
-);
+const displayKey = $derived(entry.key ? visualizeWhitespace(entry.key) : "(empty)");
+const displayValue = $derived(entry.value ? visualizeWhitespace(entry.value) : "(empty)");
 </script>
 
 <div class="entry-display font-mono text-sm leading-5">

@@ -2,10 +2,8 @@ import adapter from "@sveltejs/adapter-static";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 // Detect build environment
-const isTauriBuild =
-	process.env.TAURI_BUILD === "true" || process.env.BUILD_TARGET === "tauri";
-const _isNetlifyBuild =
-	process.env.NETLIFY === "true" || process.env.BUILD_TARGET === "netlify";
+const isTauriBuild = process.env.TAURI_BUILD === "true" || process.env.BUILD_TARGET === "tauri";
+const _isNetlifyBuild = process.env.NETLIFY === "true" || process.env.BUILD_TARGET === "netlify";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -50,7 +48,7 @@ const config = {
 			: undefined,
 		// Prerender configuration
 		prerender: {
-			handleHttpError: ({ path, referrer, message }) => {
+			handleHttpError: ({ path, message }) => {
 				// Ignore common 404s in production builds
 				if (path === "/favicon.ico" || path.startsWith("/apple-touch-icon")) {
 					return;

@@ -4,14 +4,7 @@
 import type { CCLFunction } from "./types.js";
 
 export interface FunctionSpecificResult {
-	type:
-		| "entries"
-		| "object"
-		| "hierarchy"
-		| "value"
-		| "list"
-		| "error"
-		| "placeholder";
+	type: "entries" | "object" | "hierarchy" | "value" | "list" | "error" | "placeholder";
 	content: unknown;
 	language: string;
 	metadata: {
@@ -25,10 +18,7 @@ export interface FunctionSpecificResult {
 }
 
 // Function implementation status
-export const FUNCTION_STATUS: Record<
-	CCLFunction,
-	"implemented" | "planned" | "experimental"
-> = {
+export const FUNCTION_STATUS: Record<CCLFunction, "implemented" | "planned" | "experimental"> = {
 	parse: "implemented",
 	parse_value: "planned",
 	filter: "planned",

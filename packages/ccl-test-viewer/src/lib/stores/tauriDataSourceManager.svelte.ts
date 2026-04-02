@@ -56,9 +56,7 @@ class TauriDataSourceManager {
 	// Combined data sources (existing + local)
 	get allDataSources() {
 		const existingSources = dataSourceManager.dataSources;
-		const localSourcesAsDataSources = this._localSources.map(
-			this.localToDataSource,
-		);
+		const localSourcesAsDataSources = this._localSources.map(this.localToDataSource);
 		return [...existingSources, ...localSourcesAsDataSources];
 	}
 
@@ -74,8 +72,7 @@ class TauriDataSourceManager {
 		}
 
 		const sourceId = `local-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-		const sourceName =
-			name || `Local Files - ${new Date().toLocaleDateString()}`;
+		const sourceName = name || `Local Files - ${new Date().toLocaleDateString()}`;
 
 		const localSource: LocalDataSource = {
 			id: sourceId,
@@ -197,9 +194,7 @@ class TauriDataSourceManager {
 			const dataSource = this.localToDataSource(localSource);
 
 			// Check if already exists in main manager
-			const existing = dataSourceManager.dataSources.find(
-				(ds) => ds.id === dataSource.id,
-			);
+			const existing = dataSourceManager.dataSources.find((ds) => ds.id === dataSource.id);
 			if (!existing) {
 				// Add to main manager (this will trigger UI updates)
 				await dataSourceManager.processUploadedFiles(
@@ -243,10 +238,7 @@ class TauriDataSourceManager {
 		// Generate basic stats
 		const stats: import("./dataSource").DataSource["stats"] = {
 			totalTests: allTests.length,
-			totalAssertions: allTests.reduce(
-				(sum, test) => sum + (test.expected?.count || 0),
-				0,
-			),
+			totalAssertions: allTests.reduce((sum, test) => sum + (test.expected?.count || 0), 0),
 			categories: {},
 			functions: {},
 			features: {},
@@ -293,13 +285,9 @@ class TauriDataSourceManager {
 		totalSize: number;
 		lastSync: Date | null;
 	} {
-		const totalFiles = this._localSources.reduce(
-			(sum, source) => sum + source.files.length,
-			0,
-		);
+		const totalFiles = this._localSources.reduce((sum, source) => sum + source.files.length, 0);
 		const totalSize = this._localSources.reduce(
-			(sum, source) =>
-				sum + source.files.reduce((fileSum, file) => fileSum + file.size, 0),
+			(sum, source) => sum + source.files.reduce((fileSum, file) => fileSum + file.size, 0),
 			0,
 		);
 

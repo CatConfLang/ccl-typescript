@@ -1,8 +1,4 @@
-import {
-	PackageJsonProperties,
-	PackageJsonSorted,
-	type PolicyConfig,
-} from "repopo";
+import { PackageJsonProperties, PackageJsonSorted, type PolicyConfig } from "repopo";
 
 const config: PolicyConfig = {
 	policies: [
@@ -18,5 +14,4 @@ const config: PolicyConfig = {
 	],
 };
 
-// biome-ignore lint/style/noDefaultExport: config file
 export default config;
