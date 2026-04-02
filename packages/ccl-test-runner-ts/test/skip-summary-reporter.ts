@@ -148,13 +148,11 @@ export default class SkipSummaryReporter implements Reporter {
 
 		for (const [detail, count] of sortedDetails) {
 			const truncatedDetail = detail.length > 40 ? `${detail.slice(0, 37)}...` : detail;
-			console.log("│" + `    └─ ${truncatedDetail}`.padEnd(50) + `${count}`.padStart(10) + "  │");
+			console.log(`│${`    └─ ${truncatedDetail}`.padEnd(50)}${`${count}`.padStart(10)}  │`);
 		}
 
 		if (details.size > 5) {
-			console.log(
-				"│" + `    └─ ... and ${details.size - 5} more`.padEnd(50) + "".padStart(10) + "  │",
-			);
+			console.log(`│${`    └─ ... and ${details.size - 5} more`.padEnd(50)}${"".padStart(10)}  │`);
 		}
 	}
 
@@ -165,7 +163,7 @@ export default class SkipSummaryReporter implements Reporter {
 		console.log(`├${"─".repeat(62)}┤`);
 		console.log(`│${"  Passed".padEnd(50)}${`${this.passedCount}`.padStart(10)}  │`);
 		console.log(`│${"  Failed".padEnd(50)}${`${this.failedCount}`.padStart(10)}  │`);
-		console.log("│" + "  Skipped".padEnd(50) + `${this.skippedCount}`.padStart(10) + "  │");
+		console.log(`│${"  Skipped".padEnd(50)}${`${this.skippedCount}`.padStart(10)}  │`);
 		console.log(`│${"  Todo".padEnd(50)}${`${this.todoCount}`.padStart(10)}  │`);
 		console.log(`├${"─".repeat(62)}┤`);
 
@@ -218,7 +216,7 @@ export default class SkipSummaryReporter implements Reporter {
 
 		if (!hasSkipDetails && this.skippedCount > 0) {
 			console.log(
-				"│" + "  Skipped (no reason)".padEnd(50) + `${this.skippedCount}`.padStart(10) + "  │",
+				`│${"  Skipped (no reason)".padEnd(50)}${`${this.skippedCount}`.padStart(10)}  │`,
 			);
 		}
 
