@@ -83,11 +83,14 @@
 			}
 		},
 		{
-			"includes": ["**/*.svelte"],
+			"includes": ["**/*.svelte", "**/*.svelte.ts"],
 			"linter": {
 				"rules": {
 					"style": {
-						"noDefaultExport": "off"
+						"noDefaultExport": "off",
+						// Svelte 5 $bindable() props require `let` destructuring;
+						// biome incorrectly rewrites them to `const` causing build failures.
+						"useConst": "off"
 					},
 					"correctness": {
 						"noUnusedVariables": "off",
