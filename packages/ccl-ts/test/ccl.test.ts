@@ -147,8 +147,10 @@ describe("CCL", async () => {
 
 				switch (categorization.type) {
 					case "skip":
-						// Function or feature not supported - skip
-						test.skip(testCase.name, () => {});
+						// Function or feature not supported - skip with reason
+						test(testCase.name, (ctx) => {
+							ctx.skip(categorization.reason);
+						});
 						break;
 
 					case "todo":
