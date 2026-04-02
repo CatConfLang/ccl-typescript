@@ -63,8 +63,6 @@ function preprocessInput(input: string): string {
 		result = result.replace(/\r\n/g, "\n");
 	}
 
-	// Note: tabs_to_spaces is applied AFTER parsing, not here
-
 	return result;
 }
 
@@ -74,15 +72,9 @@ function preprocessInput(input: string): string {
 function postprocessValue(value: string): string {
 	let result = value;
 
-	// With loose_spacing, trim leading tabs in addition to spaces
-	// (the parse function only trims leading spaces)
-	if (capabilities.behaviors.includes("loose_spacing")) {
+	// tabs_as_whitespace: tabs count as whitespace — strip leading tabs and convert to spaces
+	if (capabilities.behaviors.includes("tabs_as_whitespace")) {
 		result = result.replace(/^[\t]+/, "");
-	}
-
-	// Convert tabs to spaces if behavior is enabled
-	// Note: Test data uses 2-space tabs, but spec says single space
-	if (capabilities.behaviors.includes("tabs_to_spaces")) {
 		result = result.replace(/\t/g, "  ");
 	}
 

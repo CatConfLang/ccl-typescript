@@ -442,11 +442,10 @@ function preprocessInput(input: string, capabilities: ImplementationCapabilities
 function postprocessValue(value: string, capabilities: ImplementationCapabilities): string {
 	let result = value;
 
-	if (capabilities.behaviors.includes("loose_spacing")) {
+	if (capabilities.behaviors.includes("tabs_as_whitespace")) {
+		// tabs_as_whitespace: tabs count as whitespace, strip leading tabs
 		result = result.replace(LEADING_TABS_REGEX, "");
-	}
-
-	if (capabilities.behaviors.includes("tabs_to_spaces")) {
+		// Convert remaining tabs to spaces
 		result = result.replace(TAB_REGEX, "  ");
 	}
 

@@ -92,7 +92,7 @@ describe("validateCapabilities", () => {
 			version: "1.0.0",
 			functions: [],
 			features: [],
-			behaviors: ["tabs_preserve", "tabs_to_spaces"] as const,
+			behaviors: ["tabs_as_content", "tabs_as_whitespace"] as const,
 			variant: "proposed_behavior" as const,
 		};
 
@@ -113,7 +113,7 @@ describe("validateCapabilities", () => {
 			version: "1.0.0",
 			functions: [],
 			features: [],
-			behaviors: ["boolean_strict", "boolean_lenient", "tabs_preserve", "tabs_to_spaces"] as const,
+			behaviors: ["boolean_strict", "boolean_lenient", "tabs_as_content", "tabs_as_whitespace"] as const,
 			variant: "proposed_behavior" as const,
 		};
 
@@ -142,13 +142,18 @@ describe("getConflictingBehavior", () => {
 	});
 
 	it("should return conflicting behavior for tab options", () => {
-		expect(getConflictingBehavior("tabs_preserve")).toBe("tabs_to_spaces");
-		expect(getConflictingBehavior("tabs_to_spaces")).toBe("tabs_preserve");
+		expect(getConflictingBehavior("tabs_as_content")).toBe("tabs_as_whitespace");
+		expect(getConflictingBehavior("tabs_as_whitespace")).toBe("tabs_as_content");
 	});
 
-	it("should return conflicting behavior for spacing options", () => {
-		expect(getConflictingBehavior("strict_spacing")).toBe("loose_spacing");
-		expect(getConflictingBehavior("loose_spacing")).toBe("strict_spacing");
+	it("should return conflicting behavior for delimiter options", () => {
+		expect(getConflictingBehavior("delimiter_first_equals")).toBe("delimiter_prefer_spaced");
+		expect(getConflictingBehavior("delimiter_prefer_spaced")).toBe("delimiter_first_equals");
+	});
+
+	it("should return conflicting behavior for indent style options", () => {
+		expect(getConflictingBehavior("indent_spaces")).toBe("indent_tabs");
+		expect(getConflictingBehavior("indent_tabs")).toBe("indent_spaces");
 	});
 
 	it("should return conflicting behavior for list coercion options", () => {
@@ -168,10 +173,12 @@ describe("Constants exports", () => {
 		expect(Behavior.BooleanLenient).toBe("boolean_lenient");
 		expect(Behavior.CRLFPreserve).toBe("crlf_preserve_literal");
 		expect(Behavior.CRLFNormalize).toBe("crlf_normalize_to_lf");
-		expect(Behavior.TabsPreserve).toBe("tabs_preserve");
-		expect(Behavior.TabsToSpaces).toBe("tabs_to_spaces");
-		expect(Behavior.StrictSpacing).toBe("strict_spacing");
-		expect(Behavior.LooseSpacing).toBe("loose_spacing");
+		expect(Behavior.TabsAsContent).toBe("tabs_as_content");
+		expect(Behavior.TabsAsWhitespace).toBe("tabs_as_whitespace");
+		expect(Behavior.DelimiterFirstEquals).toBe("delimiter_first_equals");
+		expect(Behavior.DelimiterPreferSpaced).toBe("delimiter_prefer_spaced");
+		expect(Behavior.IndentSpaces).toBe("indent_spaces");
+		expect(Behavior.IndentTabs).toBe("indent_tabs");
 		expect(Behavior.ListCoercionEnabled).toBe("list_coercion_enabled");
 		expect(Behavior.ListCoercionDisabled).toBe("list_coercion_disabled");
 		expect(Behavior.ArrayOrderInsertion).toBe("array_order_insertion");
@@ -223,8 +230,8 @@ describe("Capability Filtering", () => {
 			behaviors: [
 				"boolean_lenient", // We use lenient
 				"crlf_normalize_to_lf",
-				"tabs_to_spaces",
-				"loose_spacing",
+				"tabs_as_content",
+				"delimiter_first_equals",
 				"list_coercion_disabled",
 			],
 			variant: "proposed_behavior",

@@ -29,6 +29,8 @@ features:
 behaviors:
   - boolean_lenient
   - crlf_normalize_to_lf
+  - tabs_as_content
+  - delimiter_first_equals
   - list_coercion_disabled
 
 # Optional: Specification variant

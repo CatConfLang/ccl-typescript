@@ -111,8 +111,8 @@ const cclConfig = defineCCLTests({
 	behaviors: [
 		Behavior.BooleanLenient,
 		Behavior.CRLFPreserve,
-		Behavior.TabsPreserve,
-		Behavior.StrictSpacing,
+		Behavior.TabsAsContent,
+		Behavior.DelimiterFirstEquals,
 		Behavior.ListCoercionDisabled,
 		Behavior.ToplevelIndentPreserve,
 	],

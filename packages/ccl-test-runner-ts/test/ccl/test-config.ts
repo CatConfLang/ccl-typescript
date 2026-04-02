@@ -48,12 +48,6 @@ export const STUB_PARSER_SKIP_TESTS: string[] = [
 	"complex_multi_newline_whitespace_parse",
 	// Nested list parsing
 	"deeply_nested_list_parse",
-	// Whitespace/tab handling edge cases
-	"spacing_loose_mixed_whitespace_parse",
-	"tabs_to_spaces_in_value_parse",
-	"spacing_and_tabs_combined_loose_to_spaces_parse",
-	"tabs_to_spaces_leading_tab_parse",
-	"tabs_to_spaces_multiple_tabs_parse",
 	// Round-trip normalization
 	"round_trip_whitespace_normalization_parse",
 ];

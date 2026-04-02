@@ -340,7 +340,7 @@ describe("runCCLTest", () => {
 	});
 
 	describe("postprocessing", () => {
-		it("should strip leading tabs when loose_spacing enabled", () => {
+		it("should strip leading tabs and convert to spaces when tabs_as_whitespace enabled", () => {
 			const testCase = createTestCase({
 				inputs: ["key = value"],
 				expected: {
@@ -356,7 +356,7 @@ describe("runCCLTest", () => {
 			const capabilities = createCapabilities({
 				name: "test",
 				functions: ["parse"],
-				behaviors: ["loose_spacing"],
+				behaviors: ["tabs_as_whitespace"],
 			});
 
 			const result = runCCLTest(testCase, functions, capabilities);
@@ -365,7 +365,7 @@ describe("runCCLTest", () => {
 			expect(result.output).toEqual([{ key: "key", value: "hello" }]);
 		});
 
-		it("should convert tabs to spaces when tabs_to_spaces enabled", () => {
+		it("should convert interior tabs to spaces when tabs_as_whitespace enabled", () => {
 			const testCase = createTestCase({
 				inputs: ["key = value"],
 				expected: {
@@ -381,7 +381,7 @@ describe("runCCLTest", () => {
 			const capabilities = createCapabilities({
 				name: "test",
 				functions: ["parse"],
-				behaviors: ["tabs_to_spaces"],
+				behaviors: ["tabs_as_whitespace"],
 			});
 
 			const result = runCCLTest(testCase, functions, capabilities);
