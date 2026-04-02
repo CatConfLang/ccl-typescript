@@ -7,50 +7,25 @@
  * - Regular test execution when all conditions are met
  */
 import { describe, expect, test } from "vitest";
-import {
-	type CCLFunction,
-	createCapabilities,
-	type ImplementationCapabilities,
-} from "../../src/capabilities.js";
+import type { CCLFunction, ImplementationCapabilities } from "../../src/capabilities.js";
+import { loadConfigFileSync } from "../../src/config.js";
 import { getImplementedFunctions, parse } from "../../src/ccl.js";
 import type { TestCase } from "../../src/schema-validation.js";
 import { groupTestsByFunction, loadAllTests, shouldRunTest } from "../../src/test-data.js";
 import type { CCLTestResult } from "../../src/vitest.js";
-import { STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH } from "./test-config.js";
+import { CCL_CONFIG_PATH, STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH } from "./test-config.js";
 
 /**
  * Current implementation capabilities.
- * Update this as you implement more CCL functions.
+ * Loaded from ccl-config.yaml with skip overrides for the stub parser.
  */
-const capabilities: ImplementationCapabilities = createCapabilities({
-	name: "ccl-test-runner-ts",
-	version: "0.1.0",
-	functions: [
-		"parse",
-		// Add more functions here as you implement them:
-		// "build_hierarchy",
-	],
-	features: [
-		// Add supported features here as needed:
-		"comments",
-		"empty_keys",
-		"multiline",
-		"unicode",
-		"whitespace",
-	],
-	behaviors: [
-		"boolean_lenient",
-		"crlf_normalize_to_lf",
-		"tabs_to_spaces",
-		// Note: loose_spacing conflicts with tabs_to_spaces for leading whitespace
-		// tabs_to_spaces expects leading tabs converted to spaces and preserved
-		// loose_spacing removes all leading whitespace, including converted spaces
-		"list_coercion_disabled",
-	],
-	variant: "proposed_behavior",
-	// Tests to skip - these require full CCL parser features not implemented in stub
+const capabilities: ImplementationCapabilities = {
+	...loadConfigFileSync(CCL_CONFIG_PATH, {
+		name: "ccl-test-runner-ts",
+		version: "0.1.0",
+	}),
 	skipTests: STUB_PARSER_SKIP_TESTS,
-});
+};
 
 /**
  * Set of functions that have actual implementations (not stubs).
@@ -88,8 +63,6 @@ function preprocessInput(input: string): string {
 		result = result.replace(/\r\n/g, "\n");
 	}
 
-	// Note: tabs_to_spaces is applied AFTER parsing, not here
-
 	return result;
 }
 
@@ -99,15 +72,9 @@ function preprocessInput(input: string): string {
 function postprocessValue(value: string): string {
 	let result = value;
 
-	// With loose_spacing, trim leading tabs in addition to spaces
-	// (the parse function only trims leading spaces)
-	if (capabilities.behaviors.includes("loose_spacing")) {
+	// tabs_as_whitespace: tabs count as whitespace — strip leading tabs and convert to spaces
+	if (capabilities.behaviors.includes("tabs_as_whitespace")) {
 		result = result.replace(/^[\t]+/, "");
-	}
-
-	// Convert tabs to spaces if behavior is enabled
-	// Note: Test data uses 2-space tabs, but spec says single space
-	if (capabilities.behaviors.includes("tabs_to_spaces")) {
 		result = result.replace(/\t/g, "  ");
 	}
 
@@ -214,7 +181,9 @@ describe("CCL", async () => {
 			for (const testCase of tests) {
 				// Check if the validation function is supported by capabilities
 				if (!isFunctionSupported(validationFn)) {
-					test.skip(testCase.name, () => {});
+					test(testCase.name, (ctx) => {
+						ctx.skip(`function:${validationFn} not supported`);
+					});
 					continue;
 				}
 
@@ -223,7 +192,9 @@ describe("CCL", async () => {
 				const unsupportedFunctions = requiredFunctions.filter((fn) => !isFunctionSupported(fn));
 
 				if (unsupportedFunctions.length > 0) {
-					test.skip(testCase.name, () => {});
+					test(testCase.name, (ctx) => {
+						ctx.skip(`Missing required functions: ${unsupportedFunctions.join(", ")}`);
+					});
 					continue;
 				}
 
@@ -247,7 +218,9 @@ describe("CCL", async () => {
 				const filterResult = shouldRunTest(testCase, capabilities);
 
 				if (!filterResult.shouldRun) {
-					test.skip(testCase.name, () => {});
+					test(testCase.name, (ctx) => {
+						ctx.skip(filterResult.skipReason ?? "Capability mismatch");
+					});
 					continue;
 				}
 

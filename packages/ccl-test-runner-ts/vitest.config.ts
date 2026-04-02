@@ -1,7 +1,7 @@
 import { defineConfig, mergeConfig } from "vitest/config";
 
 import defaultConfig from "../../config/vitest.config";
-import SkipSummaryReporter from "./test/skip-summary-reporter.js";
+import SkipSummaryReporter from "./src/skip-summary-reporter.js";
 
 const config = mergeConfig(
 	defaultConfig,

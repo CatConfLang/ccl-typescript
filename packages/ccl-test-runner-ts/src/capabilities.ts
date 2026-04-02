@@ -81,10 +81,12 @@ export type CCLBehavior =
 	| "boolean_lenient"
 	| "crlf_preserve_literal"
 	| "crlf_normalize_to_lf"
-	| "tabs_preserve"
-	| "tabs_to_spaces"
-	| "strict_spacing"
-	| "loose_spacing"
+	| "tabs_as_content"
+	| "tabs_as_whitespace"
+	| "delimiter_first_equals"
+	| "delimiter_prefer_spaced"
+	| "indent_spaces"
+	| "indent_tabs"
 	| "list_coercion_enabled"
 	| "list_coercion_disabled"
 	| "array_order_insertion"
@@ -104,7 +106,7 @@ export type CCLBehavior =
  *   behaviors: [
  *     Behavior.BooleanLenient,
  *     Behavior.CRLFNormalize,
- *     Behavior.TabsToSpaces,
+ *     Behavior.TabsAsContent,
  *   ],
  * };
  * ```
@@ -119,12 +121,16 @@ export const Behavior = {
 	CRLFNormalize: "crlf_normalize_to_lf",
 
 	// Tab handling
-	TabsPreserve: "tabs_preserve",
-	TabsToSpaces: "tabs_to_spaces",
+	TabsAsContent: "tabs_as_content",
+	TabsAsWhitespace: "tabs_as_whitespace",
 
-	// Spacing
-	StrictSpacing: "strict_spacing",
-	LooseSpacing: "loose_spacing",
+	// Delimiter mode
+	DelimiterFirstEquals: "delimiter_first_equals",
+	DelimiterPreferSpaced: "delimiter_prefer_spaced",
+
+	// Indentation style (output only)
+	IndentSpaces: "indent_spaces",
+	IndentTabs: "indent_tabs",
 
 	// List coercion
 	ListCoercionEnabled: "list_coercion_enabled",
@@ -146,8 +152,9 @@ export const Behavior = {
 export const BEHAVIOR_CONFLICTS: Record<string, CCLBehavior[]> = {
 	boolean: ["boolean_strict", "boolean_lenient"],
 	crlf_handling: ["crlf_preserve_literal", "crlf_normalize_to_lf"],
-	tab_handling: ["tabs_preserve", "tabs_to_spaces"],
-	spacing: ["strict_spacing", "loose_spacing"],
+	tab_handling: ["tabs_as_content", "tabs_as_whitespace"],
+	delimiter_mode: ["delimiter_first_equals", "delimiter_prefer_spaced"],
+	indent_style: ["indent_spaces", "indent_tabs"],
 	list_coercion: ["list_coercion_enabled", "list_coercion_disabled"],
 	array_order: ["array_order_insertion", "array_order_lexicographic"],
 	toplevel_indent: ["toplevel_indent_strip", "toplevel_indent_preserve"],
@@ -193,16 +200,16 @@ export const ALL_VARIANTS: CCLVariant[] = ["proposed_behavior", "reference_compl
  *
  * // Override one behavior
  * const customBehaviors = [
- *   ...DefaultBehaviors.filter(b => b !== Behavior.LooseSpacing),
- *   Behavior.StrictSpacing,
+ *   ...DefaultBehaviors.filter(b => b !== Behavior.DelimiterFirstEquals),
+ *   Behavior.DelimiterPreferSpaced,
  * ];
  * ```
  */
 export const DefaultBehaviors: readonly CCLBehavior[] = [
 	Behavior.BooleanLenient,
 	Behavior.CRLFNormalize,
-	Behavior.TabsToSpaces,
-	Behavior.LooseSpacing,
+	Behavior.TabsAsContent,
+	Behavior.DelimiterFirstEquals,
 	Behavior.ListCoercionDisabled,
 ] as const;
 
@@ -287,8 +294,8 @@ export function getStubCapabilities(): ImplementationCapabilities {
 		behaviors: [
 			"boolean_lenient",
 			"crlf_normalize_to_lf",
-			"tabs_to_spaces",
-			"loose_spacing",
+			"tabs_as_content",
+			"delimiter_first_equals",
 			"list_coercion_disabled",
 		],
 		variant: "proposed_behavior",

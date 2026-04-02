@@ -7,7 +7,7 @@
  */
 
 import { createRequire } from "node:module";
-import { dirname, join } from "pathe";
+import { dirname, join, resolve } from "pathe";
 
 const require = createRequire(import.meta.url);
 
@@ -28,6 +28,12 @@ function resolveTestDataPath(): string {
 export const TEST_DATA_PATH = resolveTestDataPath();
 
 /**
+ * Path to the ccl-config.yaml at the monorepo root.
+ * Declares the full set of capabilities for the TypeScript CCL implementation.
+ */
+export const CCL_CONFIG_PATH = resolve(import.meta.dirname, "../../../../ccl-config.yaml");
+
+/**
  * Tests to skip - these require full CCL parser features not implemented in the stub.
  *
  * The stub parser is intentionally minimal and doesn't handle:
@@ -42,12 +48,6 @@ export const STUB_PARSER_SKIP_TESTS: string[] = [
 	"complex_multi_newline_whitespace_parse",
 	// Nested list parsing
 	"deeply_nested_list_parse",
-	// Whitespace/tab handling edge cases
-	"spacing_loose_mixed_whitespace_parse",
-	"tabs_to_spaces_in_value_parse",
-	"spacing_and_tabs_combined_loose_to_spaces_parse",
-	"tabs_to_spaces_leading_tab_parse",
-	"tabs_to_spaces_multiple_tabs_parse",
 	// Round-trip normalization
 	"round_trip_whitespace_normalization_parse",
 ];

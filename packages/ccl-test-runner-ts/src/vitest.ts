@@ -386,12 +386,16 @@ function buildCapabilities(config: CCLTestConfig): ImplementationCapabilities {
 	const declaredFunctions = getDeclaredFunctionNames(config.functions);
 	const todoFunctions = config.todoFunctions ?? [];
 
-	// Combine declared + explicit todo functions for capability declaration
-	// This makes todo functions show as "todo" (declared but not implemented)
-	// rather than "skip" (not declared at all)
+	// Combine declared + explicit todo + YAML config functions for capability declaration.
+	// Functions from the YAML config that aren't wired up will appear as "todo"
+	// (declared/supported but not yet implemented) rather than "skip" (not supported).
+	const fileFunctions = fileCapabilities?.functions ?? [];
 	const allDeclaredFunctions = [
 		...declaredFunctions,
 		...todoFunctions.filter((fn) => !declaredFunctions.includes(fn)),
+		...fileFunctions.filter(
+			(fn) => !declaredFunctions.includes(fn) && !todoFunctions.includes(fn),
+		),
 	];
 
 	// Inline config values take precedence over YAML file values.
@@ -438,11 +442,10 @@ function preprocessInput(input: string, capabilities: ImplementationCapabilities
 function postprocessValue(value: string, capabilities: ImplementationCapabilities): string {
 	let result = value;
 
-	if (capabilities.behaviors.includes("loose_spacing")) {
+	if (capabilities.behaviors.includes("tabs_as_whitespace")) {
+		// tabs_as_whitespace: tabs count as whitespace, strip leading tabs
 		result = result.replace(LEADING_TABS_REGEX, "");
-	}
-
-	if (capabilities.behaviors.includes("tabs_to_spaces")) {
+		// Convert remaining tabs to spaces
 		result = result.replace(TAB_REGEX, "  ");
 	}
 
@@ -461,17 +464,18 @@ interface ValidationResult {
 }
 
 /**
- * Handle parse validation.
+ * Handle parse or parse_indented validation.
  */
 function handleParseValidation(
 	testCase: TestCase,
 	input: string,
 	functions: CCLFunctions,
 	capabilities: ImplementationCapabilities,
+	functionKey: "parse" | "parse_indented" = "parse",
 ): ValidationResult {
-	const rawFn = functions.parse;
+	const rawFn = functions[functionKey];
 	if (!rawFn) {
-		throw new Error("parse function not implemented");
+		throw new Error(`${functionKey} function not implemented`);
 	}
 
 	const fn = normalizeParseFunction(rawFn);
@@ -1195,6 +1199,16 @@ export function runCCLTest(
 				result = handleParseValidation(testCase, input, functions, capabilities);
 				break;
 
+			case "parse_indented":
+				result = handleParseValidation(
+					testCase,
+					input,
+					functions,
+					capabilities,
+					"parse_indented",
+				);
+				break;
+
 			case "build_hierarchy":
 				result = handleBuildHierarchyValidation(testCase, input, functions);
 				break;
@@ -1507,7 +1521,7 @@ export function defineCCLTests(config: CCLTestConfig): CCLTestConfig {
  * describe('CCL', () => {
  *   for (const { categorization, run } of tests) {
  *     if (categorization.type === 'skip') {
- *       test.skip(categorization.testCase.name, () => {});
+ *       test(categorization.testCase.name, (ctx) => { ctx.skip(categorization.reason); });
  *     } else if (categorization.type === 'todo') {
  *       test.todo(categorization.testCase.name);
  *     } else {

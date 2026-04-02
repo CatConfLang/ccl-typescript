@@ -7,7 +7,6 @@
  * 3. Tests are automatically generated with proper skip/todo handling
  */
 import { describe, expect, test } from "vitest";
-import { Behavior, Variant } from "../../src/capabilities.js";
 import { parse } from "../../src/ccl.js";
 import {
 	type CCLFunctions,
@@ -15,7 +14,7 @@ import {
 	defineCCLTests,
 	getCCLTestSuiteInfo,
 } from "../../src/vitest.js";
-import { STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH } from "./test-config.js";
+import { CCL_CONFIG_PATH, STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH } from "./test-config.js";
 
 /**
  * Define CCL test configuration.
@@ -29,26 +28,15 @@ const cclConfig = defineCCLTests({
 
 	testDataPath: TEST_DATA_PATH,
 
+	// Load capabilities from ccl-config.yaml; functions declared there but not
+	// wired up below will be marked as "todo" instead of "skip".
+	configPath: CCL_CONFIG_PATH,
+
 	// Wire up only the functions you've implemented
 	functions: {
 		parse, // Using the built-in stub/example implementation
 		// build_hierarchy: buildHierarchy,  // Uncomment as you implement
 	} satisfies CCLFunctions,
-
-	// Explicit feature declarations
-	features: ["comments", "empty_keys", "multiline", "unicode", "whitespace"],
-
-	// Strongly-typed behaviors with IDE autocomplete
-	behaviors: [
-		Behavior.BooleanLenient,
-		Behavior.CRLFNormalize,
-		Behavior.TabsToSpaces,
-		Behavior.LooseSpacing,
-		Behavior.ListCoercionDisabled,
-	],
-
-	// Explicit variant choice
-	variant: Variant.ProposedBehavior,
 
 	// Tests to skip - these require full CCL parser features not implemented in stub
 	skipTests: STUB_PARSER_SKIP_TESTS,
@@ -78,8 +66,10 @@ describe("CCL (Declarative API)", async () => {
 
 				switch (categorization.type) {
 					case "skip":
-						// Function or feature not supported - skip
-						test.skip(testCase.name, () => {});
+						// Function or feature not supported - skip with reason
+						test(testCase.name, (ctx) => {
+							ctx.skip(categorization.reason);
+						});
 						break;
 
 					case "todo":

@@ -36,6 +36,12 @@
 				"types": "./esm/types.d.ts",
 				"default": "./esm/types.js"
 			}
+		},
+		"./vitest-reporter": {
+			"import": {
+				"types": "./esm/skip-summary-reporter.d.ts",
+				"default": "./esm/skip-summary-reporter.js"
+			}
 		}
 	},
 	"types": "./esm/index.d.ts",

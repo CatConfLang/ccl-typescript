@@ -28,6 +28,7 @@ import {
 	getList,
 	getString,
 	parse,
+	parseIndented,
 	print,
 } from "../src/ccl.js";
 
@@ -87,6 +88,7 @@ const cclConfig = defineCCLTests({
 	// Note: Stubs that throw "Not yet implemented" are auto-detected as todo
 	functions: {
 		parse,
+		parse_indented: parseIndented,
 		build_hierarchy: buildHierarchy,
 		get_string: getString,
 		get_int: getInt,
@@ -111,8 +113,8 @@ const cclConfig = defineCCLTests({
 	behaviors: [
 		Behavior.BooleanLenient,
 		Behavior.CRLFPreserve,
-		Behavior.TabsPreserve,
-		Behavior.StrictSpacing,
+		Behavior.TabsAsContent,
+		Behavior.DelimiterFirstEquals,
 		Behavior.ListCoercionDisabled,
 		Behavior.ToplevelIndentPreserve,
 	],
@@ -147,8 +149,10 @@ describe("CCL", async () => {
 
 				switch (categorization.type) {
 					case "skip":
-						// Function or feature not supported - skip
-						test.skip(testCase.name, () => {});
+						// Function or feature not supported - skip with reason
+						test(testCase.name, (ctx) => {
+							ctx.skip(categorization.reason);
+						});
 						break;
 
 					case "todo":

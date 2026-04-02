@@ -68,7 +68,7 @@ describe("dataMerger", () => {
 				expected: { count: 1 },
 				functions: ["parse"],
 				features: ["comments"],
-				behaviors: ["strict_spacing"],
+				behaviors: ["delimiter_first_equals"],
 				variants: [],
 				source_test: "test-basic",
 				validation: "standard",
@@ -81,7 +81,7 @@ describe("dataMerger", () => {
 			expect(result.stats.testCount).toBe(1);
 			expect(result.stats.functions).toContain("parse");
 			expect(result.stats.features).toContain("comments");
-			expect(result.stats.behaviors).toContain("strict_spacing");
+			expect(result.stats.behaviors).toContain("delimiter_first_equals");
 		});
 
 		it("warns about invalid array fields", () => {
@@ -124,7 +124,7 @@ describe("dataMerger", () => {
 					expected: { count: 1 },
 					functions: ["parse", "filter"],
 					features: ["unicode"],
-					behaviors: ["strict_spacing"],
+					behaviors: ["delimiter_first_equals"],
 				},
 			];
 
@@ -134,7 +134,7 @@ describe("dataMerger", () => {
 			expect(result.stats.testCount).toBe(2);
 			expect(result.stats.functions).toEqual(expect.arrayContaining(["parse", "filter"]));
 			expect(result.stats.features).toEqual(expect.arrayContaining(["comments", "unicode"]));
-			expect(result.stats.behaviors).toContain("strict_spacing");
+			expect(result.stats.behaviors).toContain("delimiter_first_equals");
 		});
 	});
 
@@ -202,7 +202,7 @@ describe("dataMerger", () => {
 						expected: { count: 3 },
 						functions: ["parse", "filter"],
 						features: ["unicode"],
-						behaviors: ["strict_spacing"],
+						behaviors: ["delimiter_first_equals"],
 						variants: [],
 						source_test: "test2",
 						validation: "standard",
@@ -260,7 +260,7 @@ describe("dataMerger", () => {
 
 		it("counts behaviors across all tests", () => {
 			const stats = calculateStats(mockCategories);
-			expect(stats.behaviors.strict_spacing).toBe(1);
+			expect(stats.behaviors.delimiter_first_equals).toBe(1);
 		});
 
 		it("handles empty categories array", () => {

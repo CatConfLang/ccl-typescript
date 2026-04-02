@@ -40,8 +40,8 @@ describe("Test Data Loading", () => {
 			behaviors: [
 				"boolean_lenient",
 				"crlf_normalize_to_lf",
-				"tabs_to_spaces",
-				"loose_spacing",
+				"tabs_as_content",
+				"delimiter_first_equals",
 				"list_coercion_disabled",
 			],
 			variant: "proposed_behavior",
