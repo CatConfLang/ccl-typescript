@@ -7,7 +7,7 @@
  */
 
 import { createRequire } from "node:module";
-import { dirname, join } from "pathe";
+import { dirname, join, resolve } from "pathe";
 
 const require = createRequire(import.meta.url);
 
@@ -26,6 +26,12 @@ function resolveTestDataPath(): string {
  * All test files should import this constant instead of hardcoding the path.
  */
 export const TEST_DATA_PATH = resolveTestDataPath();
+
+/**
+ * Path to the ccl-config.yaml at the monorepo root.
+ * Declares the full set of capabilities for the TypeScript CCL implementation.
+ */
+export const CCL_CONFIG_PATH = resolve(import.meta.dirname, "../../../../ccl-config.yaml");
 
 /**
  * Tests to skip - these require full CCL parser features not implemented in the stub.

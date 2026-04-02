@@ -386,12 +386,16 @@ function buildCapabilities(config: CCLTestConfig): ImplementationCapabilities {
 	const declaredFunctions = getDeclaredFunctionNames(config.functions);
 	const todoFunctions = config.todoFunctions ?? [];
 
-	// Combine declared + explicit todo functions for capability declaration
-	// This makes todo functions show as "todo" (declared but not implemented)
-	// rather than "skip" (not declared at all)
+	// Combine declared + explicit todo + YAML config functions for capability declaration.
+	// Functions from the YAML config that aren't wired up will appear as "todo"
+	// (declared/supported but not yet implemented) rather than "skip" (not supported).
+	const fileFunctions = fileCapabilities?.functions ?? [];
 	const allDeclaredFunctions = [
 		...declaredFunctions,
 		...todoFunctions.filter((fn) => !declaredFunctions.includes(fn)),
+		...fileFunctions.filter(
+			(fn) => !declaredFunctions.includes(fn) && !todoFunctions.includes(fn),
+		),
 	];
 
 	// Inline config values take precedence over YAML file values.
@@ -1507,7 +1511,7 @@ export function defineCCLTests(config: CCLTestConfig): CCLTestConfig {
  * describe('CCL', () => {
  *   for (const { categorization, run } of tests) {
  *     if (categorization.type === 'skip') {
- *       test.skip(categorization.testCase.name, () => {});
+ *       test(categorization.testCase.name, (ctx) => { ctx.skip(categorization.reason); });
  *     } else if (categorization.type === 'todo') {
  *       test.todo(categorization.testCase.name);
  *     } else {
