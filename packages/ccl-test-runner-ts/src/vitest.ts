@@ -1046,6 +1046,55 @@ function handleGetListValidation(
 }
 
 /**
+ * CCL comment key prefix. In CCL, comment lines like `/= text` parse as entries
+ * with key "/" and the comment text as the value.
+ */
+const CCL_COMMENT_KEY = "/";
+
+/**
+ * Handle filter validation.
+ *
+ * Filter tests parse the input, then filter the resulting entries using the
+ * implementation's filter function with a predicate that removes comment entries.
+ */
+function handleFilterValidation(
+	testCase: TestCase,
+	input: string,
+	functions: CCLFunctions,
+	capabilities: ImplementationCapabilities,
+): ValidationResult {
+	const rawParseFn = functions.parse;
+	const filterFn = functions.filter;
+	if (!(rawParseFn && filterFn)) {
+		throw new Error("parse and filter functions required");
+	}
+
+	const parseFn = normalizeParseFunction(rawParseFn);
+
+	const parseResult = parseFn(input);
+	if (parseResult.isErr) {
+		throw new Error(`Parse failed: ${parseResult.error.message}`);
+	}
+
+	const filtered = filterFn(parseResult.value, (entry) => entry.key !== CCL_COMMENT_KEY);
+
+	const processedEntries = filtered.map((entry: Entry) => ({
+		key: entry.key,
+		value: postprocessValue(entry.value, capabilities),
+	}));
+
+	const { passed, error } = checkParseExpectations(testCase, processedEntries);
+
+	return {
+		rawOutput: filtered,
+		output: processedEntries,
+		expected: testCase.expected.entries ?? { count: testCase.expected.count },
+		passed,
+		...(error !== undefined && { error }),
+	};
+}
+
+/**
  * Handle print validation.
  */
 function handlePrintValidation(
@@ -1207,6 +1256,10 @@ export function runCCLTest(
 					capabilities,
 					"parse_indented",
 				);
+				break;
+
+			case "filter":
+				result = handleFilterValidation(testCase, input, functions, capabilities);
 				break;
 
 			case "build_hierarchy":

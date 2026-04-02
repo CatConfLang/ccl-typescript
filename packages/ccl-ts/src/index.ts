@@ -28,8 +28,8 @@ import type { AccessError, CCLList, CCLObject, Entry, ParseError, ParseOptions }
 // Result types from true-myth
 export type { Err, Ok } from "true-myth/result";
 export { err, ok, Result } from "true-myth/result";
-// Re-export print directly (it never fails)
-export { print } from "./ccl.js";
+// Re-export functions that never fail directly
+export { filter, print } from "./ccl.js";
 
 // Error classes (usable with both Result and throwing APIs)
 export { CCLAccessError, CCLParseError } from "./errors.js";
