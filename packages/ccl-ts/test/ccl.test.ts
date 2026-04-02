@@ -28,6 +28,7 @@ import {
 	getList,
 	getString,
 	parse,
+	parseIndented,
 	print,
 } from "../src/ccl.js";
 
@@ -87,6 +88,7 @@ const cclConfig = defineCCLTests({
 	// Note: Stubs that throw "Not yet implemented" are auto-detected as todo
 	functions: {
 		parse,
+		parse_indented: parseIndented,
 		build_hierarchy: buildHierarchy,
 		get_string: getString,
 		get_int: getInt,

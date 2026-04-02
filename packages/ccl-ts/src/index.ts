@@ -20,9 +20,10 @@ import {
 	getList as getListInternal,
 	getString as getStringInternal,
 	parse as parseInternal,
+	parseIndented as parseIndentedInternal,
 } from "./ccl.js";
 import { CCLAccessError, CCLParseError } from "./errors.js";
-import type { AccessError, CCLList, CCLObject, Entry, ParseError } from "./types.js";
+import type { AccessError, CCLList, CCLObject, Entry, ParseError, ParseOptions } from "./types.js";
 
 // Result types from true-myth
 export type { Err, Ok } from "true-myth/result";
@@ -42,6 +43,8 @@ export type {
 	CCLValue,
 	Entry,
 	ParseError,
+	ParseOptions,
+	TabHandling,
 } from "./types.js";
 
 /**
@@ -84,8 +87,20 @@ function toAccessError(e: CCLParseError | CCLAccessError): AccessError {
  *
  * @beta
  */
-export function parse(text: string): Result<Entry[], ParseError> {
-	return wrapResult(() => parseInternal(text), toParseError);
+export function parse(text: string, options?: ParseOptions): Result<Entry[], ParseError> {
+	return wrapResult(() => parseInternal(text, options), toParseError);
+}
+
+/**
+ * Parse CCL text with indentation normalization.
+ *
+ * @beta
+ */
+export function parseIndented(
+	text: string,
+	options?: ParseOptions,
+): Result<Entry[], ParseError> {
+	return wrapResult(() => parseIndentedInternal(text, options), toParseError);
 }
 
 /**
@@ -93,8 +108,11 @@ export function parse(text: string): Result<Entry[], ParseError> {
  *
  * @beta
  */
-export function buildHierarchy(entries: Entry[]): Result<CCLObject, ParseError> {
-	return wrapResult(() => buildHierarchyInternal(entries), toParseError);
+export function buildHierarchy(
+	entries: Entry[],
+	options?: ParseOptions,
+): Result<CCLObject, ParseError> {
+	return wrapResult(() => buildHierarchyInternal(entries, options), toParseError);
 }
 
 /**
@@ -147,6 +165,6 @@ export function getList(obj: CCLObject, ...pathParts: string[]): Result<CCLList,
  *
  * @beta
  */
-export function canonicalFormat(input: string): Result<string, ParseError> {
-	return wrapResult(() => canonicalFormatInternal(input), toParseError);
+export function canonicalFormat(input: string, options?: ParseOptions): Result<string, ParseError> {
+	return wrapResult(() => canonicalFormatInternal(input, options), toParseError);
 }

@@ -74,3 +74,26 @@ export interface AccessError {
 	/** Path to the value that caused the error */
 	path: string[];
 }
+
+/**
+ * How the parser treats tab characters.
+ *
+ * - `tabs_as_content`: Only spaces are whitespace; tabs are preserved as content.
+ * - `tabs_as_whitespace`: Both spaces and tabs are treated as whitespace.
+ *
+ * @beta
+ */
+export type TabHandling = "tabs_as_content" | "tabs_as_whitespace";
+
+/**
+ * Options for configuring CCL parsing behavior.
+ *
+ * @beta
+ */
+export interface ParseOptions {
+	/**
+	 * How tab characters are handled during parsing.
+	 * @defaultValue `"tabs_as_content"`
+	 */
+	tabHandling?: TabHandling;
+}

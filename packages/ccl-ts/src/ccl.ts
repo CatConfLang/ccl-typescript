@@ -8,11 +8,27 @@
  */
 
 import { CCLAccessError, CCLParseError } from "./errors.js";
-import type { CCLList, CCLObject, CCLValue, Entry } from "./types.js";
+import type { CCLList, CCLObject, CCLValue, Entry, ParseOptions } from "./types.js";
 
 // Regex patterns for whitespace trimming (top-level for performance)
-const LEADING_WHITESPACE = /^[ \t]+/;
-const TRAILING_WHITESPACE = /[ \t]+$/;
+const LEADING_SPACES_AND_TABS = /^[ \t]+/;
+const LEADING_SPACES_ONLY = /^ +/;
+const TRAILING_SPACES_AND_TABS = /[ \t]+$/;
+const TRAILING_SPACES_ONLY = /[ ]+$/;
+
+/**
+ * Internal resolved options where all fields are required booleans
+ * for efficient branching in hot paths.
+ */
+interface ResolvedParseOptions {
+	tabsAreWhitespace: boolean;
+}
+
+function resolveOptions(options?: ParseOptions): ResolvedParseOptions {
+	return {
+		tabsAreWhitespace: (options?.tabHandling ?? "tabs_as_content") === "tabs_as_whitespace",
+	};
+}
 
 /**
  * Parse CCL text into a flat list of entries.
@@ -31,13 +47,47 @@ const TRAILING_WHITESPACE = /[ \t]+$/;
  *
  * @beta
  */
-export function parse(text: string): Entry[] {
-	const baseline = determineBaseline(text);
+export function parse(text: string, options?: ParseOptions): Entry[] {
+	return parseWithStrategy(text, options, false);
+}
+
+/**
+ * Determine the baseline indentation for parsing.
+ *
+ * Finds the first non-empty line and uses its indentation as the baseline.
+ * This enables correct parsing of both top-level content and nested content
+ * where all entries share a common indentation level.
+ */
+function determineBaseline(text: string, opts: ResolvedParseOptions): number {
+	let pos = 0;
+	while (pos < text.length) {
+		const line = getLineAt(text, pos);
+		if (line === null) {
+			break;
+		}
+		if (!isEmptyLine(line, opts)) {
+			return countLeadingWhitespace(line, opts);
+		}
+		pos = skipLine(text, pos);
+	}
+	return 0;
+}
+
+/**
+ * Core parsing loop parameterized on whether to normalize continuation indentation.
+ */
+function parseWithStrategy(
+	text: string,
+	options: ParseOptions | undefined,
+	stripContinuationIndent: boolean,
+): Entry[] {
+	const opts = resolveOptions(options);
+	const baseline = determineBaseline(text, opts);
 	const entries: Entry[] = [];
 	let pos = 0;
 
 	while (pos < text.length) {
-		const entryResult = getNextEntry(text, pos, baseline);
+		const entryResult = getNextEntry(text, pos, baseline, opts, stripContinuationIndent);
 		if (!entryResult) {
 			break;
 		}
@@ -51,83 +101,76 @@ export function parse(text: string): Entry[] {
 }
 
 /**
- * Determine the baseline indentation for parsing.
- *
- * Finds the first non-empty line and uses its indentation as the baseline.
- * This enables correct parsing of both top-level content and nested content
- * where all entries share a common indentation level.
- */
-function determineBaseline(text: string): number {
-	let pos = 0;
-	while (pos < text.length) {
-		const line = getLineAt(text, pos);
-		if (line === null) {
-			break;
-		}
-		if (!isEmptyLine(line)) {
-			return countLeadingWhitespace(line);
-		}
-		pos = skipLine(text, pos);
-	}
-	return 0;
-}
-
-/**
  * Extract the next entry from the text starting at the given position.
+ *
+ * When `stripContinuationIndent` is true, continuation lines have
+ * the first value line's indentation stripped (for parse_indented behavior).
  */
 function getNextEntry(
 	text: string,
 	startPos: number,
 	baseline: number,
+	opts: ResolvedParseOptions,
+	stripContinuationIndent: boolean,
 ): (Entry & { nextPos: number }) | null {
-	// Find the next '='
 	const eqIndex = text.indexOf("=", startPos);
 	if (eqIndex === -1) {
 		return null;
 	}
 
-	// Extract and trim the key
 	const rawKey = text.slice(startPos, eqIndex);
 	const key = rawKey.replace(/\s+/g, " ").trim();
 
-	// Collect value lines
 	const valueStart = eqIndex + 1;
-	const { valueLines, nextPos } = collectValueLines(text, valueStart, baseline);
+	const { valueLines, nextPos } = collectValueLines(
+		text,
+		valueStart,
+		baseline,
+		opts,
+		stripContinuationIndent,
+	);
 
-	// Build the final value
-	const value = buildValue(valueLines);
+	const value = buildValue(valueLines, opts);
 
 	return { key, value, nextPos };
 }
 
 /**
  * Collect value lines for an entry, handling continuation lines.
+ *
+ * When `stripContinuationIndent` is true, continuation lines have
+ * the first value line's leading whitespace amount stripped.
  */
 function collectValueLines(
 	text: string,
 	startPos: number,
 	baseline: number,
+	opts: ResolvedParseOptions,
+	stripContinuationIndent: boolean,
 ): { valueLines: string[]; nextPos: number } {
 	const valueLines: string[] = [];
 	let pos = startPos;
 
-	// Get the first line of the value
+	// Get the first line of the value. When stripping continuation indent,
+	// measure how much leading whitespace was trimmed from this line.
+	let firstLineIndent = 0;
 	const firstLine = getLineAt(text, pos);
 	if (firstLine !== null) {
-		valueLines.push(trimLeadingSpacesAndTabs(firstLine));
+		if (stripContinuationIndent) {
+			firstLineIndent = countLeadingWhitespace(firstLine, opts);
+		}
+		valueLines.push(trimLeadingWhitespace(firstLine, opts));
 		pos = skipLine(text, pos);
 	}
 
-	// Collect continuation lines
 	while (pos < text.length) {
 		const line = getLineAt(text, pos);
 		if (line === null) {
 			break;
 		}
 
-		if (isEmptyLine(line)) {
-			// Empty line - check if there are more continuation lines
-			if (hasMoreContinuations(text, pos, baseline)) {
+		if (isEmptyLine(line, opts)) {
+			if (hasMoreContinuations(text, pos, baseline, opts)) {
 				valueLines.push("");
 				pos = skipLine(text, pos);
 				continue;
@@ -135,13 +178,13 @@ function collectValueLines(
 			break;
 		}
 
-		const indent = countLeadingWhitespace(line);
+		const indent = countLeadingWhitespace(line, opts);
 		if (indent > baseline) {
-			// Continuation line - preserve full content
-			valueLines.push(line);
+			valueLines.push(
+				stripContinuationIndent ? stripLeadingWhitespace(line, firstLineIndent, opts) : line,
+			);
 			pos = skipLine(text, pos);
 		} else {
-			// New entry begins
 			break;
 		}
 	}
@@ -150,50 +193,89 @@ function collectValueLines(
 }
 
 /**
- * Trim only leading spaces and tabs from a string, preserving \r for CRLF handling.
+ * Trim leading whitespace from a string.
+ * Under tabs_as_content, only spaces are stripped; tabs are preserved.
  */
-function trimLeadingSpacesAndTabs(s: string): string {
-	return s.replace(LEADING_WHITESPACE, "");
+function trimLeadingWhitespace(s: string, opts: ResolvedParseOptions): string {
+	return s.replace(opts.tabsAreWhitespace ? LEADING_SPACES_AND_TABS : LEADING_SPACES_ONLY, "");
 }
 
 /**
- * Trim only trailing spaces and tabs from a string, preserving \r for CRLF handling.
+ * Strip a specific number of leading whitespace characters from a string.
+ * Under tabs_as_content, only spaces count toward the strip count.
  */
-function trimTrailingSpacesAndTabs(s: string): string {
-	return s.replace(TRAILING_WHITESPACE, "");
+function stripLeadingWhitespace(
+	s: string,
+	count: number,
+	opts: ResolvedParseOptions,
+): string {
+	let stripped = 0;
+	let i = 0;
+	while (i < s.length && stripped < count) {
+		if (s[i] === " " || (opts.tabsAreWhitespace && s[i] === "\t")) {
+			stripped++;
+			i++;
+		} else {
+			break;
+		}
+	}
+	return s.slice(i);
+}
+
+/**
+ * Trim trailing whitespace from a string.
+ * Under tabs_as_content, only spaces are stripped; tabs are preserved.
+ */
+function trimTrailingWhitespace(s: string, opts: ResolvedParseOptions): string {
+	return s.replace(opts.tabsAreWhitespace ? TRAILING_SPACES_AND_TABS : TRAILING_SPACES_ONLY, "");
 }
 
 /**
  * Build the final value string from collected lines.
  */
-function buildValue(valueLines: string[]): string {
+function buildValue(valueLines: string[], opts: ResolvedParseOptions): string {
 	if (valueLines.length === 0) {
 		return "";
 	}
 
 	if (valueLines.length === 1) {
-		return trimTrailingSpacesAndTabs(valueLines[0] as string);
+		return trimTrailingWhitespace(valueLines[0] as string, opts);
 	}
 
 	// Multiline value - trim trailing spaces/tabs from last line only
 	const lastIndex = valueLines.length - 1;
 	const processed = valueLines.map((line, idx) =>
-		idx === lastIndex ? trimTrailingSpacesAndTabs(line) : line,
+		idx === lastIndex ? trimTrailingWhitespace(line, opts) : line,
 	);
 	return processed.join("\n");
 }
 
 /**
  * Check if a line is empty (contains only whitespace or nothing).
+ * Under tabs_as_content, a line with only tabs is NOT empty.
  */
-function isEmptyLine(line: string): boolean {
-	return line.trim() === "";
+function isEmptyLine(line: string, opts: ResolvedParseOptions): boolean {
+	if (opts.tabsAreWhitespace) {
+		return line.trim() === "";
+	}
+	// tabs_as_content: only spaces and CR are whitespace; tabs are content
+	for (const char of line) {
+		if (char !== " " && char !== "\r") {
+			return false;
+		}
+	}
+	return true;
 }
 
 /**
  * Check if there are more continuation lines after the current position.
  */
-function hasMoreContinuations(text: string, pos: number, baseline: number): boolean {
+function hasMoreContinuations(
+	text: string,
+	pos: number,
+	baseline: number,
+	opts: ResolvedParseOptions,
+): boolean {
 	let checkPos = pos;
 
 	while (checkPos < text.length) {
@@ -202,8 +284,8 @@ function hasMoreContinuations(text: string, pos: number, baseline: number): bool
 			break;
 		}
 
-		if (!isEmptyLine(line)) {
-			const indent = countLeadingWhitespace(line);
+		if (!isEmptyLine(line, opts)) {
+			const indent = countLeadingWhitespace(line, opts);
 			return indent > baseline;
 		}
 
@@ -234,12 +316,13 @@ function skipLine(text: string, pos: number): number {
 }
 
 /**
- * Count leading whitespace characters (spaces and tabs).
+ * Count leading whitespace characters.
+ * Under tabs_as_content, only spaces count as whitespace.
  */
-function countLeadingWhitespace(line: string): number {
+function countLeadingWhitespace(line: string, opts: ResolvedParseOptions): number {
 	let count = 0;
 	for (const char of line) {
-		if (char === " " || char === "\t") {
+		if (char === " " || (opts.tabsAreWhitespace && char === "\t")) {
 			count++;
 		} else {
 			break;
@@ -275,7 +358,7 @@ function countLeadingWhitespace(line: string): number {
  *
  * @beta
  */
-export function buildHierarchy(entries: Entry[]): CCLObject {
+export function buildHierarchy(entries: Entry[], options?: ParseOptions): CCLObject {
 	const result: CCLObject = {};
 
 	for (const entry of entries) {
@@ -283,15 +366,15 @@ export function buildHierarchy(entries: Entry[]): CCLObject {
 
 		if (key === "") {
 			if (containsCCLSyntax(value)) {
-				const listItem = parseNestedObjectValue(value);
+				const listItem = parseNestedObjectValue(value, options);
 				addToList(result, "", listItem);
 			} else {
 				addToList(result, "", value);
 			}
 		} else if (containsCCLSyntax(value)) {
 			// Value contains "=" → recursively parse as nested CCL
-			const nestedEntries = parse(value);
-			const nestedObj = buildHierarchy(nestedEntries);
+			const nestedEntries = parse(value, options);
+			const nestedObj = buildHierarchy(nestedEntries, options);
 
 			// Check if key already exists
 			const existing = result[key];
@@ -402,9 +485,9 @@ function containsCCLSyntax(value: string): boolean {
 	return beforeEquals.includes("\n");
 }
 
-function parseNestedObjectValue(value: string): CCLObject {
-	const nestedEntries = parse(value);
-	return buildHierarchy(nestedEntries);
+function parseNestedObjectValue(value: string, options?: ParseOptions): CCLObject {
+	const nestedEntries = parse(value, options);
+	return buildHierarchy(nestedEntries, options);
 }
 
 /**
@@ -781,9 +864,9 @@ export function print(entries: Entry[]): string {
  *
  * @beta
  */
-export function canonicalFormat(input: string): string {
-	const entries = parse(input);
-	const obj = buildHierarchy(entries);
+export function canonicalFormat(input: string, options?: ParseOptions): string {
+	const entries = parse(input, options);
+	const obj = buildHierarchy(entries, options);
 	return formatCanonical(obj, 0);
 }
 
@@ -822,19 +905,22 @@ function formatCanonical(obj: CCLObject, depth: number): string {
 // Each function should be added to the test config in test/ccl.test.ts
 // and exported from src/index.ts when implemented.
 
-// /**
-//  * Parse CCL text with indentation normalization.
-//  *
-//  * Similar to `parse`, but first normalizes indentation by calculating
-//  * the common leading whitespace and stripping it from all lines.
-//  * This is similar to Python's `textwrap.dedent`.
-//  *
-//  * @param text - The CCL text to parse (with potentially inconsistent indentation)
-//  * @returns An array of entries with key-value pairs
-//  */
-// export function parseIndented(text: string): Entry[] {
-// 	throw new Error("Not yet implemented");
-// }
+/**
+ * Parse CCL text with indentation normalization.
+ *
+ * Similar to `parse`, but normalizes continuation line indentation:
+ * the leading whitespace from the first value line (after `=`) is stripped
+ * from all continuation lines, preserving relative indentation.
+ *
+ * @param text - The CCL text to parse
+ * @param options - Optional parsing configuration
+ * @returns An array of entries with key-value pairs
+ *
+ * @beta
+ */
+export function parseIndented(text: string, options?: ParseOptions): Entry[] {
+	return parseWithStrategy(text, options, true);
+}
 
 // /**
 //  * Filter entries based on a predicate.

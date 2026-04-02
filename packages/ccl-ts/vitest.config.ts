@@ -1,3 +1,4 @@
+import SkipSummaryReporter from "ccl-test-runner-ts/vitest-reporter";
 import { defineConfig, mergeConfig } from "vitest/config";
 import defaultConfig from "../../config/vitest.config.js";
 
@@ -6,6 +7,7 @@ export default mergeConfig(
 	defineConfig({
 		test: {
 			environment: "node",
+			reporters: ["verbose", new SkipSummaryReporter()],
 		},
 	}),
 );

@@ -464,17 +464,18 @@ interface ValidationResult {
 }
 
 /**
- * Handle parse validation.
+ * Handle parse or parse_indented validation.
  */
 function handleParseValidation(
 	testCase: TestCase,
 	input: string,
 	functions: CCLFunctions,
 	capabilities: ImplementationCapabilities,
+	functionKey: "parse" | "parse_indented" = "parse",
 ): ValidationResult {
-	const rawFn = functions.parse;
+	const rawFn = functions[functionKey];
 	if (!rawFn) {
-		throw new Error("parse function not implemented");
+		throw new Error(`${functionKey} function not implemented`);
 	}
 
 	const fn = normalizeParseFunction(rawFn);
@@ -1196,6 +1197,16 @@ export function runCCLTest(
 		switch (testCase.validation) {
 			case "parse":
 				result = handleParseValidation(testCase, input, functions, capabilities);
+				break;
+
+			case "parse_indented":
+				result = handleParseValidation(
+					testCase,
+					input,
+					functions,
+					capabilities,
+					"parse_indented",
+				);
 				break;
 
 			case "build_hierarchy":
