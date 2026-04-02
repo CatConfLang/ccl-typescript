@@ -38,6 +38,7 @@ import type {
 	ImplementationCapabilities,
 } from "./capabilities.js";
 import { DefaultBehaviors, Variant, validateCapabilities } from "./capabilities.js";
+import { loadConfigFileSync } from "./config.js";
 import type { TestCase } from "./schema-validation.js";
 import { loadAllTests, shouldRunTest } from "./test-data.js";
 import type {
@@ -181,6 +182,14 @@ export interface CCLTestConfig {
 
 	/** Tests to skip by name */
 	skipTests?: string[];
+
+	/**
+	 * Path to a ccl-config.yaml file conforming to ccl-config-schema.json.
+	 * When provided, capabilities (features, behaviors, variant, skipTests)
+	 * are loaded from this file. Inline values in this config take precedence
+	 * over values from the YAML file.
+	 */
+	configPath?: string;
 }
 
 /**
@@ -366,6 +375,14 @@ function getDeclaredFunctionNames(functions: CCLFunctions): CCLFunction[] {
  * You can also explicitly add functions to todoFunctions for the same effect.
  */
 function buildCapabilities(config: CCLTestConfig): ImplementationCapabilities {
+	// Load base capabilities from YAML config file if provided
+	const fileCapabilities = config.configPath
+		? loadConfigFileSync(config.configPath, {
+				name: config.name,
+				...(config.version !== undefined ? { version: config.version } : {}),
+			})
+		: undefined;
+
 	const declaredFunctions = getDeclaredFunctionNames(config.functions);
 	const todoFunctions = config.todoFunctions ?? [];
 
@@ -377,18 +394,23 @@ function buildCapabilities(config: CCLTestConfig): ImplementationCapabilities {
 		...todoFunctions.filter((fn) => !declaredFunctions.includes(fn)),
 	];
 
+	// Inline config values take precedence over YAML file values.
+	// YAML file provides the base; inline overrides selectively.
 	const capabilities: ImplementationCapabilities = {
 		name: config.name,
-		version: config.version ?? "0.0.0",
+		version: config.version ?? fileCapabilities?.version ?? "0.0.0",
 		functions: allDeclaredFunctions,
-		features: config.features ?? [],
-		behaviors: config.behaviors ?? [...DefaultBehaviors],
-		variant: config.variant ?? Variant.ProposedBehavior,
+		features: config.features ?? fileCapabilities?.features ?? [],
+		behaviors: config.behaviors ?? fileCapabilities?.behaviors ?? [...DefaultBehaviors],
+		variant: config.variant ?? fileCapabilities?.variant ?? Variant.ProposedBehavior,
 	};
 
-	// Only add skipTests if defined
-	if (config.skipTests !== undefined) {
-		capabilities.skipTests = config.skipTests;
+	// Merge skipTests: combine YAML file skip_tests with inline skipTests
+	const fileSkipTests = fileCapabilities?.skipTests ?? [];
+	const inlineSkipTests = config.skipTests ?? [];
+	const mergedSkipTests = [...new Set([...fileSkipTests, ...inlineSkipTests])];
+	if (mergedSkipTests.length > 0) {
+		capabilities.skipTests = mergedSkipTests;
 	}
 
 	// Validate for conflicts
