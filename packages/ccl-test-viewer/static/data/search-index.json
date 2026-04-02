@@ -200,14 +200,8 @@
 			"s99_fuzz_nested_percent_ampersand_9_build_hierarchy",
 			"s99_fuzz_nested_percent_ampersand_9_get_string"
 		],
-		"composition": [
-			"composition_stability_duplicate_keys_parse",
-			"composition_stability_ba_parse"
-		],
-		"stability": [
-			"composition_stability_duplicate_keys_parse",
-			"composition_stability_ba_parse"
-		],
+		"composition": ["composition_stability_duplicate_keys_parse", "composition_stability_ba_parse"],
+		"stability": ["composition_stability_duplicate_keys_parse", "composition_stability_ba_parse"],
 		"duplicate": [
 			"composition_stability_duplicate_keys_parse",
 			"duplicate_keys_to_lists_parse",
@@ -2885,15 +2879,9 @@
 			"list_multiline_values_parse_indented",
 			"complex_mixed_list_scenarios_parse_indented"
 		],
-		"surrounded": [
-			"key_value_surrounded_spaces_parse",
-			"surrounded_by_newlines_parse"
-		],
+		"surrounded": ["key_value_surrounded_spaces_parse", "surrounded_by_newlines_parse"],
 		"by": ["surrounded_by_newlines_parse"],
-		"newlines": [
-			"surrounded_by_newlines_parse",
-			"empty_key_value_with_surrounding_newlines_parse"
-		],
+		"newlines": ["surrounded_by_newlines_parse", "empty_key_value_with_surrounding_newlines_parse"],
 		"newline": [
 			"empty_value_with_newline_parse",
 			"empty_key_with_newline_parse",
@@ -3015,10 +3003,7 @@
 			"round_trip_complex_nesting_print",
 			"round_trip_complex_nesting_round_trip"
 		],
-		"multi": [
-			"complex_multi_newline_whitespace_parse",
-			"nested_multi_line_parse"
-		],
+		"multi": ["complex_multi_newline_whitespace_parse", "nested_multi_line_parse"],
 		"surrounding": ["empty_key_value_with_surrounding_newlines_parse"],
 		"quotes": [
 			"quotes_treated_as_literal_unquoted_parse",
@@ -3246,18 +3231,9 @@
 			"parentheses_in_map_keys_parse",
 			"parentheses_in_map_keys_build_hierarchy"
 		],
-		"backslashes": [
-			"backslashes_in_map_keys_parse",
-			"backslashes_in_map_keys_build_hierarchy"
-		],
-		"hyphens": [
-			"hyphens_in_map_keys_parse",
-			"hyphens_in_map_keys_build_hierarchy"
-		],
-		"signs": [
-			"at_signs_in_map_keys_parse",
-			"at_signs_in_map_keys_build_hierarchy"
-		],
+		"backslashes": ["backslashes_in_map_keys_parse", "backslashes_in_map_keys_build_hierarchy"],
+		"hyphens": ["hyphens_in_map_keys_parse", "hyphens_in_map_keys_build_hierarchy"],
+		"signs": ["at_signs_in_map_keys_parse", "at_signs_in_map_keys_build_hierarchy"],
 		"hash": [
 			"hash_in_map_keys_parse",
 			"hash_in_map_keys_build_hierarchy",
@@ -3271,14 +3247,8 @@
 			"s99_fuzz_single_hash_parse",
 			"s99_fuzz_combo_rparen_pipe_lparen_hash_parse"
 		],
-		"brackets": [
-			"brackets_in_map_keys_parse",
-			"brackets_in_map_keys_build_hierarchy"
-		],
-		"parentheses": [
-			"parentheses_in_map_keys_parse",
-			"parentheses_in_map_keys_build_hierarchy"
-		],
+		"brackets": ["brackets_in_map_keys_parse", "brackets_in_map_keys_build_hierarchy"],
+		"parentheses": ["parentheses_in_map_keys_parse", "parentheses_in_map_keys_build_hierarchy"],
 		"special": [
 			"mixed_special_chars_in_keys_parse",
 			"mixed_special_chars_in_keys_build_hierarchy",
@@ -3289,10 +3259,7 @@
 			"list_with_special_characters_reference_build_hierarchy",
 			"list_with_special_characters_reference_get_list"
 		],
-		"chars": [
-			"mixed_special_chars_in_keys_parse",
-			"mixed_special_chars_in_keys_build_hierarchy"
-		],
+		"chars": ["mixed_special_chars_in_keys_parse", "mixed_special_chars_in_keys_build_hierarchy"],
 		"url": [
 			"url_like_keys_parse",
 			"url_like_keys_build_hierarchy",
@@ -3385,10 +3352,7 @@
 			"relative_path_parent_parse",
 			"relative_path_parent_build_hierarchy"
 		],
-		"dot": [
-			"relative_path_single_dot_parse",
-			"relative_path_single_dot_build_hierarchy"
-		],
+		"dot": ["relative_path_single_dot_parse", "relative_path_single_dot_build_hierarchy"],
 		"paths": [
 			"relative_paths_deeply_nested_parse",
 			"relative_paths_deeply_nested_build_hierarchy",
@@ -3463,10 +3427,7 @@
 			"delimiter_spaced_fallback_no_space_parse",
 			"delimiter_spaced_fallback_no_space_build_hierarchy"
 		],
-		"fragment": [
-			"url_with_fragment_as_key_parse",
-			"url_with_fragment_as_key_build_hierarchy"
-		],
+		"fragment": ["url_with_fragment_as_key_parse", "url_with_fragment_as_key_build_hierarchy"],
 		"just": ["just_key_error_parse", "just_string_error_parse"],
 		"error": [
 			"just_key_error_parse",
@@ -3502,10 +3463,7 @@
 			"boolean_empty_value_error_parse",
 			"boolean_empty_value_error_get_bool"
 		],
-		"plain": [
-			"multiline_plain_error_parse",
-			"multiline_plain_nested_error_parse"
-		],
+		"plain": ["multiline_plain_error_parse", "multiline_plain_nested_error_parse"],
 		"s1": [
 			"s1_fuzz_single_squote_parse",
 			"s1_fuzz_single_asterisk_parse",
@@ -4389,10 +4347,7 @@
 			"s99_fuzz_pos_middle_underscore_alpha_parse",
 			"s99_fuzz_pos_middle_percent_host_parse"
 		],
-		"gamma": [
-			"s1_fuzz_pos_middle_dollar_gamma_parse",
-			"s42_fuzz_pos_end_semicolon_gamma_parse"
-		],
+		"gamma": ["s1_fuzz_pos_middle_dollar_gamma_parse", "s42_fuzz_pos_end_semicolon_gamma_parse"],
 		"name": [
 			"s1_fuzz_pos_end_pipe_name_parse",
 			"s1_fuzz_val_name_0_parse",
@@ -4733,10 +4688,7 @@
 			"s42_fuzz_nested_tilde_ampersand_9_build_hierarchy",
 			"s42_fuzz_nested_tilde_ampersand_9_get_string"
 		],
-		"delta": [
-			"s42_fuzz_pos_end_plus_delta_parse",
-			"s99_fuzz_pos_end_gt_delta_parse"
-		],
+		"delta": ["s42_fuzz_pos_end_plus_delta_parse", "s99_fuzz_pos_end_gt_delta_parse"],
 		"beta": [
 			"s42_fuzz_val_beta_1_parse",
 			"s42_fuzz_val_beta_1_build_hierarchy",
@@ -4926,11 +4878,7 @@
 			"basic_list_from_duplicates_build_hierarchy",
 			"basic_list_from_duplicates_get_list"
 		],
-		"large": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
+		"large": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
 		"missing": [
 			"list_error_missing_key_parse",
 			"list_error_missing_key_build_hierarchy",
@@ -5275,20 +5223,14 @@
 			"tabs_as_whitespace_leading_tab_parse",
 			"tabs_as_whitespace_leading_tab_get_string"
 		],
-		"preservation": [
-			"canonical_format_tab_preservation_ocaml_reference_canonical_format"
-		],
+		"preservation": ["canonical_format_tab_preservation_ocaml_reference_canonical_format"],
 		"endings": [
 			"canonical_format_line_endings_reference_behavior_parse",
 			"canonical_format_line_endings_reference_behavior_canonical_format",
 			"crlf_mixed_line_endings_parse"
 		],
-		"consistent": [
-			"canonical_format_consistent_spacing_ocaml_reference_canonical_format"
-		],
-		"spacing": [
-			"canonical_format_consistent_spacing_ocaml_reference_canonical_format"
-		],
+		"consistent": ["canonical_format_consistent_spacing_ocaml_reference_canonical_format"],
+		"spacing": ["canonical_format_consistent_spacing_ocaml_reference_canonical_format"],
 		"deterministic": ["deterministic_output_ocaml_reference_canonical_format"],
 		"output": ["deterministic_output_ocaml_reference_canonical_format"],
 		"integer": [
@@ -5594,10 +5536,7 @@
 			"crlf_normalize_multiple_comments_parse",
 			"crlf_normalize_multiple_comments_filter"
 		],
-		"lf": [
-			"crlf_normalize_to_lf_basic_parse",
-			"crlf_normalize_to_lf_basic_build_hierarchy"
-		],
+		"lf": ["crlf_normalize_to_lf_basic_parse", "crlf_normalize_to_lf_basic_build_hierarchy"],
 		"semigroup": [
 			"semigroup_associativity_basic_compose_associative",
 			"semigroup_associativity_nested_compose_associative",
@@ -6932,10 +6871,7 @@
 			"crlf_preserve_multiple_comments_filter",
 			"crlf_preserve_multiple_comments_filter"
 		],
-		"connection": [
-			"section_headers_with_comments_parse",
-			"section_headers_with_comments_filter"
-		],
+		"connection": ["section_headers_with_comments_parse", "section_headers_with_comments_filter"],
 		"alice": [
 			"basic_object_construction_parse",
 			"basic_object_construction_build_hierarchy",
@@ -7913,10 +7849,7 @@
 			"backslashes_in_map_keys_parse",
 			"backslashes_in_map_keys_build_hierarchy"
 		],
-		"user_settings": [
-			"backslashes_in_map_keys_parse",
-			"backslashes_in_map_keys_build_hierarchy"
-		],
+		"user_settings": ["backslashes_in_map_keys_parse", "backslashes_in_map_keys_build_hierarchy"],
 		"d:\\data\\file.txt": [
 			"backslashes_in_map_keys_parse",
 			"backslashes_in_map_keys_build_hierarchy"
@@ -7933,50 +7866,17 @@
 			"complex_mixed_list_scenarios_reference_build_hierarchy",
 			"complex_mixed_list_scenarios_reference_get_list"
 		],
-		"timestamps": [
-			"colons_in_map_keys_parse",
-			"colons_in_map_keys_build_hierarchy"
-		],
-		"12:30:45": [
-			"colons_in_map_keys_parse",
-			"colons_in_map_keys_build_hierarchy"
-		],
-		"morning": [
-			"colons_in_map_keys_parse",
-			"colons_in_map_keys_build_hierarchy"
-		],
-		"23:59:59": [
-			"colons_in_map_keys_parse",
-			"colons_in_map_keys_build_hierarchy"
-		],
-		"midnight": [
-			"colons_in_map_keys_parse",
-			"colons_in_map_keys_build_hierarchy"
-		],
-		"packages": [
-			"hyphens_in_map_keys_parse",
-			"hyphens_in_map_keys_build_hierarchy"
-		],
-		"my-package-name": [
-			"hyphens_in_map_keys_parse",
-			"hyphens_in_map_keys_build_hierarchy"
-		],
-		"another-lib": [
-			"hyphens_in_map_keys_parse",
-			"hyphens_in_map_keys_build_hierarchy"
-		],
-		"2.3.4": [
-			"hyphens_in_map_keys_parse",
-			"hyphens_in_map_keys_build_hierarchy"
-		],
-		"emails": [
-			"at_signs_in_map_keys_parse",
-			"at_signs_in_map_keys_build_hierarchy"
-		],
-		"user@example.com": [
-			"at_signs_in_map_keys_parse",
-			"at_signs_in_map_keys_build_hierarchy"
-		],
+		"timestamps": ["colons_in_map_keys_parse", "colons_in_map_keys_build_hierarchy"],
+		"12:30:45": ["colons_in_map_keys_parse", "colons_in_map_keys_build_hierarchy"],
+		"morning": ["colons_in_map_keys_parse", "colons_in_map_keys_build_hierarchy"],
+		"23:59:59": ["colons_in_map_keys_parse", "colons_in_map_keys_build_hierarchy"],
+		"midnight": ["colons_in_map_keys_parse", "colons_in_map_keys_build_hierarchy"],
+		"packages": ["hyphens_in_map_keys_parse", "hyphens_in_map_keys_build_hierarchy"],
+		"my-package-name": ["hyphens_in_map_keys_parse", "hyphens_in_map_keys_build_hierarchy"],
+		"another-lib": ["hyphens_in_map_keys_parse", "hyphens_in_map_keys_build_hierarchy"],
+		"2.3.4": ["hyphens_in_map_keys_parse", "hyphens_in_map_keys_build_hierarchy"],
+		"emails": ["at_signs_in_map_keys_parse", "at_signs_in_map_keys_build_hierarchy"],
+		"user@example.com": ["at_signs_in_map_keys_parse", "at_signs_in_map_keys_build_hierarchy"],
 		"primary": [
 			"at_signs_in_map_keys_parse",
 			"at_signs_in_map_keys_build_hierarchy",
@@ -7995,10 +7895,7 @@
 			"complex_mixed_list_scenarios_reference_build_hierarchy",
 			"complex_mixed_list_scenarios_reference_get_list"
 		],
-		"admin@test.org": [
-			"at_signs_in_map_keys_parse",
-			"at_signs_in_map_keys_build_hierarchy"
-		],
+		"admin@test.org": ["at_signs_in_map_keys_parse", "at_signs_in_map_keys_build_hierarchy"],
 		"secondary": [
 			"at_signs_in_map_keys_parse",
 			"at_signs_in_map_keys_build_hierarchy",
@@ -8017,42 +7914,15 @@
 		"open": ["hash_in_map_keys_parse", "hash_in_map_keys_build_hierarchy"],
 		"bug#456": ["hash_in_map_keys_parse", "hash_in_map_keys_build_hierarchy"],
 		"closed": ["hash_in_map_keys_parse", "hash_in_map_keys_build_hierarchy"],
-		"arrays": [
-			"brackets_in_map_keys_parse",
-			"brackets_in_map_keys_build_hierarchy"
-		],
-		"items[0]": [
-			"brackets_in_map_keys_parse",
-			"brackets_in_map_keys_build_hierarchy"
-		],
-		"items[1]": [
-			"brackets_in_map_keys_parse",
-			"brackets_in_map_keys_build_hierarchy"
-		],
-		"functions": [
-			"parentheses_in_map_keys_parse",
-			"parentheses_in_map_keys_build_hierarchy"
-		],
-		"init()": [
-			"parentheses_in_map_keys_parse",
-			"parentheses_in_map_keys_build_hierarchy"
-		],
-		"setup": [
-			"parentheses_in_map_keys_parse",
-			"parentheses_in_map_keys_build_hierarchy"
-		],
-		"run(args)": [
-			"parentheses_in_map_keys_parse",
-			"parentheses_in_map_keys_build_hierarchy"
-		],
-		"execute": [
-			"parentheses_in_map_keys_parse",
-			"parentheses_in_map_keys_build_hierarchy"
-		],
-		"complex": [
-			"mixed_special_chars_in_keys_parse",
-			"mixed_special_chars_in_keys_build_hierarchy"
-		],
+		"arrays": ["brackets_in_map_keys_parse", "brackets_in_map_keys_build_hierarchy"],
+		"items[0]": ["brackets_in_map_keys_parse", "brackets_in_map_keys_build_hierarchy"],
+		"items[1]": ["brackets_in_map_keys_parse", "brackets_in_map_keys_build_hierarchy"],
+		"functions": ["parentheses_in_map_keys_parse", "parentheses_in_map_keys_build_hierarchy"],
+		"init()": ["parentheses_in_map_keys_parse", "parentheses_in_map_keys_build_hierarchy"],
+		"setup": ["parentheses_in_map_keys_parse", "parentheses_in_map_keys_build_hierarchy"],
+		"run(args)": ["parentheses_in_map_keys_parse", "parentheses_in_map_keys_build_hierarchy"],
+		"execute": ["parentheses_in_map_keys_parse", "parentheses_in_map_keys_build_hierarchy"],
+		"complex": ["mixed_special_chars_in_keys_parse", "mixed_special_chars_in_keys_build_hierarchy"],
 		"user@host:8080/api": [
 			"mixed_special_chars_in_keys_parse",
 			"mixed_special_chars_in_keys_build_hierarchy"
@@ -8068,10 +7938,7 @@
 			"mixed_special_chars_in_keys_parse",
 			"mixed_special_chars_in_keys_build_hierarchy"
 		],
-		"release": [
-			"mixed_special_chars_in_keys_parse",
-			"mixed_special_chars_in_keys_build_hierarchy"
-		],
+		"release": ["mixed_special_chars_in_keys_parse", "mixed_special_chars_in_keys_build_hierarchy"],
 		"path\\to\\[item]": [
 			"mixed_special_chars_in_keys_parse",
 			"mixed_special_chars_in_keys_build_hierarchy"
@@ -8081,39 +7948,18 @@
 			"mixed_special_chars_in_keys_build_hierarchy"
 		],
 		"endpoints": ["url_like_keys_parse", "url_like_keys_build_hierarchy"],
-		"https://api.example.com/v1": [
-			"url_like_keys_parse",
-			"url_like_keys_build_hierarchy"
-		],
-		"http://localhost:3000/test": [
-			"url_like_keys_parse",
-			"url_like_keys_build_hierarchy"
-		],
+		"https://api.example.com/v1": ["url_like_keys_parse", "url_like_keys_build_hierarchy"],
+		"http://localhost:3000/test": ["url_like_keys_parse", "url_like_keys_build_hierarchy"],
 		"development": ["url_like_keys_parse", "url_like_keys_build_hierarchy"],
-		"../..": [
-			"relative_path_parent_parent_parse",
-			"relative_path_parent_parent_build_hierarchy"
-		],
+		"../..": ["relative_path_parent_parent_parse", "relative_path_parent_parent_build_hierarchy"],
 		"up_two_levels": [
 			"relative_path_parent_parent_parse",
 			"relative_path_parent_parent_build_hierarchy"
 		],
-		"../": [
-			"relative_path_parent_parse",
-			"relative_path_parent_build_hierarchy"
-		],
-		"parent_dir": [
-			"relative_path_parent_parse",
-			"relative_path_parent_build_hierarchy"
-		],
-		"current_dir": [
-			"relative_path_single_dot_parse",
-			"relative_path_single_dot_build_hierarchy"
-		],
-		"double_slash_value": [
-			"double_slash_parse",
-			"double_slash_build_hierarchy"
-		],
+		"../": ["relative_path_parent_parse", "relative_path_parent_build_hierarchy"],
+		"parent_dir": ["relative_path_parent_parse", "relative_path_parent_build_hierarchy"],
+		"current_dir": ["relative_path_single_dot_parse", "relative_path_single_dot_build_hierarchy"],
+		"double_slash_value": ["double_slash_parse", "double_slash_build_hierarchy"],
 		"../../src": [
 			"relative_path_in_value_parse",
 			"relative_path_in_value_build_hierarchy",
@@ -8139,26 +7985,11 @@
 			"relative_path_in_nested_value_build_hierarchy",
 			"relative_path_in_nested_value_get_string"
 		],
-		"urls": [
-			"double_slash_in_nested_parse",
-			"double_slash_in_nested_build_hierarchy"
-		],
-		"//api": [
-			"double_slash_in_nested_parse",
-			"double_slash_in_nested_build_hierarchy"
-		],
-		"//backup": [
-			"double_slash_in_nested_parse",
-			"double_slash_in_nested_build_hierarchy"
-		],
-		"//server": [
-			"double_slash_in_nested_parse",
-			"double_slash_in_nested_build_hierarchy"
-		],
-		"/root": [
-			"double_slash_in_nested_parse",
-			"double_slash_in_nested_build_hierarchy"
-		],
+		"urls": ["double_slash_in_nested_parse", "double_slash_in_nested_build_hierarchy"],
+		"//api": ["double_slash_in_nested_parse", "double_slash_in_nested_build_hierarchy"],
+		"//backup": ["double_slash_in_nested_parse", "double_slash_in_nested_build_hierarchy"],
+		"//server": ["double_slash_in_nested_parse", "double_slash_in_nested_build_hierarchy"],
+		"/root": ["double_slash_in_nested_parse", "double_slash_in_nested_build_hierarchy"],
 		"build": [
 			"relative_paths_deeply_nested_parse",
 			"relative_paths_deeply_nested_build_hierarchy",
@@ -8281,18 +8112,12 @@
 			"urls_deeply_nested_build_hierarchy",
 			"urls_deeply_nested_get_string"
 		],
-		"http://localhost:8080": [
-			"url_with_port_as_key_parse",
-			"url_with_port_as_key_build_hierarchy"
-		],
+		"http://localhost:8080": ["url_with_port_as_key_parse", "url_with_port_as_key_build_hierarchy"],
 		"https://api.example.com/v1/users": [
 			"url_with_path_as_key_parse",
 			"url_with_path_as_key_build_hierarchy"
 		],
-		"users_endpoint": [
-			"url_with_path_as_key_parse",
-			"url_with_path_as_key_build_hierarchy"
-		],
+		"users_endpoint": ["url_with_path_as_key_parse", "url_with_path_as_key_build_hierarchy"],
 		"https://api.example.com/v1/data": [
 			"url_in_value_parse",
 			"url_in_value_build_hierarchy",
@@ -9573,106 +9398,26 @@
 			"list_with_whitespace_reference_get_list",
 			"list_with_whitespace_reference_get_list"
 		],
-		"item01": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item02": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item03": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item04": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item05": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item06": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item07": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item08": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item09": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item10": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item11": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item12": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item13": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item14": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item15": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item16": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item17": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item18": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item19": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
-		"item20": [
-			"large_list_parse",
-			"large_list_build_hierarchy",
-			"large_list_get_list"
-		],
+		"item01": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item02": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item03": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item04": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item05": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item06": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item07": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item08": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item09": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item10": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item11": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item12": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item13": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item14": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item15": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item16": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item17": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item18": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item19": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
+		"item20": ["large_list_parse", "large_list_build_hierarchy", "large_list_get_list"],
 		"end": [
 			"list_with_comments_parse",
 			"list_with_comments_build_hierarchy",
@@ -9865,10 +9610,7 @@
 			"mixed_indentation_levels_build_hierarchy",
 			"mixed_indentation_levels_build_hierarchy"
 		],
-		"for": [
-			"mixed_indentation_levels_parse_indented",
-			"mixed_indentation_levels_build_hierarchy"
-		],
+		"for": ["mixed_indentation_levels_parse_indented", "mixed_indentation_levels_build_hierarchy"],
 		"single": [
 			"single_item_as_list_parse",
 			"single_item_as_list_build_hierarchy",
@@ -10091,9 +9833,7 @@
 			"empty_value_reference_behavior_build_hierarchy",
 			"canonical_format_empty_values_ocaml_reference_canonical_format"
 		],
-		"value_with_tabs": [
-			"canonical_format_tab_preservation_ocaml_reference_canonical_format"
-		],
+		"value_with_tabs": ["canonical_format_tab_preservation_ocaml_reference_canonical_format"],
 		"tabs": [
 			"canonical_format_tab_preservation_ocaml_reference_canonical_format",
 			"tabs_as_content_in_value_parse",
@@ -10109,9 +9849,7 @@
 		"你好世界": ["canonical_format_unicode_ocaml_reference_canonical_format"],
 		"emo": ["canonical_format_unicode_ocaml_reference_canonical_format"],
 		"🌟✨": ["canonical_format_unicode_ocaml_reference_canonical_format"],
-		"key3": [
-			"canonical_format_consistent_spacing_ocaml_reference_canonical_format"
-		],
+		"key3": ["canonical_format_consistent_spacing_ocaml_reference_canonical_format"],
 		"value3": [
 			"canonical_format_consistent_spacing_ocaml_reference_canonical_format",
 			"crlf_mixed_line_endings_parse"
@@ -10383,17 +10121,11 @@
 			"boolean_numeric_one_zero_strict_get_int",
 			"boolean_numeric_one_zero_strict_get_bool"
 		],
-		"padded": [
-			"boolean_with_whitespace_parse",
-			"boolean_with_whitespace_get_bool"
-		],
+		"padded": ["boolean_with_whitespace_parse", "boolean_with_whitespace_get_bool"],
 		"verbose": ["boolean_nested_object_build_hierarchy"],
 		"abc": ["type_mismatch_nested_path_build_hierarchy"],
 		"three_tabs": ["tabs_as_whitespace_multiple_tabs_parse"],
-		"indented_with_tabs": [
-			"tabs_as_content_multiline_parse",
-			"tabs_as_whitespace_multiline_parse"
-		],
+		"indented_with_tabs": ["tabs_as_content_multiline_parse", "tabs_as_whitespace_multiline_parse"],
 		"another_line": [
 			"tabs_as_content_multiline_parse",
 			"tabs_as_whitespace_multiline_parse",
@@ -10408,10 +10140,7 @@
 		"nested2": ["deeply_nested_bare_list_indentation_canonical_format"],
 		"level3a": ["deeply_nested_bare_list_indentation_canonical_format"],
 		"level3b": ["deeply_nested_bare_list_indentation_canonical_format"],
-		"multiline": [
-			"crlf_normalize_multiline_value_parse",
-			"crlf_preserve_multiline_value_parse"
-		],
+		"multiline": ["crlf_normalize_multiline_value_parse", "crlf_preserve_multiline_value_parse"],
 		"lf_line": ["crlf_mixed_line_endings_parse"],
 		"crlf_line": ["crlf_mixed_line_endings_parse"],
 		"lf_again": ["crlf_mixed_line_endings_parse"],
