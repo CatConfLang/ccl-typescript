@@ -10,12 +10,8 @@ test.describe("CCL Test Viewer App", () => {
 		).toBeVisible();
 
 		// Check for navigation links using specific aria-labels
-		await expect(
-			page.getByRole("button", { name: "Go to dashboard homepage" }),
-		).toBeVisible();
-		await expect(
-			page.getByRole("button", { name: "Browse and filter test cases" }),
-		).toBeVisible();
+		await expect(page.getByRole("button", { name: "Go to dashboard homepage" })).toBeVisible();
+		await expect(page.getByRole("button", { name: "Browse and filter test cases" })).toBeVisible();
 	});
 
 	test("navigation works correctly", async ({ page }, testInfo) => {
@@ -23,20 +19,15 @@ test.describe("CCL Test Viewer App", () => {
 		// The mobile sidebar overlay blocks navigation clicks even with force clicks and escape key handling
 		// This needs investigation for proper mobile testing approach
 		test.skip(
-			testInfo.project.name === "Mobile Chrome" ||
-				testInfo.project.name === "Mobile Safari",
+			testInfo.project.name === "Mobile Chrome" || testInfo.project.name === "Mobile Safari",
 			"Mobile browser overlay interference - needs investigation",
 		);
 
 		await page.goto("/");
 
 		// Navigate to browse page using specific aria-label
-		await page
-			.getByRole("button", { name: "Browse and filter test cases" })
-			.click();
-		await expect(
-			page.getByRole("heading", { name: "Browse Tests" }),
-		).toBeVisible();
+		await page.getByRole("button", { name: "Browse and filter test cases" }).click();
+		await expect(page.getByRole("heading", { name: "Browse Tests" })).toBeVisible();
 
 		// Close any open sidebar overlay that might interfere with navigation
 		const closeFiltersButton = page.getByRole("button", {
@@ -50,9 +41,7 @@ test.describe("CCL Test Viewer App", () => {
 		}
 
 		// Navigate back to home using specific aria-label (force click to bypass overlay issues)
-		await page
-			.getByRole("button", { name: "Go to dashboard homepage" })
-			.click({ force: true });
+		await page.getByRole("button", { name: "Go to dashboard homepage" }).click({ force: true });
 
 		// Verify navigation worked by checking URL
 		await expect(page).toHaveURL("/");
@@ -68,9 +57,7 @@ test.describe("CCL Test Viewer App", () => {
 		});
 
 		// Check for test cards or empty state
-		const testCards = page.locator(
-			'[role="button"][aria-label*="View test case"]',
-		);
+		const testCards = page.locator('[role="button"][aria-label*="View test case"]');
 		const emptyState = page.getByText("No tests found");
 
 		await expect(testCards.first().or(emptyState)).toBeVisible();
@@ -88,9 +75,7 @@ test.describe("CCL Test Viewer App", () => {
 		const sidebar = page.getByRole("complementary", {
 			name: "Test filters and search",
 		});
-		const sidebarToggle = page
-			.getByRole("button", { name: /filters/i })
-			.first();
+		const sidebarToggle = page.getByRole("button", { name: /filters/i }).first();
 
 		if (!(await sidebar.isVisible())) {
 			await sidebarToggle.click();
@@ -122,9 +107,7 @@ test.describe("CCL Test Viewer App", () => {
 		});
 
 		// Find and click first test card if any exist
-		const firstTestCard = page
-			.locator('[role="button"][aria-label*="View test case"]')
-			.first();
+		const firstTestCard = page.locator('[role="button"][aria-label*="View test case"]').first();
 
 		if (await firstTestCard.isVisible()) {
 			await firstTestCard.click();

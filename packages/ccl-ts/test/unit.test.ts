@@ -6,13 +6,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import {
-	buildHierarchy,
-	canonicalFormat,
-	getFloat,
-	getList,
-	parse,
-} from "../src/ccl.js";
+import { buildHierarchy, canonicalFormat, getFloat, getList, parse } from "../src/ccl.js";
 
 describe("getFloat", () => {
 	it("should return error for empty string value", () => {
@@ -302,9 +296,7 @@ describe("buildHierarchy edge cases", () => {
 	});
 
 	it("should merge nested objects with same key", () => {
-		const parseResult = parse(
-			"server=\n  host=localhost\nserver=\n  port=8080",
-		);
+		const parseResult = parse("server=\n  host=localhost\nserver=\n  port=8080");
 		expect(parseResult.isOk).toBe(true);
 		if (!parseResult.isOk) {
 			return;

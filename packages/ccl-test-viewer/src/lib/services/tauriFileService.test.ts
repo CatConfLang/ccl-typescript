@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	isOfflineModeAvailable,
-	isTauriEnvironment,
-} from "./tauriFileService.js";
+import { isOfflineModeAvailable, isTauriEnvironment } from "./tauriFileService.js";
 
 describe("tauriFileService", () => {
 	describe("isTauriEnvironment", () => {
@@ -288,7 +285,6 @@ describe("tauriFileService", () => {
 		});
 
 		it("formats error with null", () => {
-			// biome-ignore lint/suspicious/noEvolvingTypes: Testing null error handling
 			const error = null;
 			const message = `Operation failed: ${error instanceof Error ? error.message : "Unknown error"}`;
 			expect(message).toBe("Operation failed: Unknown error");

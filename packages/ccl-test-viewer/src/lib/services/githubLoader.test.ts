@@ -31,9 +31,7 @@ describe("GitHubLoader", () => {
 			});
 
 			it("parses repository URL with tree but no path", () => {
-				const result = loader.parseGitHubUrl(
-					"https://github.com/owner/repo/tree/feature-branch",
-				);
+				const result = loader.parseGitHubUrl("https://github.com/owner/repo/tree/feature-branch");
 
 				expect(result).toEqual({
 					owner: "owner",
@@ -44,9 +42,7 @@ describe("GitHubLoader", () => {
 			});
 
 			it("handles main branch explicitly", () => {
-				const result = loader.parseGitHubUrl(
-					"https://github.com/owner/repo/tree/main",
-				);
+				const result = loader.parseGitHubUrl("https://github.com/owner/repo/tree/main");
 
 				expect(result).toEqual({
 					owner: "owner",
@@ -121,9 +117,7 @@ describe("GitHubLoader", () => {
 			});
 
 			it("parses API URL without path", () => {
-				const result = loader.parseGitHubUrl(
-					"https://api.github.com/repos/owner/repo/contents",
-				);
+				const result = loader.parseGitHubUrl("https://api.github.com/repos/owner/repo/contents");
 
 				expect(result).toEqual({
 					owner: "owner",
@@ -134,16 +128,12 @@ describe("GitHubLoader", () => {
 			});
 
 			it("rejects API URL with invalid format", () => {
-				const result = loader.parseGitHubUrl(
-					"https://api.github.com/owner/repo",
-				);
+				const result = loader.parseGitHubUrl("https://api.github.com/owner/repo");
 				expect(result).toBeNull();
 			});
 
 			it("rejects API URL without repos prefix", () => {
-				const result = loader.parseGitHubUrl(
-					"https://api.github.com/owner/repo/contents/data",
-				);
+				const result = loader.parseGitHubUrl("https://api.github.com/owner/repo/contents/data");
 				expect(result).toBeNull();
 			});
 		});
@@ -202,9 +192,7 @@ describe("GitHubLoader", () => {
 			});
 
 			it("rejects raw URL with insufficient path segments", () => {
-				const result = loader.parseGitHubUrl(
-					"https://raw.githubusercontent.com/owner/repo",
-				);
+				const result = loader.parseGitHubUrl("https://raw.githubusercontent.com/owner/repo");
 				expect(result).toBeNull();
 			});
 		});
@@ -244,9 +232,7 @@ describe("GitHubLoader", () => {
 			});
 
 			it("handles URLs with query parameters", () => {
-				const result = loader.parseGitHubUrl(
-					"https://github.com/owner/repo?tab=readme",
-				);
+				const result = loader.parseGitHubUrl("https://github.com/owner/repo?tab=readme");
 
 				expect(result).toEqual({
 					owner: "owner",
@@ -257,9 +243,7 @@ describe("GitHubLoader", () => {
 			});
 
 			it("handles complex repository names", () => {
-				const result = loader.parseGitHubUrl(
-					"https://github.com/owner-name/repo-name.js",
-				);
+				const result = loader.parseGitHubUrl("https://github.com/owner-name/repo-name.js");
 
 				expect(result).toEqual({
 					owner: "owner-name",
@@ -356,9 +340,7 @@ describe("GitHubLoader", () => {
 		});
 
 		it("validates URLs with tree paths", () => {
-			const result = loader.validateGitHubUrl(
-				"https://github.com/owner/repo/tree/develop/tests",
-			);
+			const result = loader.validateGitHubUrl("https://github.com/owner/repo/tree/develop/tests");
 
 			expect(result.valid).toBe(true);
 			expect(result.repository).toEqual({
@@ -454,8 +436,7 @@ describe("GitHubLoader", () => {
 						path: "tests/test.json",
 						type: "file",
 						size: 1234,
-						download_url:
-							"https://raw.githubusercontent.com/owner/repo/main/tests/test.json",
+						download_url: "https://raw.githubusercontent.com/owner/repo/main/tests/test.json",
 						sha: "abc123",
 					},
 				];
@@ -478,8 +459,7 @@ describe("GitHubLoader", () => {
 						path: "tests/test1.json",
 						type: "file",
 						size: 1234,
-						download_url:
-							"https://raw.githubusercontent.com/owner/repo/main/tests/test1.json",
+						download_url: "https://raw.githubusercontent.com/owner/repo/main/tests/test1.json",
 						sha: "abc123",
 					},
 					{
@@ -487,8 +467,7 @@ describe("GitHubLoader", () => {
 						path: "tests/test2.json",
 						type: "file",
 						size: 2345,
-						download_url:
-							"https://raw.githubusercontent.com/owner/repo/main/tests/test2.json",
+						download_url: "https://raw.githubusercontent.com/owner/repo/main/tests/test2.json",
 						sha: "def456",
 					},
 				];
@@ -507,8 +486,7 @@ describe("GitHubLoader", () => {
 						path: "tests/invalid.json",
 						type: "file",
 						size: 100,
-						download_url:
-							"https://raw.githubusercontent.com/owner/repo/main/tests/invalid.json",
+						download_url: "https://raw.githubusercontent.com/owner/repo/main/tests/invalid.json",
 						sha: "xyz789",
 					},
 				];
@@ -525,8 +503,7 @@ describe("GitHubLoader", () => {
 						path: "tests/valid.json",
 						type: "file",
 						size: 1234,
-						download_url:
-							"https://raw.githubusercontent.com/owner/repo/main/tests/valid.json",
+						download_url: "https://raw.githubusercontent.com/owner/repo/main/tests/valid.json",
 						sha: "abc123",
 					},
 					{
@@ -534,8 +511,7 @@ describe("GitHubLoader", () => {
 						path: "tests/invalid.json",
 						type: "file",
 						size: 100,
-						download_url:
-							"https://raw.githubusercontent.com/owner/repo/main/tests/invalid.json",
+						download_url: "https://raw.githubusercontent.com/owner/repo/main/tests/invalid.json",
 						sha: "xyz789",
 					},
 				];
@@ -578,24 +554,18 @@ describe("GitHubLoader", () => {
 			});
 
 			it("throws error for empty URL", async () => {
-				await expect(loader.loadRepositoryData("")).rejects.toThrow(
-					"URL cannot be empty",
-				);
+				await expect(loader.loadRepositoryData("")).rejects.toThrow("URL cannot be empty");
 			});
 
 			it("handles repository not found", async () => {
 				await expect(
-					loader.loadRepositoryData(
-						"https://github.com/notfound/repo/tree/main/tests",
-					),
+					loader.loadRepositoryData("https://github.com/notfound/repo/tree/main/tests"),
 				).rejects.toThrow("Repository, branch, or path not found");
 			});
 
 			it("handles private repository or rate limit", async () => {
 				await expect(
-					loader.loadRepositoryData(
-						"https://github.com/private/repo/tree/main/tests",
-					),
+					loader.loadRepositoryData("https://github.com/private/repo/tree/main/tests"),
 				).rejects.toThrow("Rate limit exceeded or repository is private");
 			});
 
@@ -637,9 +607,9 @@ describe("GitHubLoader", () => {
 			});
 
 			it("handles repository not found", async () => {
-				await expect(
-					loader.getRepositoryInfo("https://github.com/notfound/repo"),
-				).rejects.toThrow("Repository, branch, or path not found");
+				await expect(loader.getRepositoryInfo("https://github.com/notfound/repo")).rejects.toThrow(
+					"Repository, branch, or path not found",
+				);
 			});
 		});
 	});

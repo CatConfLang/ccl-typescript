@@ -1,11 +1,6 @@
 // Pure Svelte 5 runes-based state management
 import { browser } from "$app/environment";
-import type {
-	GeneratedTest,
-	SearchIndex,
-	TestCategory,
-	TestStats,
-} from "./data/types.js";
+import type { GeneratedTest, SearchIndex, TestCategory, TestStats } from "./data/types.js";
 
 // Filter state interface
 export interface FilterState {
@@ -104,8 +99,7 @@ class ThemeStore {
 	private autoSelectBase16Theme() {
 		// If current base16 theme doesn't match the mode, switch to a default one
 		if (BASE16_THEMES[this.base16Theme].variant !== this.theme) {
-			this.base16Theme =
-				this.theme === "dark" ? "base16-tomorrow-night" : "base16-tomorrow";
+			this.base16Theme = this.theme === "dark" ? "base16-tomorrow-night" : "base16-tomorrow";
 		}
 	}
 
@@ -208,9 +202,7 @@ class AppState {
 
 		if (categoryFilters.length > 0) {
 			allTests = allTests.filter((test) => {
-				const testCategory = this.testCategories.find((cat) =>
-					cat.tests.includes(test),
-				)?.name;
+				const testCategory = this.testCategories.find((cat) => cat.tests.includes(test))?.name;
 				return testCategory && categoryFilters.includes(testCategory);
 			});
 		}
@@ -256,9 +248,7 @@ class AppState {
 					test.name.toLowerCase().includes(query) ||
 					test.inputs.join("\n").toLowerCase().includes(query) ||
 					test.functions.some((func) => func.toLowerCase().includes(query)) ||
-					test.features.some((feature) =>
-						feature.toLowerCase().includes(query),
-					),
+					test.features.some((feature) => feature.toLowerCase().includes(query)),
 			);
 		}
 

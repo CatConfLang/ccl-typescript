@@ -5,7 +5,7 @@ import { alertVariants } from "./variants.js";
 
 type $$Props = Props;
 
-let className: $$Props["class"] ;
+let className: $$Props["class"];
 export const variant: $$Props["variant"] = undefined;
 export { className as class };
 </script>

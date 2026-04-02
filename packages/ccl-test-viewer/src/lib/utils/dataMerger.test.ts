@@ -33,24 +33,17 @@ describe("dataMerger", () => {
 		it("requires $schema property", () => {
 			const result = validateTestData({ tests: [] }, "test.json");
 			expect(result.isValid).toBe(false);
-			expect(result.errors).toContain(
-				"Missing required $schema property in CCL format",
-			);
+			expect(result.errors).toContain("Missing required $schema property in CCL format");
 		});
 
 		it("requires tests array", () => {
 			const result = validateTestData({ $schema: "1.0" }, "test.json");
 			expect(result.isValid).toBe(false);
-			expect(result.errors).toContain(
-				"Missing or invalid 'tests' array in CCL format",
-			);
+			expect(result.errors).toContain("Missing or invalid 'tests' array in CCL format");
 		});
 
 		it("warns about empty tests array", () => {
-			const result = validateTestData(
-				{ $schema: "1.0", tests: [] },
-				"test.json",
-			);
+			const result = validateTestData({ $schema: "1.0", tests: [] }, "test.json");
 			expect(result.warnings).toContain("File contains no test data");
 		});
 
@@ -63,15 +56,9 @@ describe("dataMerger", () => {
 				"test.json",
 			);
 			expect(result.isValid).toBe(false);
-			expect(result.errors).toContain(
-				"Test at index 0 missing or invalid 'name' field",
-			);
-			expect(result.errors).toContain(
-				"Test at index 0 missing or invalid 'inputs' field",
-			);
-			expect(result.errors).toContain(
-				"Test at index 0 missing or invalid 'expected.count' field",
-			);
+			expect(result.errors).toContain("Test at index 0 missing or invalid 'name' field");
+			expect(result.errors).toContain("Test at index 0 missing or invalid 'inputs' field");
+			expect(result.errors).toContain("Test at index 0 missing or invalid 'expected.count' field");
 		});
 
 		it("validates valid test data successfully", () => {
@@ -87,10 +74,7 @@ describe("dataMerger", () => {
 				validation: "standard",
 			};
 
-			const result = validateTestData(
-				{ $schema: "1.0", tests: [validTest] },
-				"test.json",
-			);
+			const result = validateTestData({ $schema: "1.0", tests: [validTest] }, "test.json");
 
 			expect(result.isValid).toBe(true);
 			expect(result.errors).toHaveLength(0);
@@ -118,9 +102,7 @@ describe("dataMerger", () => {
 			expect(result.warnings).toContain(
 				"Test test has invalid 'functions' field - should be array",
 			);
-			expect(result.warnings).toContain(
-				"Test test has invalid 'features' field - should be array",
-			);
+			expect(result.warnings).toContain("Test test has invalid 'features' field - should be array");
 			expect(result.warnings).toContain(
 				"Test test has invalid 'behaviors' field - should be array",
 			);
@@ -150,12 +132,8 @@ describe("dataMerger", () => {
 
 			expect(result.isValid).toBe(true);
 			expect(result.stats.testCount).toBe(2);
-			expect(result.stats.functions).toEqual(
-				expect.arrayContaining(["parse", "filter"]),
-			);
-			expect(result.stats.features).toEqual(
-				expect.arrayContaining(["comments", "unicode"]),
-			);
+			expect(result.stats.functions).toEqual(expect.arrayContaining(["parse", "filter"]));
+			expect(result.stats.features).toEqual(expect.arrayContaining(["comments", "unicode"]));
 			expect(result.stats.behaviors).toContain("strict_spacing");
 		});
 	});
@@ -435,11 +413,7 @@ describe("dataMerger", () => {
 				},
 			};
 
-			const dataSource = createDataSourceFromUpload(
-				mockFile,
-				tests,
-				validationResult,
-			);
+			const dataSource = createDataSourceFromUpload(mockFile, tests, validationResult);
 
 			expect(dataSource.name).toBe("test-data");
 			expect(dataSource.type).toBe("uploaded");

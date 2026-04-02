@@ -4,7 +4,7 @@ import type { Props } from "./index.js";
 
 type $$Props = Props;
 
-let className: $$Props["class"] ;
+let className: $$Props["class"];
 export const value: $$Props["value"] = 0;
 export const max: $$Props["max"] = 100;
 export { className as class };

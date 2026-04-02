@@ -62,10 +62,7 @@ const COMPOSITE_FUNCTIONS: Record<string, string[]> = {
 /**
  * Check if a function is supported, either directly or via composite implementation.
  */
-function isFunctionSupported(
-	fn: string,
-	capabilities: ImplementationCapabilities,
-): boolean {
+function isFunctionSupported(fn: string, capabilities: ImplementationCapabilities): boolean {
 	// Direct implementation
 	if (capabilities.functions.includes(fn as CCLFunction)) {
 		return true;
@@ -74,9 +71,7 @@ function isFunctionSupported(
 	// Composite implementation
 	const compositeDeps = COMPOSITE_FUNCTIONS[fn];
 	if (compositeDeps) {
-		return compositeDeps.every((dep) =>
-			capabilities.functions.includes(dep as CCLFunction),
-		);
+		return compositeDeps.every((dep) => capabilities.functions.includes(dep as CCLFunction));
 	}
 
 	return false;
@@ -90,9 +85,7 @@ function checkFunctions(
 	capabilities: ImplementationCapabilities,
 ): TestFilterResult | null {
 	const functions = test.functions ?? [];
-	const unsupportedFunctions = functions.filter(
-		(fn) => !isFunctionSupported(fn, capabilities),
-	);
+	const unsupportedFunctions = functions.filter((fn) => !isFunctionSupported(fn, capabilities));
 	if (unsupportedFunctions.length > 0) {
 		return {
 			shouldRun: false,
@@ -110,15 +103,11 @@ function checkBehaviors(
 	capabilities: ImplementationCapabilities,
 ): TestFilterResult | null {
 	for (const requiredBehavior of test.behaviors) {
-		const implHasBehavior = capabilities.behaviors.includes(
-			requiredBehavior as CCLBehavior,
-		);
+		const implHasBehavior = capabilities.behaviors.includes(requiredBehavior as CCLBehavior);
 
 		if (!implHasBehavior) {
 			// Test requires a behavior the implementation doesn't have
-			const conflicting = getConflictingBehavior(
-				requiredBehavior as CCLBehavior,
-			);
+			const conflicting = getConflictingBehavior(requiredBehavior as CCLBehavior);
 			if (conflicting && capabilities.behaviors.includes(conflicting)) {
 				return {
 					shouldRun: false,
@@ -143,9 +132,7 @@ function checkVariants(
 	capabilities: ImplementationCapabilities,
 ): TestFilterResult | null {
 	if (test.variants.length > 0) {
-		const hasMatchingVariant = test.variants.some(
-			(v) => v === capabilities.variant,
-		);
+		const hasMatchingVariant = test.variants.some((v) => v === capabilities.variant);
 		if (!hasMatchingVariant) {
 			return {
 				shouldRun: false,
@@ -231,12 +218,7 @@ export function shouldRunTest(
 	}
 
 	// Check each requirement in order
-	const checks = [
-		checkFunctions,
-		checkBehaviors,
-		checkVariants,
-		checkConflicts,
-	];
+	const checks = [checkFunctions, checkBehaviors, checkVariants, checkConflicts];
 
 	for (const check of checks) {
 		const result = check(test, capabilities);
@@ -254,9 +236,7 @@ export function shouldRunTest(
  * When capabilities are provided, tests are filtered to only include those
  * that are compatible with the implementation's declared capabilities.
  */
-export async function loadTestData(
-	options: LoadTestDataOptions,
-): Promise<LoadedTestData> {
+export async function loadTestData(options: LoadTestDataOptions): Promise<LoadedTestData> {
 	const { testDataPath, capabilities, skipTests = [] } = options;
 
 	const files = await readdir(testDataPath);
@@ -317,18 +297,14 @@ export async function loadTestData(
  * Load all tests without filtering.
  * Useful for getting statistics about the full test suite.
  */
-export async function loadAllTests(
-	testDataPath: string,
-): Promise<LoadedTestData> {
+export async function loadAllTests(testDataPath: string): Promise<LoadedTestData> {
 	return loadTestData({ testDataPath });
 }
 
 /**
  * Group tests by the function they validate.
  */
-export function groupTestsByFunction(
-	tests: TestCase[],
-): Map<string, TestCase[]> {
+export function groupTestsByFunction(tests: TestCase[]): Map<string, TestCase[]> {
 	const groups = new Map<string, TestCase[]>();
 
 	for (const test of tests) {
@@ -344,9 +320,7 @@ export function groupTestsByFunction(
 /**
  * Group tests by their source test name.
  */
-export function groupTestsBySourceTest(
-	tests: TestCase[],
-): Map<string, TestCase[]> {
+export function groupTestsBySourceTest(tests: TestCase[]): Map<string, TestCase[]> {
 	const groups = new Map<string, TestCase[]>();
 
 	for (const test of tests) {

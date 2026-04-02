@@ -9,14 +9,7 @@
  */
 
 import { err, ok, type Result } from "true-myth/result";
-import type {
-	AccessError,
-	CCLList,
-	CCLObject,
-	CCLValue,
-	Entry,
-	ParseError,
-} from "./types.js";
+import type { AccessError, CCLList, CCLObject, CCLValue, Entry, ParseError } from "./types.js";
 
 // Regex patterns for whitespace trimming (top-level for performance)
 const LEADING_WHITESPACE = /^[ \t]+/;
@@ -204,11 +197,7 @@ function isEmptyLine(line: string): boolean {
 /**
  * Check if there are more continuation lines after the current position.
  */
-function hasMoreContinuations(
-	text: string,
-	pos: number,
-	baseline: number,
-): boolean {
+function hasMoreContinuations(text: string, pos: number, baseline: number): boolean {
 	let checkPos = pos;
 
 	while (checkPos < text.length) {
@@ -295,9 +284,7 @@ function countLeadingWhitespace(line: string): number {
  *
  * @beta
  */
-export function buildHierarchy(
-	entries: Entry[],
-): Result<CCLObject, ParseError> {
+export function buildHierarchy(entries: Entry[]): Result<CCLObject, ParseError> {
 	const result: CCLObject = {};
 
 	for (const entry of entries) {
@@ -480,10 +467,7 @@ function addToList(result: CCLObject, key: string, value: string | CCLObject): v
  * @param pathParts - Path components to the value (e.g., "server", "host")
  * @returns The value at the path, or undefined if not found
  */
-function navigateToValue(
-	obj: CCLObject,
-	pathParts: string[],
-): CCLValue | undefined {
+function navigateToValue(obj: CCLObject, pathParts: string[]): CCLValue | undefined {
 	if (pathParts.length === 0) {
 		// Empty path - return the root object itself is not valid for typed access
 		return undefined;
@@ -529,10 +513,7 @@ function navigateToValue(
  *
  * @beta
  */
-export function getString(
-	obj: CCLObject,
-	...pathParts: string[]
-): Result<string, AccessError> {
+export function getString(obj: CCLObject, ...pathParts: string[]): Result<string, AccessError> {
 	const value = navigateToValue(obj, pathParts);
 
 	if (value === undefined) {
@@ -598,10 +579,7 @@ function getTrimmedForParsing(
  *
  * @beta
  */
-export function getInt(
-	obj: CCLObject,
-	...pathParts: string[]
-): Result<number, AccessError> {
+export function getInt(obj: CCLObject, ...pathParts: string[]): Result<number, AccessError> {
 	const prepResult = getTrimmedForParsing(obj, pathParts, "integer");
 	if (prepResult.isErr) {
 		return err(prepResult.error);
@@ -651,10 +629,7 @@ export function getInt(
  *
  * @beta
  */
-export function getBool(
-	obj: CCLObject,
-	...pathParts: string[]
-): Result<boolean, AccessError> {
+export function getBool(obj: CCLObject, ...pathParts: string[]): Result<boolean, AccessError> {
 	const strResult = getString(obj, ...pathParts);
 	if (strResult.isErr) {
 		return err(strResult.error);
@@ -705,10 +680,7 @@ export function getBool(
  *
  * @beta
  */
-export function getFloat(
-	obj: CCLObject,
-	...pathParts: string[]
-): Result<number, AccessError> {
+export function getFloat(obj: CCLObject, ...pathParts: string[]): Result<number, AccessError> {
 	const prepResult = getTrimmedForParsing(obj, pathParts, "float");
 	if (prepResult.isErr) {
 		return err(prepResult.error);
@@ -772,10 +744,7 @@ export function getFloat(
  *
  * @beta
  */
-export function getList(
-	obj: CCLObject,
-	...pathParts: string[]
-): Result<CCLList, AccessError> {
+export function getList(obj: CCLObject, ...pathParts: string[]): Result<CCLList, AccessError> {
 	const value = navigateToValue(obj, pathParts);
 
 	if (value === undefined) {

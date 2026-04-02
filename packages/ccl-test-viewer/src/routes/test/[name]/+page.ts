@@ -49,8 +49,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 		return {
 			testName,
 			test: null,
-			error:
-				"Failed to load test data. Please check if the static data files are available.",
+			error: "Failed to load test data. Please check if the static data files are available.",
 			categories: [],
 		};
 	}

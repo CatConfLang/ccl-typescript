@@ -37,12 +37,8 @@ const formattedValue = $derived.by(() => {
 			return {
 				display: String(value),
 				type: "boolean",
-				color: value
-					? "text-green-600 dark:text-green-400"
-					: "text-destructive",
-				bgColor: value
-					? "bg-green-50 dark:bg-green-950/50"
-					: "bg-destructive/10",
+				color: value ? "text-green-600 dark:text-green-400" : "text-destructive",
+				bgColor: value ? "bg-green-50 dark:bg-green-950/50" : "bg-destructive/10",
 			};
 		default:
 			return {

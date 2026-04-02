@@ -17,9 +17,7 @@ const require = createRequire(import.meta.url);
  */
 function resolveTestDataPath(): string {
 	// Resolve the package.json of ccl-test-data, then get the data directory
-	const packageJsonPath = require.resolve(
-		"@tylerbu/ccl-test-data/package.json",
-	);
+	const packageJsonPath = require.resolve("@tylerbu/ccl-test-data/package.json");
 	return join(dirname(packageJsonPath), "data");
 }
 

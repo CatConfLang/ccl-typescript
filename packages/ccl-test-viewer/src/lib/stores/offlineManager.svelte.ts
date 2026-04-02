@@ -356,13 +356,9 @@ class OfflineManager {
 			totalSize: entries.reduce((sum, entry) => sum + entry.size, 0),
 			entryCount: entries.length,
 			oldestEntry:
-				entries.length > 0
-					? new Date(Math.min(...entries.map((e) => e.cachedAt.getTime())))
-					: null,
+				entries.length > 0 ? new Date(Math.min(...entries.map((e) => e.cachedAt.getTime()))) : null,
 			newestEntry:
-				entries.length > 0
-					? new Date(Math.max(...entries.map((e) => e.cachedAt.getTime())))
-					: null,
+				entries.length > 0 ? new Date(Math.max(...entries.map((e) => e.cachedAt.getTime()))) : null,
 			expiredCount: entries.filter((e) => e.expiresAt < now).length,
 		};
 	}

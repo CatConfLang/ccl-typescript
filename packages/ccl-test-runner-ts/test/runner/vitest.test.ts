@@ -1,17 +1,7 @@
 import { describe, expect, it } from "vitest";
-import {
-	Behavior,
-	createCapabilities,
-	DefaultBehaviors,
-	Variant,
-} from "../../src/capabilities.js";
+import { Behavior, createCapabilities, DefaultBehaviors, Variant } from "../../src/capabilities.js";
 import type { TestCase } from "../../src/schema-validation.js";
-import type {
-	CCLObject,
-	Entry,
-	HierarchyResult,
-	ParseResult,
-} from "../../src/types.js";
+import type { CCLObject, Entry, HierarchyResult, ParseResult } from "../../src/types.js";
 import {
 	type CCLFunctions,
 	type CCLTestConfig,
@@ -216,9 +206,7 @@ describe("runCCLTest", () => {
 			});
 
 			const functions: CCLFunctions = {
-				parse: (_input: string): Entry[] => [
-					{ key: "server", value: "\n  host = localhost" },
-				],
+				parse: (_input: string): Entry[] => [{ key: "server", value: "\n  host = localhost" }],
 				build_hierarchy: (_entries: Entry[]): CCLObject => ({
 					server: { host: "localhost" },
 				}),
@@ -362,9 +350,7 @@ describe("runCCLTest", () => {
 			});
 
 			const functions: CCLFunctions = {
-				parse: (_input: string): Entry[] => [
-					{ key: "key", value: "\t\thello" },
-				],
+				parse: (_input: string): Entry[] => [{ key: "key", value: "\t\thello" }],
 			};
 
 			const capabilities = createCapabilities({
@@ -420,9 +406,7 @@ describe("runCCLTest", () => {
 			});
 
 			// runCCLTest throws synchronously for missing inputs
-			expect(() => runCCLTest(testCase, functions, capabilities)).toThrow(
-				"has no inputs",
-			);
+			expect(() => runCCLTest(testCase, functions, capabilities)).toThrow("has no inputs");
 		});
 
 		it("should catch exceptions during test execution", () => {
@@ -463,12 +447,8 @@ describe("categorizeTest", () => {
 			functions: (overrides.functions ?? []) as Parameters<
 				typeof createCapabilities
 			>[0]["functions"],
-			features: overrides.features as Parameters<
-				typeof createCapabilities
-			>[0]["features"],
-			behaviors: overrides.behaviors as Parameters<
-				typeof createCapabilities
-			>[0]["behaviors"],
+			features: overrides.features as Parameters<typeof createCapabilities>[0]["features"],
+			behaviors: overrides.behaviors as Parameters<typeof createCapabilities>[0]["behaviors"],
 			variant: (overrides.variant ?? "proposed_behavior") as Parameters<
 				typeof createCapabilities
 			>[0]["variant"],
@@ -630,8 +610,7 @@ describe("runCCLTest typed access validations", () => {
 			const functions: CCLFunctions = {
 				parse: (_input: string): Entry[] => [{ key: "name", value: "Alice" }],
 				build_hierarchy: (_entries: Entry[]): CCLObject => ({ name: "Alice" }),
-				get_string: (obj: CCLObject, ...path: string[]) =>
-					obj[path[0]] as string,
+				get_string: (obj: CCLObject, ...path: string[]) => obj[path[0]] as string,
 			};
 
 			const capabilities = createCapabilities({
@@ -680,8 +659,7 @@ describe("runCCLTest typed access validations", () => {
 			const functions: CCLFunctions = {
 				parse: (_input: string): Entry[] => [{ key: "name", value: "Alice" }],
 				build_hierarchy: (_entries: Entry[]): CCLObject => ({ name: "Alice" }),
-				get_string: (obj: CCLObject, ...path: string[]) =>
-					obj[path[0]] as string,
+				get_string: (obj: CCLObject, ...path: string[]) => obj[path[0]] as string,
 			};
 
 			const capabilities = createCapabilities({
@@ -705,8 +683,7 @@ describe("runCCLTest typed access validations", () => {
 			const functions: CCLFunctions = {
 				parse: (_input: string): Entry[] => [{ key: "name", value: "Alice" }],
 				build_hierarchy: (_entries: Entry[]): CCLObject => ({ name: "Alice" }),
-				get_string: (obj: CCLObject, ...path: string[]) =>
-					obj[path[0]] as string,
+				get_string: (obj: CCLObject, ...path: string[]) => obj[path[0]] as string,
 			};
 
 			const capabilities = createCapabilities({
@@ -1199,9 +1176,7 @@ describe("runCCLTest formatting validations", () => {
 
 			const result = runCCLTest(testCase, functions, capabilities);
 			expect(result.passed).toBe(false);
-			expect(result.error).toContain(
-				"canonical_format function not implemented",
-			);
+			expect(result.error).toContain("canonical_format function not implemented");
 		});
 	});
 
@@ -1268,9 +1243,7 @@ describe("runCCLTest formatting validations", () => {
 
 			const result = runCCLTest(testCase, functions, capabilities);
 			expect(result.passed).toBe(false);
-			expect(result.error).toContain(
-				"parse and print functions required for round_trip",
-			);
+			expect(result.error).toContain("parse and print functions required for round_trip");
 		});
 	});
 });
