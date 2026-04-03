@@ -25,6 +25,7 @@ import {
 import { CCLAccessError, CCLParseError } from "./errors.js";
 import type {
 	AccessError,
+	BuildHierarchyOptions,
 	CCLList,
 	CCLObject,
 	Entry,
@@ -46,6 +47,7 @@ export { CCLAccessError, CCLParseError } from "./errors.js";
 // CCL types
 export type {
 	AccessError,
+	BuildHierarchyOptions,
 	CCLList,
 	CCLListItem,
 	CCLObject,
@@ -118,7 +120,7 @@ export function parseIndented(text: string, options?: ParseOptions): Result<Entr
  */
 export function buildHierarchy(
 	entries: Entry[],
-	options?: ParseOptions,
+	options?: BuildHierarchyOptions,
 ): Result<CCLObject, ParseError> {
 	return wrapResult(() => buildHierarchyInternal(entries, options), toParseError);
 }

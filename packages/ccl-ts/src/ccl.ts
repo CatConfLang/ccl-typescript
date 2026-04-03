@@ -9,6 +9,7 @@
 
 import { CCLAccessError, CCLParseError } from "./errors.js";
 import type {
+	BuildHierarchyOptions,
 	CCLList,
 	CCLObject,
 	CCLValue,
@@ -351,6 +352,7 @@ function countLeadingWhitespace(line: string, opts: ResolvedParseOptions): numbe
  * 4. Return the constructed hierarchy
  *
  * @param entries - The flat entries from a parse operation
+ * @param options - Options controlling hierarchy construction behavior
  * @returns A hierarchical CCL object
  *
  * @example
@@ -358,11 +360,15 @@ function countLeadingWhitespace(line: string, opts: ResolvedParseOptions): numbe
  * const entries = parse("server=\n  host=localhost\n  port=8080");
  * const obj = buildHierarchy(entries);
  * // => { server: { host: "localhost", port: "8080" } }
+ *
+ * const entries2 = parse("colors=red\ncolors=green\ncolors=blue");
+ * const sorted = buildHierarchy(entries2, { sort: "lexicographic" });
+ * // => { colors: ["blue", "green", "red"] }
  * ```
  *
  * @beta
  */
-export function buildHierarchy(entries: Entry[], options?: ParseOptions): CCLObject {
+export function buildHierarchy(entries: Entry[], options?: BuildHierarchyOptions): CCLObject {
 	const result: CCLObject = {};
 
 	for (const entry of entries) {
@@ -408,6 +414,10 @@ export function buildHierarchy(entries: Entry[], options?: ParseOptions): CCLObj
 		}
 	}
 
+	if (options?.sort === "lexicographic") {
+		sortListValues(result);
+	}
+
 	return result;
 }
 
@@ -416,6 +426,26 @@ export function buildHierarchy(entries: Entry[], options?: ParseOptions): CCLObj
  */
 function isPlainObject(value: unknown): value is CCLObject {
 	return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Recursively sort all list values in a CCL object lexicographically.
+ * String items are sorted; non-string items retain relative order.
+ */
+function sortListValues(obj: CCLObject): void {
+	for (const key of Object.keys(obj)) {
+		const value = obj[key];
+		if (Array.isArray(value)) {
+			obj[key] = value.toSorted((a, b) => {
+				if (typeof a === "string" && typeof b === "string") {
+					return a < b ? -1 : a > b ? 1 : 0;
+				}
+				return 0;
+			});
+		} else if (isPlainObject(value)) {
+			sortListValues(value);
+		}
+	}
 }
 
 /**

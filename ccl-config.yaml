@@ -35,11 +35,13 @@ behaviors:
   - delimiter_first_equals
   - list_coercion_disabled
   - toplevel_indent_preserve
+  - array_order_insertion
 
 # Optional: Additional behaviors supported via function options
 optional_behaviors:
   - boolean_strict
   - list_coercion_enabled
+  - array_order_lexicographic
 
 # Optional: Specification variant
 variants:

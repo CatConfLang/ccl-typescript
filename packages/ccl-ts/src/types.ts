@@ -125,3 +125,18 @@ export interface GetListOptions {
 	 */
 	coercion?: boolean;
 }
+
+/**
+ * Options for configuring hierarchy construction behavior.
+ *
+ * @beta
+ */
+export interface BuildHierarchyOptions extends ParseOptions {
+	/**
+	 * Controls the ordering of list items built from duplicate keys.
+	 * - `"insertion"` (default): items appear in the order they were defined.
+	 * - `"lexicographic"`: string items are sorted lexicographically; non-string items retain relative order.
+	 * @defaultValue `"insertion"`
+	 */
+	sort?: "insertion" | "lexicographic";
+}

@@ -46,6 +46,7 @@ import type {
 	AccessError,
 	AnyBuildHierarchyFn,
 	AnyParseFn,
+	BuildHierarchyOptions,
 	CCLList,
 	CCLObject,
 	Entry,
@@ -549,6 +550,16 @@ function checkParseExpectations(
 }
 
 /**
+ * Derive BuildHierarchyOptions from test case behaviors.
+ */
+function deriveBuildHierarchyOptions(testCase: TestCase): BuildHierarchyOptions | undefined {
+	if (testCase.behaviors.includes("array_order_lexicographic")) {
+		return { sort: "lexicographic" };
+	}
+	return undefined;
+}
+
+/**
  * Handle build_hierarchy validation.
  */
 function handleBuildHierarchyValidation(
@@ -570,7 +581,8 @@ function handleBuildHierarchyValidation(
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
 
-	const hierarchyResult = buildFn(parseResult.value);
+	const buildOptions = deriveBuildHierarchyOptions(testCase);
+	const hierarchyResult = buildFn(parseResult.value, buildOptions);
 
 	if (hierarchyResult.isErr) {
 		return {
@@ -597,7 +609,11 @@ function handleBuildHierarchyValidation(
  * Build a CCL object from input using parse and build_hierarchy.
  * Helper for typed access validation handlers.
  */
-function buildObjectFromInput(input: string, functions: CCLFunctions): CCLObject {
+function buildObjectFromInput(
+	input: string,
+	functions: CCLFunctions,
+	buildOptions?: BuildHierarchyOptions,
+): CCLObject {
 	const rawParseFn = functions.parse;
 	const rawBuildFn = functions.build_hierarchy;
 	if (!(rawParseFn && rawBuildFn)) {
@@ -612,7 +628,7 @@ function buildObjectFromInput(input: string, functions: CCLFunctions): CCLObject
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
 
-	const hierarchyResult = buildFn(parseResult.value);
+	const hierarchyResult = buildFn(parseResult.value, buildOptions);
 	if (hierarchyResult.isErr) {
 		throw new Error(`Build hierarchy failed: ${hierarchyResult.error.message}`);
 	}
@@ -667,7 +683,7 @@ function handleGetStringValidation(
 		throw new Error("get_string function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions);
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Check if we expect an error
@@ -747,7 +763,7 @@ function handleGetIntValidation(
 		throw new Error("get_int function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions);
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Check if we expect an error
@@ -827,7 +843,7 @@ function handleGetBoolValidation(
 		throw new Error("get_bool function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions);
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Derive options from test case behaviors
@@ -913,7 +929,7 @@ function handleGetFloatValidation(
 		throw new Error("get_float function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions);
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Check if we expect an error
@@ -993,7 +1009,7 @@ function handleGetListValidation(
 		throw new Error("get_list function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions);
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Derive options from test case behaviors
