@@ -29,6 +29,7 @@
  * ```
  */
 
+import { isDeepStrictEqual } from "node:util";
 import type { Result } from "true-myth/result";
 import type {
 	CCLBehavior,
@@ -393,9 +394,7 @@ function buildCapabilities(config: CCLTestConfig): ImplementationCapabilities {
 	const allDeclaredFunctions = [
 		...declaredFunctions,
 		...todoFunctions.filter((fn) => !declaredFunctions.includes(fn)),
-		...fileFunctions.filter(
-			(fn) => !declaredFunctions.includes(fn) && !todoFunctions.includes(fn),
-		),
+		...fileFunctions.filter((fn) => !declaredFunctions.includes(fn) && !todoFunctions.includes(fn)),
 	];
 
 	// Inline config values take precedence over YAML file values.
@@ -525,9 +524,7 @@ function checkParseExpectations(
 	}
 
 	if (testCase.expected.entries !== undefined) {
-		const entriesMatch =
-			JSON.stringify(processedEntries) === JSON.stringify(testCase.expected.entries);
-		if (!entriesMatch) {
+		if (!isDeepStrictEqual(processedEntries, testCase.expected.entries)) {
 			return { passed: false, error: "Entries mismatch" };
 		}
 	}
@@ -569,7 +566,7 @@ function handleBuildHierarchyValidation(
 		};
 	}
 
-	const passed = JSON.stringify(hierarchyResult.value) === JSON.stringify(testCase.expected.object);
+	const passed = isDeepStrictEqual(hierarchyResult.value, testCase.expected.object);
 
 	return {
 		rawOutput: hierarchyResult,
@@ -1021,7 +1018,7 @@ function handleGetListValidation(
 		}
 		const result = unwrapped.value;
 		const expected = testCase.expected.list ?? testCase.expected.value;
-		const passed = JSON.stringify(result) === JSON.stringify(expected);
+		const passed = isDeepStrictEqual(result, expected);
 
 		return {
 			rawOutput: rawResult,
@@ -1258,6 +1255,121 @@ function handleRoundTripValidation(
 	};
 }
 
+function getComposeValidationHelpers(functions: CCLFunctions): {
+	parseFn: ReturnType<typeof normalizeParseFunction>;
+	buildFn: ReturnType<typeof normalizeBuildHierarchyFunction>;
+	composeFn: NonNullable<CCLFunctions["compose"]>;
+} {
+	const rawParseFn = functions.parse;
+	const rawBuildFn = functions.build_hierarchy;
+	const composeFn = functions.compose;
+	if (!(rawParseFn && rawBuildFn && composeFn)) {
+		throw new Error("parse, compose, and build_hierarchy functions required");
+	}
+
+	return {
+		parseFn: normalizeParseFunction(rawParseFn),
+		buildFn: normalizeBuildHierarchyFunction(rawBuildFn),
+		composeFn,
+	};
+}
+
+function parseEntriesForCompose(
+	input: string,
+	parseFn: ReturnType<typeof normalizeParseFunction>,
+): Entry[] {
+	const parseResult = parseFn(input);
+	if (parseResult.isErr) {
+		throw new Error(`Parse failed: ${parseResult.error.message}`);
+	}
+	return parseResult.value;
+}
+
+function buildObjectFromEntries(
+	entries: Entry[],
+	buildFn: ReturnType<typeof normalizeBuildHierarchyFunction>,
+): CCLObject {
+	const hierarchyResult = buildFn(entries);
+	if (hierarchyResult.isErr) {
+		throw new Error(`Build hierarchy failed: ${hierarchyResult.error.message}`);
+	}
+	return hierarchyResult.value;
+}
+
+function handleComposeAssociativeValidation(
+	testCase: TestCase,
+	inputs: string[],
+	functions: CCLFunctions,
+): ValidationResult {
+	const [firstInput, secondInput, thirdInput] = inputs;
+	if (!(firstInput !== undefined && secondInput !== undefined && thirdInput !== undefined)) {
+		throw new Error("compose_associative validation requires exactly 3 inputs");
+	}
+
+	const { parseFn, buildFn, composeFn } = getComposeValidationHelpers(functions);
+	const a = parseEntriesForCompose(firstInput, parseFn);
+	const b = parseEntriesForCompose(secondInput, parseFn);
+	const c = parseEntriesForCompose(thirdInput, parseFn);
+
+	const left = buildObjectFromEntries(composeFn(composeFn(a, b), c), buildFn);
+	const right = buildObjectFromEntries(composeFn(a, composeFn(b, c)), buildFn);
+	const passed = isDeepStrictEqual(left, right);
+
+	return {
+		rawOutput: { left, right },
+		output: passed,
+		expected: testCase.expected.value,
+		passed: passed === testCase.expected.value,
+		...(passed === testCase.expected.value
+			? {}
+			: { error: "Associativity check failed for compose" }),
+	};
+}
+
+function handleIdentityValidation(
+	testCase: TestCase,
+	inputs: string[],
+	functions: CCLFunctions,
+	direction: "left" | "right",
+): ValidationResult {
+	const [firstInput, secondInput] = inputs;
+	if (!(firstInput !== undefined && secondInput !== undefined)) {
+		throw new Error(
+			`${direction === "left" ? "identity_left" : "identity_right"} validation requires exactly 2 inputs`,
+		);
+	}
+
+	const { parseFn, buildFn, composeFn } = getComposeValidationHelpers(functions);
+	const identityEntries = parseEntriesForCompose(
+		direction === "left" ? firstInput : secondInput,
+		parseFn,
+	);
+	const valueEntries = parseEntriesForCompose(
+		direction === "left" ? secondInput : firstInput,
+		parseFn,
+	);
+	const actualEntries =
+		direction === "left"
+			? composeFn(identityEntries, valueEntries)
+			: composeFn(valueEntries, identityEntries);
+
+	const actual = buildObjectFromEntries(actualEntries, buildFn);
+	const expected = buildObjectFromEntries(valueEntries, buildFn);
+	const passed = isDeepStrictEqual(actual, expected);
+
+	return {
+		rawOutput: { actual, expected },
+		output: passed,
+		expected: testCase.expected.value,
+		passed: passed === testCase.expected.value,
+		...(passed === testCase.expected.value
+			? {}
+			: {
+					error: `${direction === "left" ? "Left" : "Right"} identity check failed for compose`,
+				}),
+	};
+}
+
 /**
  * Run a single CCL test case and return detailed results.
  * This is the hybrid approach - returns values for vitest assertions.
@@ -1271,20 +1383,22 @@ export function runCCLTest(
 	if (rawInput === undefined) {
 		throw new Error(`Test case "${testCase.name}" has no inputs`);
 	}
-	const input = preprocessInput(rawInput, capabilities);
+	const inputs = testCase.inputs.map((value) => preprocessInput(value, capabilities));
+	const singleInput = inputs[0] ?? rawInput;
+	const input = inputs.length === 1 ? singleInput : inputs.join("\n---\n");
 
 	try {
 		let result: ValidationResult;
 
 		switch (testCase.validation) {
 			case "parse":
-				result = handleParseValidation(testCase, input, functions, capabilities);
+				result = handleParseValidation(testCase, singleInput, functions, capabilities);
 				break;
 
 			case "parse_indented":
 				result = handleParseValidation(
 					testCase,
-					input,
+					singleInput,
 					functions,
 					capabilities,
 					"parse_indented",
@@ -1296,39 +1410,51 @@ export function runCCLTest(
 				break;
 
 			case "build_hierarchy":
-				result = handleBuildHierarchyValidation(testCase, input, functions);
+				result = handleBuildHierarchyValidation(testCase, singleInput, functions);
 				break;
 
 			case "get_string":
-				result = handleGetStringValidation(testCase, input, functions);
+				result = handleGetStringValidation(testCase, singleInput, functions);
 				break;
 
 			case "get_int":
-				result = handleGetIntValidation(testCase, input, functions);
+				result = handleGetIntValidation(testCase, singleInput, functions);
 				break;
 
 			case "get_bool":
-				result = handleGetBoolValidation(testCase, input, functions);
+				result = handleGetBoolValidation(testCase, singleInput, functions);
 				break;
 
 			case "get_float":
-				result = handleGetFloatValidation(testCase, input, functions);
+				result = handleGetFloatValidation(testCase, singleInput, functions);
 				break;
 
 			case "get_list":
-				result = handleGetListValidation(testCase, input, functions);
+				result = handleGetListValidation(testCase, singleInput, functions);
 				break;
 
 			case "print":
-				result = handlePrintValidation(testCase, input, functions);
+				result = handlePrintValidation(testCase, singleInput, functions);
 				break;
 
 			case "canonical_format":
-				result = handleCanonicalFormatValidation(testCase, input, functions);
+				result = handleCanonicalFormatValidation(testCase, singleInput, functions);
 				break;
 
 			case "round_trip":
-				result = handleRoundTripValidation(testCase, input, functions);
+				result = handleRoundTripValidation(testCase, singleInput, functions);
+				break;
+
+			case "compose_associative":
+				result = handleComposeAssociativeValidation(testCase, inputs, functions);
+				break;
+
+			case "identity_left":
+				result = handleIdentityValidation(testCase, inputs, functions, "left");
+				break;
+
+			case "identity_right":
+				result = handleIdentityValidation(testCase, inputs, functions, "right");
 				break;
 
 			default:
@@ -1373,6 +1499,9 @@ export type TestCategorization =
  */
 const compositeValidations: Record<string, string[]> = {
 	round_trip: ["parse", "print"],
+	compose_associative: ["parse", "compose", "build_hierarchy"],
+	identity_left: ["parse", "compose", "build_hierarchy"],
+	identity_right: ["parse", "compose", "build_hierarchy"],
 };
 
 type FunctionCheckResult =

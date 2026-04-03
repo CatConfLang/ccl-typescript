@@ -204,11 +204,7 @@ function trimLeadingWhitespace(s: string, opts: ResolvedParseOptions): string {
  * Strip a specific number of leading whitespace characters from a string.
  * Under tabs_as_content, only spaces count toward the strip count.
  */
-function stripLeadingWhitespace(
-	s: string,
-	count: number,
-	opts: ResolvedParseOptions,
-): string {
+function stripLeadingWhitespace(s: string, count: number, opts: ResolvedParseOptions): string {
 	let stripped = 0;
 	let i = 0;
 	while (i < s.length && stripped < count) {
@@ -938,16 +934,25 @@ export function filter(
 	return entries.filter(predicate);
 }
 
-// /**
-//  * Compose two entry lists (overlay on base).
-//  *
-//  * @param base - The base entries
-//  * @param overlay - The overlay entries (take precedence)
-//  * @returns Composed entries
-//  */
-// export function compose(base: Entry[], overlay: Entry[]): Entry[] {
-// 	throw new Error("Not yet implemented");
-// }
+/**
+ * Compose two entry lists.
+ *
+ * Composition is an entry-level operation: it appends the overlay entries
+ * after the base entries so downstream processing (for example
+ * `buildHierarchy(compose(base, overlay))`) observes the combined document.
+ *
+ * This gives `Entry[]` the expected monoid identity of `[]` and keeps
+ * composition structure-preserving at the entry layer.
+ *
+ * @param base - The base entries
+ * @param overlay - The overlay entries to append
+ * @returns The combined entry list
+ *
+ * @beta
+ */
+export function compose(base: Entry[], overlay: Entry[]): Entry[] {
+	return [...base, ...overlay];
+}
 
 // /**
 //  * Load and parse CCL from string directly to object.

@@ -39,7 +39,7 @@ Manipulate CCL entries for composition and filtering.
 
 **Common Functions**:
 - `filter(entries, predicate)` - Remove entries (e.g., comments)
-- `compose(entries1, entries2)` - Merge entry lists (Monoid composition)
+- `compose(entries1, entries2)` - Concatenate entry lists before downstream hierarchy building
 
 **Example**:
 ```ccl
@@ -56,6 +56,19 @@ prod_entries = parse(prod_config)
 combined = compose(dev_entries, prod_entries)
 final_config = build_hierarchy(combined)
 ```
+
+`compose` is intentionally an **entry-processing helper**, not an object merge API.
+The expected flow is:
+
+```pseudocode
+entries_a = parse(text_a)
+entries_b = parse(text_b)
+merged_entries = compose(entries_a, entries_b)
+final_config = build_hierarchy(merged_entries)
+```
+
+This keeps composition pure at the `Entry[]` layer and gives `[]` the expected
+left/right identity for compose.
 
 ## Formatting Functions
 
@@ -182,7 +195,7 @@ Some implementations provide additional experimental features:
 The [CCL Test Suite](https://github.com/CatConfLang/ccl-test-data) provides tests for these features:
 
 - **Type-Safe Access**: `get_string`, `get_int`, `get_bool`, `get_float`, `get_list` — covered by tests tagged `optional_typed_accessors`
-- **Entry Processing**: `filter`, `compose`, identity properties
+- **Entry Processing**: `filter`, `compose`, and compose algebraic properties evaluated by normalizing `build_hierarchy(compose(...))`
 - **Formatting**: `print` and `round_trip` tests verify isomorphism properties
 - **Experimental Features**: `experimental_dotted_keys` tests for dotted representation
 

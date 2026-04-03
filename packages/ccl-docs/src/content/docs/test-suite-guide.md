@@ -98,6 +98,22 @@ The `print` function verifies structure-preserving output. For inputs in standar
 tests.filter(t => ['compose_associative', 'identity_left', 'identity_right'].includes(t.validation))
 ```
 
+These validations are **composite checks** built on the entry-processing pipeline:
+
+```pseudocode
+parsed_inputs = inputs.map(parse)
+composed_entries = compose(parsed_inputs[0], parsed_inputs[1])  # or nested compose calls
+result = build_hierarchy(composed_entries)
+```
+
+- `compose_associative` compares `build_hierarchy(compose(compose(a, b), c))` with `build_hierarchy(compose(a, compose(b, c)))`
+- `identity_left` compares `build_hierarchy(compose([], x))` with `build_hierarchy(x)`
+- `identity_right` compares `build_hierarchy(compose(x, []))` with `build_hierarchy(x)`
+
+If you use `ccl-test-runner-ts`, wiring `parse`, `compose`, and `build_hierarchy`
+is enough for these validations to run; the runner resolves those composite
+requirements automatically during filtering and execution.
+
 ### Optional Features
 
 The `features` field is **informational only** — it describes which CCL language features a test exercises but is not used to decide whether to run it. Use it to understand your coverage gaps (e.g. "I have no comment-related tests passing yet") rather than as a filter condition.
@@ -118,6 +134,11 @@ const supportedTests = tests.filter(test => {
   return true;
 });
 ```
+
+When a test case uses a composite validation such as `compose_associative`, treat
+its effective function requirements as `parse`, `compose`, and
+`build_hierarchy`, even if the validation name is listed directly in test
+metadata.
 
 ## Example Test
 

@@ -25,6 +25,28 @@ function createTestCase(overrides: Partial<TestCase>): TestCase {
 	};
 }
 
+function parseFlatEntries(input: string): Entry[] {
+	if (input.trim() === "") {
+		return [];
+	}
+
+	return input.split("\n").map((line) => {
+		const [key, ...valueParts] = line.split("=");
+		return {
+			key: key?.trim() ?? "",
+			value: valueParts.join("=").trim(),
+		};
+	});
+}
+
+function buildFlatHierarchy(entries: Entry[]): CCLObject {
+	return Object.fromEntries(entries.map((entry) => [entry.key, entry.value]));
+}
+
+function composeFlatEntries(base: Entry[], overlay: Entry[]): Entry[] {
+	return [...base, ...overlay];
+}
+
 describe("defineCCLTests", () => {
 	it("should return config unchanged", () => {
 		const config: CCLTestConfig = {
@@ -431,6 +453,80 @@ describe("runCCLTest", () => {
 			expect(result.error).toContain("Unexpected crash");
 		});
 	});
+
+	describe("algebraic compose validations", () => {
+		it("should run compose_associative validation successfully", () => {
+			const testCase = createTestCase({
+				validation: "compose_associative",
+				inputs: ["a = 1", "b = 2", "c = 3"],
+				expected: { count: 1, value: true },
+				functions: ["compose_associative"],
+			});
+
+			const functions: CCLFunctions = {
+				parse: parseFlatEntries,
+				build_hierarchy: buildFlatHierarchy,
+				compose: composeFlatEntries,
+			};
+
+			const capabilities = createCapabilities({
+				name: "test",
+				functions: ["parse", "compose", "build_hierarchy"],
+			});
+
+			const result = runCCLTest(testCase, functions, capabilities);
+			expect(result.passed).toBe(true);
+			expect(result.output).toBe(true);
+		});
+
+		it("should run identity_left validation successfully", () => {
+			const testCase = createTestCase({
+				validation: "identity_left",
+				inputs: ["", "key = value\nanother = test"],
+				expected: { count: 1, value: true },
+				functions: ["identity_left"],
+			});
+
+			const functions: CCLFunctions = {
+				parse: parseFlatEntries,
+				build_hierarchy: buildFlatHierarchy,
+				compose: composeFlatEntries,
+			};
+
+			const capabilities = createCapabilities({
+				name: "test",
+				functions: ["parse", "compose", "build_hierarchy"],
+			});
+
+			const result = runCCLTest(testCase, functions, capabilities);
+			expect(result.passed).toBe(true);
+			expect(result.output).toBe(true);
+		});
+
+		it("should run identity_right validation successfully", () => {
+			const testCase = createTestCase({
+				validation: "identity_right",
+				inputs: ["key = value\nanother = test", ""],
+				expected: { count: 1, value: true },
+				functions: ["identity_right"],
+			});
+
+			const functions: CCLFunctions = {
+				parse: parseFlatEntries,
+				build_hierarchy: buildFlatHierarchy,
+				compose: composeFlatEntries,
+			};
+
+			const capabilities = createCapabilities({
+				name: "test",
+				functions: ["parse", "compose", "build_hierarchy"],
+			});
+
+			const result = runCCLTest(testCase, functions, capabilities);
+			expect(result.passed).toBe(true);
+			expect(result.output).toBe(true);
+		});
+	});
 });
 
 describe("categorizeTest", () => {
@@ -522,6 +618,18 @@ describe("categorizeTest", () => {
 		if (result.type === "todo") {
 			expect(result.reason).toContain("declared but not implemented");
 		}
+	});
+
+	it("should return 'run' for compose algebraic validations when parse, compose, and build_hierarchy are implemented", () => {
+		const testCase = createTestCase({
+			validation: "compose_associative",
+			functions: ["compose_associative"],
+		});
+
+		const context = createContext({ functions: ["parse", "compose", "build_hierarchy"] });
+		const result = categorizeTest(testCase, context);
+
+		expect(result.type).toBe("run");
 	});
 
 	it("should return 'skip' when required function not supported", () => {
