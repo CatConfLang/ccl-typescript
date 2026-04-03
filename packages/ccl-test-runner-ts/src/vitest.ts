@@ -29,6 +29,7 @@
  * ```
  */
 
+import { isDeepStrictEqual } from "node:util";
 import type { Result } from "true-myth/result";
 import type {
 	CCLBehavior,
@@ -1232,7 +1233,7 @@ function handleComposeAssociativeValidation(
 
 	const left = buildObjectFromEntries(composeFn(composeFn(a, b), c), buildFn);
 	const right = buildObjectFromEntries(composeFn(a, composeFn(b, c)), buildFn);
-	const passed = JSON.stringify(left) === JSON.stringify(right);
+	const passed = isDeepStrictEqual(left, right);
 
 	return {
 		rawOutput: { left, right },
@@ -1274,7 +1275,7 @@ function handleIdentityValidation(
 
 	const actual = buildObjectFromEntries(actualEntries, buildFn);
 	const expected = buildObjectFromEntries(valueEntries, buildFn);
-	const passed = JSON.stringify(actual) === JSON.stringify(expected);
+	const passed = isDeepStrictEqual(actual, expected);
 
 	return {
 		rawOutput: { actual, expected },

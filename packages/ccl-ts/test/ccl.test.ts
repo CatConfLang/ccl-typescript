@@ -70,6 +70,15 @@ function runAssertions(result: CCLTestResult): void {
 	if (expected.object !== undefined) {
 		expect(result.output).toEqual(expected.object);
 	}
+
+	// Algebraic property tests use expected.value=true, but many existing
+	// non-algebraic validations rely on the runner's own pass/fail logic.
+	if (
+		expected.value !== undefined &&
+		["compose_associative", "identity_left", "identity_right"].includes(result.testCase.validation)
+	) {
+		expect(result.output).toEqual(expected.value);
+	}
 }
 
 /**
