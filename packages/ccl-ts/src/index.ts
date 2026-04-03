@@ -19,8 +19,8 @@ import {
 	getInt as getIntInternal,
 	getList as getListInternal,
 	getString as getStringInternal,
-	parse as parseInternal,
 	parseIndented as parseIndentedInternal,
+	parse as parseInternal,
 } from "./ccl.js";
 import { CCLAccessError, CCLParseError } from "./errors.js";
 import type { AccessError, CCLList, CCLObject, Entry, ParseError, ParseOptions } from "./types.js";
@@ -28,8 +28,8 @@ import type { AccessError, CCLList, CCLObject, Entry, ParseError, ParseOptions }
 // Result types from true-myth
 export type { Err, Ok } from "true-myth/result";
 export { err, ok, Result } from "true-myth/result";
-// Re-export print directly (it never fails)
-export { print } from "./ccl.js";
+// Re-export direct helpers that never fail
+export { compose, print } from "./ccl.js";
 
 // Error classes (usable with both Result and throwing APIs)
 export { CCLAccessError, CCLParseError } from "./errors.js";
@@ -96,10 +96,7 @@ export function parse(text: string, options?: ParseOptions): Result<Entry[], Par
  *
  * @beta
  */
-export function parseIndented(
-	text: string,
-	options?: ParseOptions,
-): Result<Entry[], ParseError> {
+export function parseIndented(text: string, options?: ParseOptions): Result<Entry[], ParseError> {
 	return wrapResult(() => parseIndentedInternal(text, options), toParseError);
 }
 

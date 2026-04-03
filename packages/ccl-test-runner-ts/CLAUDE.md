@@ -81,8 +81,15 @@ npx ccl-download-tests schema --output ./schemas
 - `loadTestData()` - Load tests with capability filtering
 - `loadAllTests()` - Load all tests without filtering
 - `shouldRunTest()` - Check if single test matches capabilities
+- `COMPOSITE_FUNCTIONS` - Maps composite validations like `round_trip` and the compose algebraic checks to the lower-level functions that satisfy them during filtering
 - `groupTestsByFunction()` / `groupTestsBySourceTest()` - Grouping utilities
 - `getTestStats()` - Calculate test statistics
+
+**`src/vitest.ts`** - Declarative Vitest wiring and execution
+- `defineCCLTests()` / `createCCLTestCases()` - Build the test suite from an implementation config
+- `runCCLTest()` - Executes a validation after preprocessing inputs and normalizing function signatures
+- Compose algebraic validations (`compose_associative`, `identity_left`, `identity_right`) parse each raw input, compose the resulting `Entry[]` values, then compare `build_hierarchy(...)` output
+- Composite validations are treated as dependency-driven checks, so todo/skip decisions are based on the underlying functions rather than only the validation name
 
 **`src/ccl.ts`** - CCL function stubs (to be implemented)
 - `parse()` - Parse CCL text to flat entries
@@ -117,7 +124,7 @@ Test execution
 ### Capability Filtering Logic
 
 Tests are filtered by checking all requirements (ALL must pass):
-1. **Functions** - All required functions must be implemented
+1. **Functions** - All required functions must be implemented; composite validations can also be satisfied transitively by their dependency sets (for example `round_trip` via `parse` + `print`, or compose algebraic validations via `parse` + `compose` + `build_hierarchy`)
 2. **Behaviors** - Implementation behaviors must match (no conflicts)
 3. **Variants** - Implementation variant must match if specified
 4. **Conflicts** - Test must not conflict with implementation capabilities
