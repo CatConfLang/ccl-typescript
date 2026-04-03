@@ -1052,45 +1052,28 @@ function handleGetListValidation(
 const CCL_COMMENT_KEY = "/";
 
 /**
- * Supported filter predicate operators.
+ * A filter predicate specification from test data.
  */
-type FilterOperator = "==" | "!=";
+interface FilterPredicate {
+	field: "key" | "value";
+	op: "==" | "!=";
+	value: string;
+}
 
 /**
- * Build a filter predicate from a test case's args.
+ * Build a filter predicate function from a structured predicate specification.
  *
- * When args is provided, it is interpreted as a `[field, operator, value]` triplet:
- * - field: `"key"` or `"value"` — which Entry field to compare
- * - operator: `"=="` or `"!="` — comparison operator
- * - value: the string to compare against
- *
- * When args is undefined/null, falls back to the default comment-exclusion predicate.
+ * When a predicate object is provided, builds the corresponding comparison function.
+ * When predicate is undefined, falls back to the default comment-exclusion predicate.
  */
-function buildFilterPredicate(args: string[] | undefined): (entry: Entry) => boolean {
-	if (args === undefined || args.length === 0) {
+function buildFilterPredicate(predicate: FilterPredicate | undefined): (entry: Entry) => boolean {
+	if (predicate === undefined) {
 		return (entry) => entry.key !== CCL_COMMENT_KEY;
 	}
 
-	if (args.length !== 3) {
-		throw new Error(
-			`Filter args must be a [field, operator, value] triplet, got ${JSON.stringify(args)}`,
-		);
-	}
+	const { field, op, value } = predicate;
 
-	const [field, operator, value] = args;
-
-	if (field !== "key" && field !== "value") {
-		throw new Error(`Unsupported filter field: "${field}" (expected "key" or "value")`);
-	}
-
-	const validOperators: FilterOperator[] = ["==", "!="];
-	if (!validOperators.includes(operator as FilterOperator)) {
-		throw new Error(
-			`Unsupported filter operator: "${operator}" (expected ${validOperators.map((o) => `"${o}"`).join(" or ")})`,
-		);
-	}
-
-	switch (operator as FilterOperator) {
+	switch (op) {
 		case "==":
 			return (entry) => entry[field] === value;
 		case "!=":
@@ -1103,8 +1086,8 @@ function buildFilterPredicate(args: string[] | undefined): (entry: Entry) => boo
  *
  * Filter tests parse the input, then filter the resulting entries using the
  * implementation's filter function. The predicate is built from the test case's
- * `args` field (a `[field, operator, value]` triplet), or defaults to excluding
- * comment entries when args is not provided.
+ * `predicate` field (a structured `{field, op, value}` object), or defaults to
+ * excluding comment entries when predicate is not provided.
  */
 function handleFilterValidation(
 	testCase: TestCase,
@@ -1125,7 +1108,7 @@ function handleFilterValidation(
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
 
-	const predicate = buildFilterPredicate(testCase.args);
+	const predicate = buildFilterPredicate(testCase.predicate as FilterPredicate | undefined);
 	const filtered = filterFn(parseResult.value, predicate);
 
 	const processedEntries = filtered.map((entry: Entry) => ({
