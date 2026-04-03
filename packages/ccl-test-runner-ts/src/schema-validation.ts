@@ -77,7 +77,8 @@ const testCaseSchema = {
 		},
 		args: {
 			type: "array",
-			description: "Arguments for typed access functions",
+			description:
+				"Arguments for validation functions. For typed access functions (get_string, etc.), specifies the path components. For filter, a [field, operator, value] predicate triplet.",
 			items: { type: "string" },
 		},
 		functions: {

@@ -1052,10 +1052,59 @@ function handleGetListValidation(
 const CCL_COMMENT_KEY = "/";
 
 /**
+ * Supported filter predicate operators.
+ */
+type FilterOperator = "==" | "!=";
+
+/**
+ * Build a filter predicate from a test case's args.
+ *
+ * When args is provided, it is interpreted as a `[field, operator, value]` triplet:
+ * - field: `"key"` or `"value"` — which Entry field to compare
+ * - operator: `"=="` or `"!="` — comparison operator
+ * - value: the string to compare against
+ *
+ * When args is undefined/null, falls back to the default comment-exclusion predicate.
+ */
+function buildFilterPredicate(args: string[] | undefined): (entry: Entry) => boolean {
+	if (args === undefined || args.length === 0) {
+		return (entry) => entry.key !== CCL_COMMENT_KEY;
+	}
+
+	if (args.length !== 3) {
+		throw new Error(
+			`Filter args must be a [field, operator, value] triplet, got ${JSON.stringify(args)}`,
+		);
+	}
+
+	const [field, operator, value] = args;
+
+	if (field !== "key" && field !== "value") {
+		throw new Error(`Unsupported filter field: "${field}" (expected "key" or "value")`);
+	}
+
+	const validOperators: FilterOperator[] = ["==", "!="];
+	if (!validOperators.includes(operator as FilterOperator)) {
+		throw new Error(
+			`Unsupported filter operator: "${operator}" (expected ${validOperators.map((o) => `"${o}"`).join(" or ")})`,
+		);
+	}
+
+	switch (operator as FilterOperator) {
+		case "==":
+			return (entry) => entry[field] === value;
+		case "!=":
+			return (entry) => entry[field] !== value;
+	}
+}
+
+/**
  * Handle filter validation.
  *
  * Filter tests parse the input, then filter the resulting entries using the
- * implementation's filter function with a predicate that removes comment entries.
+ * implementation's filter function. The predicate is built from the test case's
+ * `args` field (a `[field, operator, value]` triplet), or defaults to excluding
+ * comment entries when args is not provided.
  */
 function handleFilterValidation(
 	testCase: TestCase,
@@ -1076,7 +1125,8 @@ function handleFilterValidation(
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
 
-	const filtered = filterFn(parseResult.value, (entry) => entry.key !== CCL_COMMENT_KEY);
+	const predicate = buildFilterPredicate(testCase.args);
+	const filtered = filterFn(parseResult.value, predicate);
 
 	const processedEntries = filtered.map((entry: Entry) => ({
 		key: entry.key,
