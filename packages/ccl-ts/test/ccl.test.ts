@@ -22,6 +22,7 @@ import { describe, expect, test } from "vitest";
 import {
 	buildHierarchy,
 	canonicalFormat,
+	compose,
 	getBool,
 	getFloat,
 	getInt,
@@ -89,6 +90,7 @@ const cclConfig = defineCCLTests({
 	functions: {
 		parse,
 		parse_indented: parseIndented,
+		compose,
 		build_hierarchy: buildHierarchy,
 		get_string: getString,
 		get_int: getInt,

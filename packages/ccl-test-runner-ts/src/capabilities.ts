@@ -48,6 +48,9 @@ export const ALL_FUNCTIONS: CCLFunction[] = [
 	"canonical_format",
 	"load",
 	"round_trip",
+	"compose_associative",
+	"identity_left",
+	"identity_right",
 ];
 
 /**

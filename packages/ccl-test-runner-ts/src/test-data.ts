@@ -57,6 +57,9 @@ export interface TestFilterResult {
  */
 const COMPOSITE_FUNCTIONS: Record<string, string[]> = {
 	round_trip: ["parse", "print"],
+	compose_associative: ["parse", "compose", "build_hierarchy"],
+	identity_left: ["parse", "compose", "build_hierarchy"],
+	identity_right: ["parse", "compose", "build_hierarchy"],
 };
 
 /**

@@ -8,6 +8,7 @@ import {
 	CCLAccessError,
 	CCLParseError,
 	canonicalFormat,
+	compose,
 	getBool,
 	getFloat,
 	getInt,
@@ -24,6 +25,14 @@ score=3.14
 tags=one
 tags=two
 tags=three`;
+
+function buildObjectFromText(input: string) {
+	return buildHierarchy(parse(input));
+}
+
+function composeToObject(base: string, overlay: string) {
+	return buildHierarchy(compose(parse(base), parse(overlay)));
+}
 
 describe("throwing API", () => {
 	describe("CCLParseError", () => {
@@ -143,6 +152,29 @@ describe("throwing API", () => {
 			const result = canonicalFormat("name=Alice");
 			expect(result).toContain("name");
 			expect(result).toContain("Alice");
+		});
+	});
+
+	describe("compose", () => {
+		it("composes nested structures semantically", () => {
+			expect(composeToObject("config=\n  host=localhost", "config=\n  port=8080")).toEqual({
+				config: {
+					host: "localhost",
+					port: "8080",
+				},
+			});
+		});
+
+		it("uses empty entries as the left identity", () => {
+			expect(composeToObject("", "key=value\nnested=\n  child=data")).toEqual(
+				buildObjectFromText("key=value\nnested=\n  child=data"),
+			);
+		});
+
+		it("uses empty entries as the right identity", () => {
+			expect(composeToObject("key=value\nnested=\n  child=data", "")).toEqual(
+				buildObjectFromText("key=value\nnested=\n  child=data"),
+			);
 		});
 	});
 

@@ -64,6 +64,58 @@ describe("Test Data Loading", () => {
 		}
 	});
 
+	it("should load algebraic compose tests when parse, compose, and build_hierarchy are supported", async () => {
+		const capabilities = createCapabilities({
+			name: "test-impl",
+			functions: ["parse", "compose", "build_hierarchy"],
+			features: [],
+			behaviors: [
+				"boolean_lenient",
+				"crlf_normalize_to_lf",
+				"tabs_as_content",
+				"delimiter_first_equals",
+				"list_coercion_disabled",
+			],
+			variant: "proposed_behavior",
+		});
+
+		const data = await loadTestData({
+			testDataPath: TEST_DATA_PATH,
+			capabilities,
+		});
+
+		const validations = new Set(data.tests.map((testCase) => testCase.validation));
+		expect(validations).toContain("compose_associative");
+		expect(validations).toContain("identity_left");
+		expect(validations).toContain("identity_right");
+	});
+
+	it("should not load algebraic compose tests when build_hierarchy support is missing", async () => {
+		const capabilities = createCapabilities({
+			name: "test-impl",
+			functions: ["parse", "compose"],
+			features: [],
+			behaviors: [
+				"boolean_lenient",
+				"crlf_normalize_to_lf",
+				"tabs_as_content",
+				"delimiter_first_equals",
+				"list_coercion_disabled",
+			],
+			variant: "proposed_behavior",
+		});
+
+		const data = await loadTestData({
+			testDataPath: TEST_DATA_PATH,
+			capabilities,
+		});
+
+		const validations = new Set(data.tests.map((testCase) => testCase.validation));
+		expect(validations).not.toContain("compose_associative");
+		expect(validations).not.toContain("identity_left");
+		expect(validations).not.toContain("identity_right");
+	});
+
 	it("should skip tests listed in skipTests", async () => {
 		const allData = await loadAllTests(TEST_DATA_PATH);
 		const firstTestName = allData.tests[0]?.name;
