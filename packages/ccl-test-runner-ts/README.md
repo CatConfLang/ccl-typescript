@@ -27,12 +27,13 @@ import {
   createCCLTestCases,
   defineCCLTests,
 } from "ccl-test-runner-ts/vitest";
-import { parse, buildHierarchy, getString } from "./my-ccl";
+import { parse, buildHierarchy, compose, getString } from "./my-ccl";
 
 export const cclConfig = defineCCLTests({
   name: "my-ccl",
   functions: {
     parse,
+    compose,
     build_hierarchy: buildHierarchy,
     get_string: getString,
   },
@@ -67,6 +68,12 @@ describe("CCL", async () => {
   }
 });
 ```
+
+If you wire `parse`, `compose`, and `build_hierarchy`, the runner also executes the
+algebraic compose validations (`compose_associative`, `identity_left`, and
+`identity_right`). Those validations parse each raw CCL input to `Entry[]`,
+compose the entry lists, normalize the result with `build_hierarchy`, and then
+compare the resulting objects.
 
 ## CCL Function Signatures
 
@@ -106,7 +113,7 @@ function get_list(obj: CCLObject, path: string): string[]
 // Filter entries by predicate
 function filter(entries: Entry[], predicate: (e: Entry) => boolean): Entry[]
 
-// Compose/merge entry lists
+// Compose/merge entry lists at the Entry[] layer
 function compose(base: Entry[], overlay: Entry[]): Entry[]
 
 // Expand dotted keys (e.g., "a.b" -> nested structure)
@@ -168,6 +175,11 @@ Tests are automatically categorized:
 - **run** - Requirements met, test executes
 - **skip** - Function/feature not supported
 - **todo** - Function declared but not implemented
+
+Composite validations follow the same categorization rules. In particular,
+`compose_associative`, `identity_left`, and `identity_right` run when the
+implementation wires `parse`, `compose`, and `build_hierarchy`, because the
+runner evaluates those properties through the entry-processing pipeline.
 
 ## Custom Test Data
 

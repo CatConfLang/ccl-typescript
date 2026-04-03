@@ -17,15 +17,24 @@ export interface AccessError {
 }
 
 // @beta
-export function buildHierarchy(entries: Entry[]): Result<CCLObject, ParseError>;
+export function buildHierarchy(entries: Entry[], options?: ParseOptions): Result<CCLObject, ParseError>;
 
 // @beta
-export function canonicalFormat(input: string): Result<string, ParseError>;
+export function canonicalFormat(input: string, options?: ParseOptions): Result<string, ParseError>;
 
-// Warning: (ae-forgotten-export) The symbol "CCLListItem" needs to be exported by the entry point index.d.ts
-//
+// @beta
+export class CCLAccessError extends Error {
+    constructor(error: AccessError);
+    readonly path: string[];
+}
+
 // @public (undocumented)
 export type CCLList = CCLListItem[];
+
+// Warning: (ae-incompatible-release-tags) The symbol "CCLListItem" is marked as @public, but its signature references "CCLObject" which is marked as @beta
+//
+// @public
+export type CCLListItem = string | CCLObject;
 
 // @beta
 export interface CCLObject {
@@ -34,7 +43,17 @@ export interface CCLObject {
 }
 
 // @beta
+export class CCLParseError extends Error {
+    constructor(error: ParseError);
+    readonly column: number | undefined;
+    readonly line: number | undefined;
+}
+
+// @beta
 export type CCLValue = string | CCLList | CCLObject;
+
+// @beta
+export function compose(base: Entry[], overlay: Entry[]): Entry[];
 
 // @beta
 export interface Entry {
@@ -66,7 +85,7 @@ export { Ok }
 export { ok }
 
 // @beta
-export function parse(text: string): Result<Entry[], ParseError>;
+export function parse(text: string, options?: ParseOptions): Result<Entry[], ParseError>;
 
 // @beta
 export interface ParseError {
@@ -76,8 +95,19 @@ export interface ParseError {
 }
 
 // @beta
+export function parseIndented(text: string, options?: ParseOptions): Result<Entry[], ParseError>;
+
+// @beta
+export interface ParseOptions {
+    tabHandling?: TabHandling;
+}
+
+// @beta
 export function print(entries: Entry[]): string;
 
 export { Result }
+
+// @beta
+export type TabHandling = "tabs_as_content" | "tabs_as_whitespace";
 
 ```

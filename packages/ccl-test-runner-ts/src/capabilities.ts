@@ -24,10 +24,7 @@ export type CCLFunction =
 	| "print"
 	| "canonical_format"
 	| "load"
-	| "round_trip"
-	| "compose_associative"
-	| "identity_left"
-	| "identity_right";
+	| "round_trip";
 
 /**
  * All valid CCL functions.

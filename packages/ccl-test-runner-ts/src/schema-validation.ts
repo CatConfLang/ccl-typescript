@@ -77,9 +77,32 @@ const testCaseSchema = {
 		},
 		args: {
 			type: "array",
-			description: "Arguments for typed access functions",
+			description: "Arguments for typed access functions (path components)",
 			items: { type: "string" },
 		},
+		predicate: {
+			type: "object",
+			description:
+				"Filter predicate specification. Defines how to filter entries based on a field comparison.",
+			required: ["field", "op", "value"],
+			properties: {
+				field: {
+					type: "string",
+					enum: ["key", "value"],
+					description: "Which Entry field to compare",
+				},
+				op: {
+					type: "string",
+					enum: ["==", "!="],
+					description: "Comparison operator",
+				},
+				value: {
+					type: "string",
+					description: "Value to compare against",
+				},
+			},
+			additionalProperties: false,
+		} as const,
 		functions: {
 			type: "array",
 			description: "CCL functions tested by this test",

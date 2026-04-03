@@ -6,7 +6,41 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { buildHierarchy, canonicalFormat, getFloat, getList, parse } from "../src/index.js";
+import {
+	buildHierarchy,
+	canonicalFormat,
+	compose,
+	getFloat,
+	getList,
+	parse,
+} from "../src/index.js";
+
+function parseText(input: string) {
+	const result = parse(input);
+	expect(result.isOk).toBe(true);
+	if (result.isErr) {
+		throw new Error(result.error.message);
+	}
+	return result.value;
+}
+
+function buildObjectFromText(input: string) {
+	const result = buildHierarchy(parseText(input));
+	expect(result.isOk).toBe(true);
+	if (result.isErr) {
+		throw new Error(result.error.message);
+	}
+	return result.value;
+}
+
+function composeToObject(base: string, overlay: string) {
+	const objectResult = buildHierarchy(compose(parseText(base), parseText(overlay)));
+	expect(objectResult.isOk).toBe(true);
+	if (objectResult.isErr) {
+		throw new Error(objectResult.error.message);
+	}
+	return objectResult.value;
+}
 
 describe("getFloat", () => {
 	it("should return error for empty string value", () => {
@@ -265,6 +299,50 @@ describe("canonicalFormat", () => {
 		expect(result.value).toContain("b =");
 		expect(result.value).toContain("c =");
 		expect(result.value).toContain("value =");
+	});
+});
+
+describe("compose", () => {
+	it("should merge disjoint flat keys", () => {
+		expect(composeToObject("name=Alice", "role=admin")).toEqual({
+			name: "Alice",
+			role: "admin",
+		});
+	});
+
+	it("should merge nested objects recursively", () => {
+		expect(composeToObject("config=\n  host=localhost", "config=\n  port=8080")).toEqual({
+			config: {
+				host: "localhost",
+				port: "8080",
+			},
+		});
+	});
+
+	it("should preserve duplicate key values as lists", () => {
+		expect(composeToObject("color=red", "color=blue")).toEqual({
+			color: ["red", "blue"],
+		});
+	});
+
+	it("should preserve empty-key list syntax", () => {
+		expect(composeToObject("items=\n  =first", "items=\n  =second")).toEqual({
+			items: {
+				"": ["first", "second"],
+			},
+		});
+	});
+
+	it("should treat empty entries as the left identity", () => {
+		expect(composeToObject("", "key=value\nnested=\n  child=data")).toEqual(
+			buildObjectFromText("key=value\nnested=\n  child=data"),
+		);
+	});
+
+	it("should treat empty entries as the right identity", () => {
+		expect(composeToObject("key=value\nnested=\n  child=data", "")).toEqual(
+			buildObjectFromText("key=value\nnested=\n  child=data"),
+		);
 	});
 });
 

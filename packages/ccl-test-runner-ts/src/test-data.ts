@@ -57,24 +57,22 @@ export interface TestFilterResult {
  */
 const COMPOSITE_FUNCTIONS: Record<string, string[]> = {
 	round_trip: ["parse", "print"],
+	compose_associative: ["parse", "compose", "build_hierarchy"],
+	identity_left: ["parse", "compose", "build_hierarchy"],
+	identity_right: ["parse", "compose", "build_hierarchy"],
 };
 
 /**
  * Check if a function is supported, either directly or via composite implementation.
  */
 function isFunctionSupported(fn: string, capabilities: ImplementationCapabilities): boolean {
-	// Direct implementation
-	if (capabilities.functions.includes(fn as CCLFunction)) {
-		return true;
-	}
-
 	// Composite implementation
 	const compositeDeps = COMPOSITE_FUNCTIONS[fn];
 	if (compositeDeps) {
 		return compositeDeps.every((dep) => capabilities.functions.includes(dep as CCLFunction));
 	}
 
-	return false;
+	return capabilities.functions.includes(fn as CCLFunction);
 }
 
 /**

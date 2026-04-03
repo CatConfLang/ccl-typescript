@@ -28,6 +28,7 @@
 export {
 	buildHierarchy,
 	canonicalFormat,
+	compose,
 	getBool,
 	getFloat,
 	getInt,
