@@ -524,9 +524,7 @@ function checkParseExpectations(
 	}
 
 	if (testCase.expected.entries !== undefined) {
-		const entriesMatch =
-			JSON.stringify(processedEntries) === JSON.stringify(testCase.expected.entries);
-		if (!entriesMatch) {
+		if (!isDeepStrictEqual(processedEntries, testCase.expected.entries)) {
 			return { passed: false, error: "Entries mismatch" };
 		}
 	}
@@ -568,7 +566,7 @@ function handleBuildHierarchyValidation(
 		};
 	}
 
-	const passed = JSON.stringify(hierarchyResult.value) === JSON.stringify(testCase.expected.object);
+	const passed = isDeepStrictEqual(hierarchyResult.value, testCase.expected.object);
 
 	return {
 		rawOutput: hierarchyResult,
@@ -1020,7 +1018,7 @@ function handleGetListValidation(
 		}
 		const result = unwrapped.value;
 		const expected = testCase.expected.list ?? testCase.expected.value;
-		const passed = JSON.stringify(result) === JSON.stringify(expected);
+		const passed = isDeepStrictEqual(result, expected);
 
 		return {
 			rawOutput: rawResult,
