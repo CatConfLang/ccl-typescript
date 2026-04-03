@@ -1043,6 +1043,88 @@ function handleGetListValidation(
 }
 
 /**
+ * CCL comment key prefix. In CCL, comment lines like `/= text` parse as entries
+ * with key "/" and the comment text as the value.
+ */
+const CCL_COMMENT_KEY = "/";
+
+/**
+ * A filter predicate specification from test data.
+ */
+interface FilterPredicate {
+	field: "key" | "value";
+	op: "==" | "!=";
+	value: string;
+}
+
+/**
+ * Build a filter predicate function from a structured predicate specification.
+ *
+ * When a predicate object is provided, builds the corresponding comparison function.
+ * When predicate is undefined, falls back to the default comment-exclusion predicate.
+ */
+function buildFilterPredicate(predicate: FilterPredicate | undefined): (entry: Entry) => boolean {
+	if (predicate === undefined) {
+		return (entry) => entry.key !== CCL_COMMENT_KEY;
+	}
+
+	const { field, op, value } = predicate;
+
+	switch (op) {
+		case "==":
+			return (entry) => entry[field] === value;
+		case "!=":
+			return (entry) => entry[field] !== value;
+	}
+}
+
+/**
+ * Handle filter validation.
+ *
+ * Filter tests parse the input, then filter the resulting entries using the
+ * implementation's filter function. The predicate is built from the test case's
+ * `predicate` field (a structured `{field, op, value}` object), or defaults to
+ * excluding comment entries when predicate is not provided.
+ */
+function handleFilterValidation(
+	testCase: TestCase,
+	input: string,
+	functions: CCLFunctions,
+	capabilities: ImplementationCapabilities,
+): ValidationResult {
+	const rawParseFn = functions.parse;
+	const filterFn = functions.filter;
+	if (!(rawParseFn && filterFn)) {
+		throw new Error("parse and filter functions required");
+	}
+
+	const parseFn = normalizeParseFunction(rawParseFn);
+
+	const parseResult = parseFn(input);
+	if (parseResult.isErr) {
+		throw new Error(`Parse failed: ${parseResult.error.message}`);
+	}
+
+	const predicate = buildFilterPredicate(testCase.predicate as FilterPredicate | undefined);
+	const filtered = filterFn(parseResult.value, predicate);
+
+	const processedEntries = filtered.map((entry: Entry) => ({
+		key: entry.key,
+		value: postprocessValue(entry.value, capabilities),
+	}));
+
+	const { passed, error } = checkParseExpectations(testCase, processedEntries);
+
+	return {
+		rawOutput: filtered,
+		output: processedEntries,
+		expected: testCase.expected.entries ?? { count: testCase.expected.count },
+		passed,
+		...(error !== undefined && { error }),
+	};
+}
+
+/**
  * Handle print validation.
  */
 function handlePrintValidation(
@@ -1321,6 +1403,10 @@ export function runCCLTest(
 					capabilities,
 					"parse_indented",
 				);
+				break;
+
+			case "filter":
+				result = handleFilterValidation(testCase, input, functions, capabilities);
 				break;
 
 			case "build_hierarchy":

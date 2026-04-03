@@ -918,19 +918,21 @@ export function parseIndented(text: string, options?: ParseOptions): Entry[] {
 	return parseWithStrategy(text, options, true);
 }
 
-// /**
-//  * Filter entries based on a predicate.
-//  *
-//  * @param entries - The entries to filter
-//  * @param predicate - A function that returns true for entries to keep
-//  * @returns Filtered entries
-//  */
-// export function filter(
-// 	entries: Entry[],
-// 	predicate: (entry: Entry) => boolean,
-// ): Entry[] {
-// 	throw new Error("Not yet implemented");
-// }
+/**
+ * Filter entries based on a predicate.
+ *
+ * @param entries - The entries to filter
+ * @param predicate - A function that returns true for entries to keep
+ * @returns Filtered entries
+ *
+ * @beta
+ */
+export function filter(
+	entries: Entry[],
+	predicate: (entry: Entry) => boolean,
+): Entry[] {
+	return entries.filter(predicate);
+}
 
 /**
  * Compose two entry lists.
