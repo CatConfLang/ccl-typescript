@@ -113,12 +113,12 @@ describe("throwing API", () => {
 	describe("getBool", () => {
 		it("returns boolean value", () => {
 			const obj = buildHierarchy(parse(VALID_CCL));
-			expect(getBool(obj, "active")).toBe(true);
+			expect(getBool(obj, ["active"])).toBe(true);
 		});
 
 		it("throws CCLAccessError for non-boolean value", () => {
 			const obj = buildHierarchy(parse(VALID_CCL));
-			expect(() => getBool(obj, "name")).toThrow(CCLAccessError);
+			expect(() => getBool(obj, ["name"])).toThrow(CCLAccessError);
 		});
 	});
 
@@ -137,13 +137,13 @@ describe("throwing API", () => {
 	describe("getList", () => {
 		it("returns list value", () => {
 			const obj = buildHierarchy(parse(VALID_CCL));
-			const list = getList(obj, "tags");
+			const list = getList(obj, ["tags"]);
 			expect(list).toEqual(["one", "two", "three"]);
 		});
 
 		it("throws CCLAccessError for non-list value", () => {
 			const obj = buildHierarchy(parse(VALID_CCL));
-			expect(() => getList(obj, "name")).toThrow(CCLAccessError);
+			expect(() => getList(obj, ["name"])).toThrow(CCLAccessError);
 		});
 	});
 

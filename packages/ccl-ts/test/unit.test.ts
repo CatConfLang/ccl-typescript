@@ -118,7 +118,7 @@ describe("getList", () => {
 			return;
 		}
 
-		const result = getList(objResult.value, "colors");
+		const result = getList(objResult.value, ["colors"]);
 		expect(result.isOk).toBe(true);
 		if (result.isOk) {
 			expect(result.value).toEqual(["red", "green", "blue"]);
@@ -138,7 +138,7 @@ describe("getList", () => {
 			return;
 		}
 
-		const result = getList(objResult.value, "colors");
+		const result = getList(objResult.value, ["colors"]);
 		expect(result.isOk).toBe(true);
 		if (result.isOk) {
 			expect(result.value).toEqual(["red", "green", "blue"]);
@@ -158,7 +158,7 @@ describe("getList", () => {
 			return;
 		}
 
-		const result = getList(objResult.value, "name");
+		const result = getList(objResult.value, ["name"]);
 		expect(result.isErr).toBe(true);
 		if (result.isErr) {
 			expect(result.error.message).toContain("not a list");
@@ -178,7 +178,7 @@ describe("getList", () => {
 			return;
 		}
 
-		const result = getList(objResult.value, "server");
+		const result = getList(objResult.value, ["server"]);
 		expect(result.isErr).toBe(true);
 		if (result.isErr) {
 			expect(result.error.message).toContain("not a list");
@@ -200,7 +200,7 @@ describe("getList", () => {
 			return;
 		}
 
-		const result = getList(objResult.value, "items");
+		const result = getList(objResult.value, ["items"]);
 		expect(result.isOk).toBe(true);
 		if (result.isOk) {
 			expect(result.value).toEqual([
@@ -223,7 +223,7 @@ describe("getList", () => {
 			return;
 		}
 
-		const result = getList(objResult.value, "missing");
+		const result = getList(objResult.value, ["missing"]);
 		expect(result.isErr).toBe(true);
 		if (result.isErr) {
 			expect(result.error.message).toContain("Path not found");

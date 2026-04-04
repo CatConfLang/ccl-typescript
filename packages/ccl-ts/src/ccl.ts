@@ -8,7 +8,16 @@
  */
 
 import { CCLAccessError, CCLParseError } from "./errors.js";
-import type { CCLList, CCLObject, CCLValue, Entry, ParseOptions } from "./types.js";
+import type {
+	BuildHierarchyOptions,
+	CCLList,
+	CCLObject,
+	CCLValue,
+	Entry,
+	GetBoolOptions,
+	GetListOptions,
+	ParseOptions,
+} from "./types.js";
 
 // Regex patterns for whitespace trimming (top-level for performance)
 const LEADING_SPACES_AND_TABS = /^[ \t]+/;
@@ -343,6 +352,7 @@ function countLeadingWhitespace(line: string, opts: ResolvedParseOptions): numbe
  * 4. Return the constructed hierarchy
  *
  * @param entries - The flat entries from a parse operation
+ * @param options - Options controlling hierarchy construction behavior
  * @returns A hierarchical CCL object
  *
  * @example
@@ -350,11 +360,15 @@ function countLeadingWhitespace(line: string, opts: ResolvedParseOptions): numbe
  * const entries = parse("server=\n  host=localhost\n  port=8080");
  * const obj = buildHierarchy(entries);
  * // => { server: { host: "localhost", port: "8080" } }
+ *
+ * const entries2 = parse("colors=red\ncolors=green\ncolors=blue");
+ * const sorted = buildHierarchy(entries2, { sort: "lexicographic" });
+ * // => { colors: ["blue", "green", "red"] }
  * ```
  *
  * @beta
  */
-export function buildHierarchy(entries: Entry[], options?: ParseOptions): CCLObject {
+export function buildHierarchy(entries: Entry[], options?: BuildHierarchyOptions): CCLObject {
 	const result: CCLObject = {};
 
 	for (const entry of entries) {
@@ -400,6 +414,10 @@ export function buildHierarchy(entries: Entry[], options?: ParseOptions): CCLObj
 		}
 	}
 
+	if (options?.sort === "lexicographic") {
+		sortListValues(result);
+	}
+
 	return result;
 }
 
@@ -408,6 +426,26 @@ export function buildHierarchy(entries: Entry[], options?: ParseOptions): CCLObj
  */
 function isPlainObject(value: unknown): value is CCLObject {
 	return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Recursively sort all list values in a CCL object lexicographically.
+ * String items are sorted; non-string items retain relative order.
+ */
+function sortListValues(obj: CCLObject): void {
+	for (const key of Object.keys(obj)) {
+		const value = obj[key];
+		if (Array.isArray(value)) {
+			obj[key] = value.toSorted((a, b) => {
+				if (typeof a === "string" && typeof b === "string") {
+					return a < b ? -1 : a > b ? 1 : 0;
+				}
+				return 0;
+			});
+		} else if (isPlainObject(value)) {
+			sortListValues(value);
+		}
+	}
 }
 
 /**
@@ -652,11 +690,12 @@ export function getInt(obj: CCLObject, ...pathParts: string[]): number {
  * Get a boolean value at the specified path.
  *
  * Navigates to the path, retrieves the string value, and parses it as a boolean.
- * Supports lenient parsing: true/false, yes/no, 1/0 (case-insensitive).
- * Returns an error Result if the path doesn't exist, value isn't a string, or not a valid boolean.
+ * By default (lenient mode), accepts true/false, yes/no, 1/0 (case-insensitive).
+ * In strict mode, only true/false (case-insensitive) are accepted.
  *
  * @param obj - The CCL object to query
  * @param pathParts - Path components to the value
+ * @param options - Options controlling boolean parsing behavior
  * @returns The boolean value
  *
  * @throws {@link CCLAccessError} if the path does not exist or the value is not a valid boolean.
@@ -664,16 +703,33 @@ export function getInt(obj: CCLObject, ...pathParts: string[]): number {
  * @example
  * ```ts
  * const obj = buildHierarchy(parse("enabled=true\ndebug=yes"));
- * const enabled = getBool(obj, "enabled"); // => true
+ * const enabled = getBool(obj, ["enabled"]); // => true
+ * const debug = getBool(obj, ["debug"]); // => true (lenient)
+ * const strict = getBool(obj, ["debug"], { strict: true }); // throws
  * ```
  *
  * @beta
  */
-export function getBool(obj: CCLObject, ...pathParts: string[]): boolean {
+export function getBool(obj: CCLObject, pathParts: string[], options?: GetBoolOptions): boolean {
 	const strValue = getString(obj, ...pathParts);
 
 	// Normalize to lowercase and trim for comparison
 	const normalized = strValue.trim().toLowerCase();
+
+	if (options?.strict) {
+		// Strict mode: only accept true/false
+		switch (normalized) {
+			case "true":
+				return true;
+			case "false":
+				return false;
+			default:
+				throw new CCLAccessError({
+					message: `Value is not a valid boolean: '${strValue}'`,
+					path: pathParts,
+				});
+		}
+	}
 
 	// Lenient mode: accept true/false, yes/no, 1/0
 	switch (normalized) {
@@ -734,11 +790,12 @@ export function getFloat(obj: CCLObject, ...pathParts: string[]): number {
  * Navigates to the path and returns the value if it's an array.
  * If the path points to an object with an empty-key list (bare list syntax),
  * automatically returns that list.
- * Does NOT coerce single values to lists (ListCoercionDisabled behavior).
- * Returns an error Result if the path doesn't exist or the value isn't a list.
+ * By default, does NOT coerce single values to lists. With `{ coercion: true }`,
+ * single string values are wrapped in a one-element array.
  *
  * @param obj - The CCL object to query
  * @param pathParts - Path components to the value
+ * @param options - Options controlling list coercion behavior
  * @returns The array of list items (strings or nested objects)
  *
  * @throws {@link CCLAccessError} if the path does not exist or the value is not a list.
@@ -747,21 +804,16 @@ export function getFloat(obj: CCLObject, ...pathParts: string[]): number {
  * ```ts
  * // Duplicate keys create a list directly
  * const obj1 = buildHierarchy(parse("colors=red\ncolors=green\ncolors=blue"));
- * const colors = getList(obj1, "colors"); // => ["red", "green", "blue"]
+ * const colors = getList(obj1, ["colors"]); // => ["red", "green", "blue"]
  *
- * // Bare list syntax (empty keys) also works
- * const obj2 = buildHierarchy(parse("colors=\n  =red\n  =green\n  =blue"));
- * const colors2 = getList(obj2, "colors"); // => ["red", "green", "blue"]
- *
- * // Bare list items can also be nested objects
- * const obj3 = buildHierarchy(parse("items=\n  =\n    name=first\n    value=1"));
- * const items = getList(obj3, "items");
- * // items[0] => { name: "first", value: "1" }
+ * // Single value coercion
+ * const obj2 = buildHierarchy(parse("tag=hello"));
+ * const tags = getList(obj2, ["tag"], { coercion: true }); // => ["hello"]
  * ```
  *
  * @beta
  */
-export function getList(obj: CCLObject, ...pathParts: string[]): CCLList {
+export function getList(obj: CCLObject, pathParts: string[], options?: GetListOptions): CCLList {
 	const value = navigateToValue(obj, pathParts);
 
 	if (value === undefined) {
@@ -781,7 +833,11 @@ export function getList(obj: CCLObject, ...pathParts: string[]): CCLList {
 		}
 	}
 
-	// ListCoercionDisabled: do not coerce single values to lists
+	// Coercion: wrap single string values as a one-element list
+	if (options?.coercion && typeof value === "string") {
+		return [value];
+	}
+
 	throw new CCLAccessError({
 		message: `Value is not a list (got ${typeof value === "string" ? "string" : "object"})`,
 		path: pathParts,

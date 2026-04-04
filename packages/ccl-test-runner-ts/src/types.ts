@@ -59,6 +59,40 @@ export interface AccessError {
 	path: string[];
 }
 
+/**
+ * Options for configuring boolean access behavior.
+ */
+export interface GetBoolOptions {
+	/**
+	 * When true, only "true" and "false" (case-insensitive) are valid.
+	 * When false (default), also accepts "yes"/"no" and "1"/"0".
+	 */
+	strict?: boolean;
+}
+
+/**
+ * Options for configuring list access behavior.
+ */
+export interface GetListOptions {
+	/**
+	 * When true, single string values are coerced to a one-element list.
+	 * When false (default), accessing a non-list value throws an error.
+	 */
+	coercion?: boolean;
+}
+
+/**
+ * Options for configuring hierarchy construction behavior.
+ */
+export interface BuildHierarchyOptions {
+	/**
+	 * Controls the ordering of list items built from duplicate keys.
+	 * - `"insertion"` (default): items appear in the order they were defined.
+	 * - `"lexicographic"`: string items are sorted lexicographically.
+	 */
+	sort?: "insertion" | "lexicographic";
+}
+
 // ============================================================================
 // Legacy Result Types (for backwards compatibility)
 // ============================================================================
@@ -98,7 +132,7 @@ export type ParseFn = (input: string) => Entry[];
 /**
  * Build_hierarchy function that throws on error.
  */
-export type BuildHierarchyFn = (entries: Entry[]) => CCLObject;
+export type BuildHierarchyFn = (entries: Entry[], options?: BuildHierarchyOptions) => CCLObject;
 
 /**
  * Typed access function that throws on error.
@@ -106,9 +140,9 @@ export type BuildHierarchyFn = (entries: Entry[]) => CCLObject;
  */
 export type GetStringFn = (obj: CCLObject, ...pathParts: string[]) => string;
 export type GetIntFn = (obj: CCLObject, ...pathParts: string[]) => number;
-export type GetBoolFn = (obj: CCLObject, ...pathParts: string[]) => boolean;
+export type GetBoolFn = (obj: CCLObject, pathParts: string[], options?: GetBoolOptions) => boolean;
 export type GetFloatFn = (obj: CCLObject, ...pathParts: string[]) => number;
-export type GetListFn = (obj: CCLObject, ...pathParts: string[]) => CCLList;
+export type GetListFn = (obj: CCLObject, pathParts: string[], options?: GetListOptions) => CCLList;
 
 /**
  * Filter function.
@@ -133,7 +167,10 @@ export type ParseResultFn = (input: string) => Result<Entry[], ParseError>;
 /**
  * Build hierarchy function that returns a true-myth Result.
  */
-export type BuildHierarchyResultFn = (entries: Entry[]) => Result<CCLObject, ParseError>;
+export type BuildHierarchyResultFn = (
+	entries: Entry[],
+	options?: BuildHierarchyOptions,
+) => Result<CCLObject, ParseError>;
 
 // ============================================================================
 // Legacy Result-Returning Function Types (custom result objects)
@@ -278,10 +315,10 @@ export function normalizeParseFunction(
  */
 export function normalizeBuildHierarchyFunction(
 	fn: AnyBuildHierarchyFn,
-): (entries: Entry[]) => Result<CCLObject, ParseError> {
-	return (entries: Entry[]): Result<CCLObject, ParseError> => {
+): (entries: Entry[], options?: BuildHierarchyOptions) => Result<CCLObject, ParseError> {
+	return (entries: Entry[], options?: BuildHierarchyOptions): Result<CCLObject, ParseError> => {
 		try {
-			const result = fn(entries);
+			const result = fn(entries, options);
 
 			// Check if it's a true-myth Result
 			if (isResult<CCLObject, ParseError>(result)) {

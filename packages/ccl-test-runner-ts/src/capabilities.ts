@@ -230,6 +230,12 @@ export interface ImplementationCapabilities {
 	features: CCLFeature[];
 	/** Behavioral choices (one from each conflict group) */
 	behaviors: CCLBehavior[];
+	/**
+	 * Additional behaviors the implementation supports via function options.
+	 * These are the alternate behaviors from conflict groups that the implementation
+	 * can handle when the appropriate options are passed to accessor functions.
+	 */
+	optionalBehaviors?: CCLBehavior[];
 	/** Specification variant choice */
 	variant: CCLVariant;
 	/** Tests to skip by name */
@@ -252,11 +258,25 @@ export class CapabilityValidationError extends Error {
 export function validateCapabilities(capabilities: ImplementationCapabilities): void {
 	const errors: string[] = [];
 
-	// Check for conflicting behaviors
+	// Check for conflicting behaviors within the primary behaviors list
 	for (const [group, conflictingBehaviors] of Object.entries(BEHAVIOR_CONFLICTS)) {
 		const selected = capabilities.behaviors.filter((b) => conflictingBehaviors.includes(b));
 		if (selected.length > 1) {
 			errors.push(`Conflicting behaviors in ${group}: ${selected.join(", ")} (pick only one)`);
+		}
+	}
+
+	// Check for conflicting behaviors within optionalBehaviors
+	if (capabilities.optionalBehaviors) {
+		for (const [group, conflictingBehaviors] of Object.entries(BEHAVIOR_CONFLICTS)) {
+			const selected = capabilities.optionalBehaviors.filter((b) =>
+				conflictingBehaviors.includes(b),
+			);
+			if (selected.length > 1) {
+				errors.push(
+					`Conflicting optional behaviors in ${group}: ${selected.join(", ")} (pick only one)`,
+				);
+			}
 		}
 	}
 
@@ -306,9 +326,17 @@ export function createCapabilities(
 	partial: Partial<ImplementationCapabilities> & { name: string },
 ): ImplementationCapabilities {
 	const defaults = getStubCapabilities();
-	return {
+	const result: ImplementationCapabilities = {
 		...defaults,
 		...partial,
+		functions: partial.functions ?? defaults.functions,
+		features: partial.features ?? defaults.features,
+		behaviors: partial.behaviors ?? defaults.behaviors,
 		version: partial.version ?? defaults.version,
 	};
+	const optionalBehaviors = partial.optionalBehaviors ?? defaults.optionalBehaviors;
+	if (optionalBehaviors) {
+		result.optionalBehaviors = optionalBehaviors;
+	}
+	return result;
 }

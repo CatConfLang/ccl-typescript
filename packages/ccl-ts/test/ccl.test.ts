@@ -9,7 +9,6 @@
  */
 
 import { createRequire } from "node:module";
-import { Behavior, Variant } from "ccl-test-runner-ts";
 import {
 	type CCLFunctions,
 	type CCLTestResult,
@@ -45,7 +44,17 @@ function resolveTestDataPath(): string {
 	return join(dirname(packageJsonPath), "data");
 }
 
+/**
+ * Resolves the path to the root ccl-config.yaml file.
+ */
+function resolveConfigPath(): string {
+	const packageJsonPath = require.resolve("@tylerbu/ccl-test-data/package.json");
+	// ccl-config.yaml is at the monorepo root, 2 levels up from packages/ccl-test-data
+	return join(dirname(packageJsonPath), "..", "..", "ccl-config.yaml");
+}
+
 const TEST_DATA_PATH = resolveTestDataPath();
+const CONFIG_PATH = resolveConfigPath();
 
 /**
  * Run assertions for a test result based on expected values.
@@ -95,6 +104,9 @@ const cclConfig = defineCCLTests({
 	// Path to test data from @tylerbu/ccl-test-data package
 	testDataPath: TEST_DATA_PATH,
 
+	// Load capabilities from root ccl-config.yaml
+	configPath: CONFIG_PATH,
+
 	// Wire up implemented functions
 	// Note: Stubs that throw "Not yet implemented" are auto-detected as todo
 	functions: {
@@ -112,30 +124,8 @@ const cclConfig = defineCCLTests({
 		canonical_format: canonicalFormat,
 	} satisfies CCLFunctions,
 
-	// Declare supported features
-	features: [
-		"comments",
-		"empty_keys",
-		"multiline",
-		"optional_typed_accessors",
-		"unicode",
-		"whitespace",
-	],
-
-	// Declare behavioral choices
-	behaviors: [
-		Behavior.BooleanLenient,
-		Behavior.CRLFPreserve,
-		Behavior.TabsAsContent,
-		Behavior.DelimiterFirstEquals,
-		Behavior.ListCoercionDisabled,
-		Behavior.ToplevelIndentPreserve,
-	],
-
-	// Specification variant
-	// Using ReferenceCompliant because the parser keeps nested content as the value
-	// (rather than flattening to individual entries as in ProposedBehavior)
-	variant: Variant.ReferenceCompliant,
+	// https://github.com/CatConfLang/ccl-test-data/issues/112
+	skipTests: ["list_with_whitespace_reference_build_hierarchy"],
 });
 
 describe("CCL", async () => {

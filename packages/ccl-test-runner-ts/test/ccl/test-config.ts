@@ -8,6 +8,8 @@
 
 import { createRequire } from "node:module";
 import { dirname, join, resolve } from "pathe";
+import type { CCLBehavior } from "../../src/capabilities.js";
+import { loadConfigFileSync } from "../../src/config.js";
 
 const require = createRequire(import.meta.url);
 
@@ -51,3 +53,37 @@ export const STUB_PARSER_SKIP_TESTS: string[] = [
 	// Round-trip normalization
 	"round_trip_whitespace_normalization_parse",
 ];
+
+/**
+ * Behavior overrides for the stub parser.
+ *
+ * The ccl-config.yaml declares behaviors for the full ccl-ts implementation,
+ * but the stub parser has different capabilities:
+ * - Uses line.trim() which strips \r, so it normalizes CRLF rather than preserving it
+ */
+export const STUB_PARSER_BEHAVIOR_OVERRIDES: Record<string, string> = {
+	crlf_preserve_literal: "crlf_normalize_to_lf",
+};
+
+/**
+ * Apply stub parser behavior overrides to a behaviors array.
+ */
+export function applyStubBehaviorOverrides(behaviors: CCLBehavior[]): CCLBehavior[] {
+	return behaviors.map(
+		(b) => (STUB_PARSER_BEHAVIOR_OVERRIDES[b] as CCLBehavior) ?? b,
+	);
+}
+
+/**
+ * Load capabilities from ccl-config.yaml with stub parser overrides applied.
+ */
+export function loadStubCapabilities() {
+	const loaded = loadConfigFileSync(CCL_CONFIG_PATH, {
+		name: "ccl-test-runner-ts",
+		version: "0.1.0",
+	});
+	return {
+		...loaded,
+		behaviors: applyStubBehaviorOverrides(loaded.behaviors),
+	};
+}

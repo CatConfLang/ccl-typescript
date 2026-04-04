@@ -23,17 +23,26 @@ features:
   - comments
   - empty_keys
   - multiline
+  - optional_typed_accessors
   - unicode
   - whitespace
 
 # Optional: Behavioral choices
 behaviors:
   - boolean_lenient
-  - crlf_normalize_to_lf
+  - crlf_preserve_literal
   - tabs_as_content
   - delimiter_first_equals
   - list_coercion_disabled
+  - toplevel_indent_preserve
+  - array_order_insertion
+
+# Optional: Additional behaviors supported via function options
+optional_behaviors:
+  - boolean_strict
+  - list_coercion_enabled
+  - array_order_lexicographic
 
 # Optional: Specification variant
 variants:
-  - proposed_behavior
+  - reference_compliant

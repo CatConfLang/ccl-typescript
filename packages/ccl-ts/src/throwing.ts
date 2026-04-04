@@ -49,5 +49,7 @@ export type {
 	CCLObject,
 	CCLValue,
 	Entry,
+	GetBoolOptions,
+	GetListOptions,
 	ParseError,
 } from "./types.js";
