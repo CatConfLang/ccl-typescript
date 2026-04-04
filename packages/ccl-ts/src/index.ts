@@ -55,6 +55,7 @@ export type {
 	CCLObject,
 	CCLValue,
 	CrlfHandling,
+	DelimiterMode,
 	Entry,
 	GetBoolOptions,
 	GetListOptions,
@@ -63,6 +64,7 @@ export type {
 	ParseOptions,
 	PrintOptions,
 	TabHandling,
+	ToplevelIndent,
 } from "./types.js";
 
 /**

@@ -69,6 +69,9 @@ export function compose(base: Entry[], overlay: Entry[]): Entry[];
 export type CrlfHandling = "crlf_preserve_literal" | "crlf_normalize_to_lf";
 
 // @beta
+export type DelimiterMode = "first_equals" | "prefer_spaced";
+
+// @beta
 export interface Entry {
     key: string;
     value: string;
@@ -129,7 +132,9 @@ export function parseIndented(text: string, options?: ParseOptions): Result<Entr
 // @beta
 export interface ParseOptions {
     crlfHandling?: CrlfHandling;
+    delimiterMode?: DelimiterMode;
     tabHandling?: TabHandling;
+    toplevelIndent?: ToplevelIndent;
 }
 
 // @beta
@@ -144,5 +149,8 @@ export { Result }
 
 // @beta
 export type TabHandling = "tabs_as_content" | "tabs_as_whitespace";
+
+// @beta
+export type ToplevelIndent = "strip" | "preserve";
 
 ```

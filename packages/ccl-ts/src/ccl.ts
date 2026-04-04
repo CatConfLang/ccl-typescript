@@ -28,6 +28,7 @@ const TRAILING_SPACES_AND_TABS = /[ \t]+$/;
 const TRAILING_SPACES_ONLY = /[ ]+$/;
 const CRLF_REGEX = /\r\n/g;
 const LEADING_SPACES_PER_LINE = /^( {2})+/gm;
+const TAB_TO_SPACE = /\t/g;
 
 /**
  * Internal resolved options where all fields are required booleans
@@ -36,12 +37,14 @@ const LEADING_SPACES_PER_LINE = /^( {2})+/gm;
 interface ResolvedParseOptions {
 	tabsAreWhitespace: boolean;
 	crlfNormalize: boolean;
+	preferSpacedDelimiter: boolean;
 }
 
 function resolveOptions(options?: ParseOptions): ResolvedParseOptions {
 	return {
 		tabsAreWhitespace: (options?.tabHandling ?? "tabs_as_content") === "tabs_as_whitespace",
 		crlfNormalize: (options?.crlfHandling ?? "crlf_preserve_literal") === "crlf_normalize_to_lf",
+		preferSpacedDelimiter: (options?.delimiterMode ?? "first_equals") === "prefer_spaced",
 	};
 }
 
@@ -106,7 +109,8 @@ function parseWithStrategy(
 ): Entry[] {
 	const opts = resolveOptions(options);
 	const normalizedText = opts.crlfNormalize ? text.replace(CRLF_REGEX, "\n") : text;
-	const baseline = determineBaseline(normalizedText, opts);
+	const baseline =
+		options?.toplevelIndent === "strip" ? 0 : determineBaseline(normalizedText, opts);
 	const entries: Entry[] = [];
 	let pos = 0;
 
@@ -125,6 +129,23 @@ function parseWithStrategy(
 }
 
 /**
+ * Find the delimiter position in the text starting from startPos.
+ *
+ * In `prefer_spaced` mode, first look for ` =` (equals preceded by a space)
+ * and return the position of the `=`. Falls back to bare `=` if not found.
+ * In `first_equals` mode, return the position of the first `=`.
+ */
+function findDelimiter(text: string, startPos: number, opts: ResolvedParseOptions): number {
+	if (opts.preferSpacedDelimiter) {
+		const spacedIndex = text.indexOf(" =", startPos);
+		if (spacedIndex !== -1) {
+			return spacedIndex + 1;
+		}
+	}
+	return text.indexOf("=", startPos);
+}
+
+/**
  * Extract the next entry from the text starting at the given position.
  *
  * When `stripContinuationIndent` is true, continuation lines have
@@ -137,7 +158,7 @@ function getNextEntry(
 	opts: ResolvedParseOptions,
 	stripContinuationIndent: boolean,
 ): (Entry & { nextPos: number }) | null {
-	const eqIndex = text.indexOf("=", startPos);
+	const eqIndex = findDelimiter(text, startPos, opts);
 	if (eqIndex === -1) {
 		return null;
 	}
@@ -204,9 +225,17 @@ function collectValueLines(
 
 		const indent = countLeadingWhitespace(line, opts);
 		if (indent > baseline) {
-			valueLines.push(
-				stripContinuationIndent ? stripLeadingWhitespace(line, firstLineIndent, opts) : line,
-			);
+			let processedLine: string;
+			if (stripContinuationIndent) {
+				processedLine = stripLeadingWhitespace(line, firstLineIndent, opts);
+			} else if (opts.tabsAreWhitespace) {
+				// When tabs are whitespace, strip leading whitespace from continuation
+				// lines so tab-indented content is normalized the same as space-indented.
+				processedLine = trimLeadingWhitespace(line, opts);
+			} else {
+				processedLine = line;
+			}
+			valueLines.push(processedLine);
 			pos = skipLine(text, pos);
 		} else {
 			break;
@@ -259,7 +288,11 @@ function buildValue(valueLines: string[], opts: ResolvedParseOptions): string {
 	}
 
 	if (valueLines.length === 1) {
-		return trimTrailingWhitespace(valueLines[0] as string, opts);
+		let result = trimTrailingWhitespace(valueLines[0] as string, opts);
+		if (opts.tabsAreWhitespace) {
+			result = result.replace(TAB_TO_SPACE, " ");
+		}
+		return result;
 	}
 
 	// Multiline value - trim trailing spaces/tabs from last line only
@@ -267,7 +300,11 @@ function buildValue(valueLines: string[], opts: ResolvedParseOptions): string {
 	const processed = valueLines.map((line, idx) =>
 		idx === lastIndex ? trimTrailingWhitespace(line, opts) : line,
 	);
-	return processed.join("\n");
+	let result = processed.join("\n");
+	if (opts.tabsAreWhitespace) {
+		result = result.replace(TAB_TO_SPACE, " ");
+	}
+	return result;
 }
 
 /**

@@ -106,6 +106,26 @@ export type Indentation = "spaces" | "tabs";
 export type CrlfHandling = "crlf_preserve_literal" | "crlf_normalize_to_lf";
 
 /**
+ * How the parser finds the key-value delimiter.
+ *
+ * - `first_equals`: Use the first `=` character as the delimiter (default).
+ * - `prefer_spaced`: Prefer ` = ` (space-equals-space) over a bare `=`. Falls back to first `=` if no spaced delimiter is found.
+ *
+ * @beta
+ */
+export type DelimiterMode = "first_equals" | "prefer_spaced";
+
+/**
+ * How the parser handles indentation in continuation lines.
+ *
+ * - `preserve`: Continuation lines retain their original leading whitespace (default for `parse`).
+ * - `strip`: The first value line's leading whitespace is stripped from all continuation lines (default for `parseIndented`).
+ *
+ * @beta
+ */
+export type ToplevelIndent = "strip" | "preserve";
+
+/**
  * Options for configuring CCL parsing behavior.
  *
  * @beta
@@ -122,6 +142,21 @@ export interface ParseOptions {
 	 * @defaultValue `"crlf_preserve_literal"`
 	 */
 	crlfHandling?: CrlfHandling;
+
+	/**
+	 * How the parser finds the key-value delimiter.
+	 * @defaultValue `"first_equals"`
+	 */
+	delimiterMode?: DelimiterMode;
+
+	/**
+	 * How continuation line indentation is handled.
+	 *
+	 * When not specified, the default depends on the function:
+	 * - `parse`: defaults to `"preserve"`
+	 * - `parseIndented`: defaults to `"strip"`
+	 */
+	toplevelIndent?: ToplevelIndent;
 }
 
 /**

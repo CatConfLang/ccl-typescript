@@ -55,6 +55,7 @@ import type {
 	GetListOptions,
 	Indentation,
 	ParseError,
+	ParseOptions,
 	PrintOptions,
 } from "./types.js";
 import { isResult, normalizeBuildHierarchyFunction, normalizeParseFunction } from "./types.js";
@@ -523,7 +524,8 @@ function handleParseValidation(
 	}
 
 	const fn = normalizeParseFunction(rawFn);
-	const result = fn(input);
+	const parseOptions = deriveParseOptions(testCase);
+	const result = fn(input, parseOptions);
 
 	if (result.isErr) {
 		return {
@@ -578,13 +580,51 @@ function checkParseExpectations(
 }
 
 /**
+ * Derive ParseOptions from test case behaviors.
+ */
+function deriveParseOptions(testCase: TestCase): ParseOptions | undefined {
+	const options: ParseOptions = {};
+	let hasOptions = false;
+
+	if (testCase.behaviors.includes("tabs_as_whitespace")) {
+		options.tabHandling = "tabs_as_whitespace";
+		hasOptions = true;
+	}
+	if (testCase.behaviors.includes("crlf_normalize_to_lf")) {
+		options.crlfHandling = "crlf_normalize_to_lf";
+		hasOptions = true;
+	}
+	if (testCase.behaviors.includes("delimiter_prefer_spaced")) {
+		options.delimiterMode = "prefer_spaced";
+		hasOptions = true;
+	}
+	if (testCase.behaviors.includes("toplevel_indent_strip")) {
+		options.toplevelIndent = "strip";
+		hasOptions = true;
+	}
+
+	return hasOptions ? options : undefined;
+}
+
+/**
  * Derive BuildHierarchyOptions from test case behaviors.
  */
 function deriveBuildHierarchyOptions(testCase: TestCase): BuildHierarchyOptions | undefined {
+	const options: BuildHierarchyOptions = {};
+	let hasOptions = false;
+
 	if (testCase.behaviors.includes("array_order_lexicographic")) {
-		return { sort: "lexicographic" };
+		options.sort = "lexicographic";
+		hasOptions = true;
 	}
-	return undefined;
+
+	const parseOpts = deriveParseOptions(testCase);
+	if (parseOpts) {
+		Object.assign(options, parseOpts);
+		hasOptions = true;
+	}
+
+	return hasOptions ? options : undefined;
 }
 
 /**
@@ -604,7 +644,8 @@ function handleBuildHierarchyValidation(
 	const parseFn = normalizeParseFunction(rawParseFn);
 	const buildFn = normalizeBuildHierarchyFunction(rawBuildFn);
 
-	const parseResult = parseFn(input);
+	const parseOptions = deriveParseOptions(testCase);
+	const parseResult = parseFn(input, parseOptions);
 	if (parseResult.isErr) {
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
@@ -641,6 +682,7 @@ function buildObjectFromInput(
 	input: string,
 	functions: CCLFunctions,
 	buildOptions?: BuildHierarchyOptions,
+	parseOptions?: ParseOptions,
 ): CCLObject {
 	const rawParseFn = functions.parse;
 	const rawBuildFn = functions.build_hierarchy;
@@ -651,7 +693,7 @@ function buildObjectFromInput(
 	const parseFn = normalizeParseFunction(rawParseFn);
 	const buildFn = normalizeBuildHierarchyFunction(rawBuildFn);
 
-	const parseResult = parseFn(input);
+	const parseResult = parseFn(input, parseOptions);
 	if (parseResult.isErr) {
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
@@ -711,7 +753,7 @@ function handleGetStringValidation(
 		throw new Error("get_string function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Check if we expect an error
@@ -791,7 +833,7 @@ function handleGetIntValidation(
 		throw new Error("get_int function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Check if we expect an error
@@ -871,7 +913,7 @@ function handleGetBoolValidation(
 		throw new Error("get_bool function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Derive options from test case behaviors
@@ -957,7 +999,7 @@ function handleGetFloatValidation(
 		throw new Error("get_float function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Check if we expect an error
@@ -1037,7 +1079,7 @@ function handleGetListValidation(
 		throw new Error("get_list function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase));
+	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Derive options from test case behaviors
@@ -1171,8 +1213,9 @@ function handleFilterValidation(
 	}
 
 	const parseFn = normalizeParseFunction(rawParseFn);
+	const parseOptions = deriveParseOptions(testCase);
 
-	const parseResult = parseFn(input);
+	const parseResult = parseFn(input, parseOptions);
 	if (parseResult.isErr) {
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
@@ -1212,8 +1255,9 @@ function handlePrintValidation(
 	}
 
 	const parseFn = normalizeParseFunction(rawParseFn);
+	const parseOptions = deriveParseOptions(testCase);
 
-	const parseResult = parseFn(input);
+	const parseResult = parseFn(input, parseOptions);
 	if (parseResult.isErr) {
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
@@ -1248,9 +1292,9 @@ function handleCanonicalFormatValidation(
 	}
 
 	const indentation = getIndentation(capabilities);
-	const formatOptions: CanonicalFormatOptions | undefined = indentation
-		? { indentation }
-		: undefined;
+	const parseOptions = deriveParseOptions(testCase);
+	const formatOptions: CanonicalFormatOptions | undefined =
+		indentation || parseOptions ? { ...parseOptions, ...(indentation ? { indentation } : {}) } : undefined;
 
 	try {
 		const rawResult = fn(input, formatOptions);
@@ -1303,7 +1347,7 @@ function handleCanonicalFormatValidation(
  * Checks if print(parse(input)) == input.
  */
 function handleRoundTripValidation(
-	_testCase: TestCase,
+	testCase: TestCase,
 	input: string,
 	functions: CCLFunctions,
 	capabilities: ImplementationCapabilities,
@@ -1315,8 +1359,9 @@ function handleRoundTripValidation(
 	}
 
 	const parseFn = normalizeParseFunction(rawParseFn);
+	const parseOptions = deriveParseOptions(testCase);
 
-	const parseResult = parseFn(input);
+	const parseResult = parseFn(input, parseOptions);
 	if (parseResult.isErr) {
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
@@ -1361,8 +1406,9 @@ function getComposeValidationHelpers(functions: CCLFunctions): {
 function parseEntriesForCompose(
 	input: string,
 	parseFn: ReturnType<typeof normalizeParseFunction>,
+	parseOptions?: ParseOptions,
 ): Entry[] {
-	const parseResult = parseFn(input);
+	const parseResult = parseFn(input, parseOptions);
 	if (parseResult.isErr) {
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
@@ -1391,9 +1437,10 @@ function handleComposeAssociativeValidation(
 	}
 
 	const { parseFn, buildFn, composeFn } = getComposeValidationHelpers(functions);
-	const a = parseEntriesForCompose(firstInput, parseFn);
-	const b = parseEntriesForCompose(secondInput, parseFn);
-	const c = parseEntriesForCompose(thirdInput, parseFn);
+	const parseOptions = deriveParseOptions(testCase);
+	const a = parseEntriesForCompose(firstInput, parseFn, parseOptions);
+	const b = parseEntriesForCompose(secondInput, parseFn, parseOptions);
+	const c = parseEntriesForCompose(thirdInput, parseFn, parseOptions);
 
 	const left = buildObjectFromEntries(composeFn(composeFn(a, b), c), buildFn);
 	const right = buildObjectFromEntries(composeFn(a, composeFn(b, c)), buildFn);
@@ -1424,13 +1471,16 @@ function handleIdentityValidation(
 	}
 
 	const { parseFn, buildFn, composeFn } = getComposeValidationHelpers(functions);
+	const parseOptions = deriveParseOptions(testCase);
 	const identityEntries = parseEntriesForCompose(
 		direction === "left" ? firstInput : secondInput,
 		parseFn,
+		parseOptions,
 	);
 	const valueEntries = parseEntriesForCompose(
 		direction === "left" ? secondInput : firstInput,
 		parseFn,
+		parseOptions,
 	);
 	const actualEntries =
 		direction === "left"
