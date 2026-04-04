@@ -93,6 +93,25 @@ export interface BuildHierarchyOptions {
 	sort?: "insertion" | "lexicographic";
 }
 
+/**
+ * How output functions render indentation.
+ */
+export type Indentation = "spaces" | "tabs";
+
+/**
+ * Options for configuring output formatting in the `print` function.
+ */
+export interface PrintOptions {
+	indentation?: Indentation;
+}
+
+/**
+ * Options for configuring canonical format output.
+ */
+export interface CanonicalFormatOptions {
+	indentation?: Indentation;
+}
+
 // ============================================================================
 // Legacy Result Types (for backwards compatibility)
 // ============================================================================

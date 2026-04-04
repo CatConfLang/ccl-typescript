@@ -26,6 +26,7 @@ import { CCLAccessError, CCLParseError } from "./errors.js";
 import type {
 	AccessError,
 	BuildHierarchyOptions,
+	CanonicalFormatOptions,
 	CCLList,
 	CCLObject,
 	Entry,
@@ -48,6 +49,7 @@ export { CCLAccessError, CCLParseError } from "./errors.js";
 export type {
 	AccessError,
 	BuildHierarchyOptions,
+	CanonicalFormatOptions,
 	CCLList,
 	CCLListItem,
 	CCLObject,
@@ -56,8 +58,10 @@ export type {
 	Entry,
 	GetBoolOptions,
 	GetListOptions,
+	Indentation,
 	ParseError,
 	ParseOptions,
+	PrintOptions,
 	TabHandling,
 } from "./types.js";
 
@@ -184,6 +188,9 @@ export function getList(
  *
  * @beta
  */
-export function canonicalFormat(input: string, options?: ParseOptions): Result<string, ParseError> {
+export function canonicalFormat(
+	input: string,
+	options?: CanonicalFormatOptions,
+): Result<string, ParseError> {
 	return wrapResult(() => canonicalFormatInternal(input, options), toParseError);
 }

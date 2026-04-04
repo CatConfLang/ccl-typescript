@@ -33,6 +33,7 @@ behaviors:
   - crlf_preserve_literal
   - tabs_as_content
   - delimiter_first_equals
+  - indent_spaces
   - list_coercion_disabled
   - toplevel_indent_preserve
   - array_order_insertion
@@ -41,6 +42,7 @@ behaviors:
 optional_behaviors:
   - boolean_strict
   - crlf_normalize_to_lf
+  - indent_tabs
   - list_coercion_enabled
   - array_order_lexicographic
 
