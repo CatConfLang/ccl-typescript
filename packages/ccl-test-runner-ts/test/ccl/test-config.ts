@@ -69,9 +69,7 @@ export const STUB_PARSER_BEHAVIOR_OVERRIDES: Record<string, string> = {
  * Apply stub parser behavior overrides to a behaviors array.
  */
 export function applyStubBehaviorOverrides(behaviors: CCLBehavior[]): CCLBehavior[] {
-	return behaviors.map(
-		(b) => (STUB_PARSER_BEHAVIOR_OVERRIDES[b] as CCLBehavior) ?? b,
-	);
+	return behaviors.map((b) => (STUB_PARSER_BEHAVIOR_OVERRIDES[b] as CCLBehavior) ?? b);
 }
 
 /**

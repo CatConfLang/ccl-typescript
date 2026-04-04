@@ -12,7 +12,7 @@ import { getImplementedFunctions, parse } from "../../src/ccl.js";
 import type { TestCase } from "../../src/schema-validation.js";
 import { groupTestsByFunction, loadAllTests, shouldRunTest } from "../../src/test-data.js";
 import type { CCLTestResult } from "../../src/vitest.js";
-import { STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH, loadStubCapabilities } from "./test-config.js";
+import { loadStubCapabilities, STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH } from "./test-config.js";
 
 /**
  * Current implementation capabilities.

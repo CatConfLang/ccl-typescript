@@ -73,10 +73,66 @@ function parseSkipNote(note: string): ParsedSkipReason {
 }
 
 /**
+ * Normalize a function detail string to just the function name(s).
+ *
+ * Strips verbose suffixes and parentheticals from function skip reasons:
+ * - "parse not supported" → "parse"
+ * - "parse (required for round_trip) not supported" → "parse"
+ * - "parse declared but not implemented" → "parse"
+ * - "parse, build_hierarchy" → "parse, build_hierarchy" (multi kept as-is)
+ */
+export function normalizeFunctionDetail(detail: string): string {
+	return detail
+		.replace(/\s*\(required for [^)]+\)/g, "")
+		.replace(/\s+not supported$/, "")
+		.replace(/\s+declared but not implemented$/, "")
+		.trim();
+}
+
+/**
+ * Format a behavior detail string for compact display.
+ *
+ * - "test requires boolean_strict, implementation uses boolean_lenient" → "boolean_strict (impl: boolean_lenient)"
+ * - "test conflicts with boolean_strict" → "boolean_strict (excluded)"
+ * - plain string → returned as-is
+ */
+export function formatBehaviorDetail(raw: string): string {
+	const reqMatch = raw.match(/test requires (\S+), implementation uses (\S+)/);
+	if (reqMatch) return `${reqMatch[1]} (impl: ${reqMatch[2]})`;
+
+	const conflictMatch = raw.match(/test conflicts with (.+)/);
+	if (conflictMatch) return `${conflictMatch[1]} (excluded)`;
+
+	return raw;
+}
+
+/**
+ * Format a variant detail string for compact display.
+ *
+ * - "test requires X or Y, implementation uses Z" → "requires X or Y"
+ * - "test conflicts with X" → "X (excluded)"
+ * - plain string → returned as-is
+ *
+ * Note: unlike formatBehaviorDetail, we omit the implementation side for variants.
+ * The implementation's variant is already known context (it's a single fixed choice
+ * per run), so repeating it on every skip line adds noise rather than information.
+ */
+export function formatVariantDetail(raw: string): string {
+	const mismatchMatch = raw.match(/test requires (.+), implementation uses \S+/);
+	if (mismatchMatch) return `requires ${mismatchMatch[1]}`;
+
+	const conflictMatch = raw.match(/test conflicts with (.+)/);
+	if (conflictMatch) return `${conflictMatch[1]} (excluded)`;
+
+	return raw;
+}
+
+/**
  * Reporter that collects and summarizes skip reasons.
  */
 export default class SkipSummaryReporter implements Reporter {
 	private skippedByReason = new Map<string, number>();
+	private todoByFunction = new Map<string, number>();
 	private todoCount = 0;
 	private passedCount = 0;
 	private failedCount = 0;
@@ -96,12 +152,18 @@ export default class SkipSummaryReporter implements Reporter {
 				// Check if it's a todo vs regular skip
 				if (testCase.options.mode === "todo") {
 					this.todoCount++;
+					// Get function name from parent describe block
+					const parent = testCase.parent;
+					const fnName = parent.type === "suite" ? parent.name : "unknown";
+					this.todoByFunction.set(fnName, (this.todoByFunction.get(fnName) ?? 0) + 1);
 				} else {
 					this.skippedCount++;
 					// Track the skip reason
 					const note = result.note ?? "No reason provided";
 					const { category, detail } = parseSkipNote(note);
-					const key = `${category}:${detail}`;
+					const normalizedDetail =
+						category === "function" ? normalizeFunctionDetail(detail) : detail;
+					const key = `${category}:${normalizedDetail}`;
 					this.skippedByReason.set(key, (this.skippedByReason.get(key) ?? 0) + 1);
 				}
 				break;
@@ -136,9 +198,27 @@ export default class SkipSummaryReporter implements Reporter {
 	}
 
 	/**
+	 * Format a detail string for a given category.
+	 */
+	private formatDetail(category: SkipCategory, detail: string): string {
+		switch (category) {
+			case "behavior":
+				return formatBehaviorDetail(detail);
+			case "variant":
+				return formatVariantDetail(detail);
+			default:
+				return detail;
+		}
+	}
+
+	/**
 	 * Print a single category section.
 	 */
-	private printCategorySection(label: string, details: Map<string, number>): void {
+	private printCategorySection(
+		label: string,
+		category: SkipCategory,
+		details: Map<string, number>,
+	): void {
 		const categoryTotal = [...details.values()].reduce((sum, count) => sum + count, 0);
 
 		console.log(`│${`  ${label}`.padEnd(50)}${`${categoryTotal}`.padStart(10)}  │`);
@@ -147,12 +227,36 @@ export default class SkipSummaryReporter implements Reporter {
 		const sortedDetails = [...details.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 
 		for (const [detail, count] of sortedDetails) {
-			const truncatedDetail = detail.length > 40 ? `${detail.slice(0, 37)}...` : detail;
-			console.log(`│${`    └─ ${truncatedDetail}`.padEnd(50)}${`${count}`.padStart(10)}  │`);
+			const formatted = this.formatDetail(category, detail);
+			// Max display length is 43 chars (full available space); keep 40 content chars + "..."
+			const truncated = formatted.length > 43 ? `${formatted.slice(0, 40)}...` : formatted;
+			console.log(`│${`    └─ ${truncated}`.padEnd(50)}${`${count}`.padStart(10)}  │`);
 		}
 
 		if (details.size > 5) {
 			console.log(`│${`    └─ ... and ${details.size - 5} more`.padEnd(50)}${"".padStart(10)}  │`);
+		}
+	}
+
+	/**
+	 * Print the todo section.
+	 */
+	private printTodoSection(): void {
+		if (this.todoByFunction.size === 0) return;
+
+		const label = "Todo (not yet implemented)";
+		const todoTotal = [...this.todoByFunction.values()].reduce((sum, n) => sum + n, 0);
+		console.log(`│${`  ${label}`.padEnd(50)}${`${todoTotal}`.padStart(10)}  │`);
+
+		const sorted = [...this.todoByFunction.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+		for (const [fn, count] of sorted) {
+			console.log(`│${`    └─ ${fn}`.padEnd(50)}${`${count}`.padStart(10)}  │`);
+		}
+
+		if (this.todoByFunction.size > 5) {
+			console.log(
+				`│${`    └─ ... and ${this.todoByFunction.size - 5} more`.padEnd(50)}${"".padStart(10)}  │`,
+			);
 		}
 	}
 
@@ -210,7 +314,7 @@ export default class SkipSummaryReporter implements Reporter {
 			const details = byCategory.get(category);
 			if (details && details.size > 0) {
 				hasSkipDetails = true;
-				this.printCategorySection(categoryLabels[category], details);
+				this.printCategorySection(categoryLabels[category], category, details);
 			}
 		}
 
@@ -219,6 +323,8 @@ export default class SkipSummaryReporter implements Reporter {
 				`│${"  Skipped (no reason)".padEnd(50)}${`${this.skippedCount}`.padStart(10)}  │`,
 			);
 		}
+
+		this.printTodoSection();
 
 		this.printTotals();
 	}

@@ -1005,10 +1005,7 @@ export function parseIndented(text: string, options?: ParseOptions): Entry[] {
  *
  * @beta
  */
-export function filter(
-	entries: Entry[],
-	predicate: (entry: Entry) => boolean,
-): Entry[] {
+export function filter(entries: Entry[], predicate: (entry: Entry) => boolean): Entry[] {
 	return entries.filter(predicate);
 }
 

@@ -18,10 +18,6 @@
  * ```
  */
 
-// Config file loading
-export type { CCLConfigFile } from "./config.js";
-export { configFileToCapabilities, loadConfigFile, loadConfigFileSync } from "./config.js";
-
 // Capabilities configuration
 export type {
 	CCLBehavior,
@@ -44,7 +40,6 @@ export {
 	Variant,
 	validateCapabilities,
 } from "./capabilities.js";
-
 // CCL functions (stub implementations)
 export {
 	buildHierarchy,
@@ -54,6 +49,9 @@ export {
 	parseIndented,
 	parseToObject,
 } from "./ccl.js";
+// Config file loading
+export type { CCLConfigFile } from "./config.js";
+export { configFileToCapabilities, loadConfigFile, loadConfigFileSync } from "./config.js";
 
 // Test data download
 export type { DownloadOptions, DownloadResult } from "./download.js";

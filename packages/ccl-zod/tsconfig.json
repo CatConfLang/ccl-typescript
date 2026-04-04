@@ -4,11 +4,11 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./esm",
-		"types": ["node"],
+		"types": ["node"]
 	},
 	"references": [
 		{
-			"path": "../ccl-ts",
-		},
-	],
+			"path": "../ccl-ts"
+		}
+	]
 }
