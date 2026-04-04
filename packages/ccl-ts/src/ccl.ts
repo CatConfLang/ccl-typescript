@@ -10,6 +10,7 @@
 import { CCLAccessError, CCLParseError } from "./errors.js";
 import type {
 	BuildHierarchyOptions,
+	CanonicalFormatOptions,
 	CCLList,
 	CCLObject,
 	CCLValue,
@@ -17,6 +18,7 @@ import type {
 	GetBoolOptions,
 	GetListOptions,
 	ParseOptions,
+	PrintOptions,
 } from "./types.js";
 
 // Regex patterns for whitespace trimming (top-level for performance)
@@ -25,6 +27,7 @@ const LEADING_SPACES_ONLY = /^ +/;
 const TRAILING_SPACES_AND_TABS = /[ \t]+$/;
 const TRAILING_SPACES_ONLY = /[ ]+$/;
 const CRLF_REGEX = /\r\n/g;
+const LEADING_SPACES_PER_LINE = /^( {2})+/gm;
 
 /**
  * Internal resolved options where all fields are required booleans
@@ -40,6 +43,14 @@ function resolveOptions(options?: ParseOptions): ResolvedParseOptions {
 		tabsAreWhitespace: (options?.tabHandling ?? "tabs_as_content") === "tabs_as_whitespace",
 		crlfNormalize: (options?.crlfHandling ?? "crlf_preserve_literal") === "crlf_normalize_to_lf",
 	};
+}
+
+/**
+ * Convert leading 2-space indentation runs to tab characters.
+ * Each pair of leading spaces on each line becomes one tab.
+ */
+function spacesToTabs(text: string): string {
+	return text.replace(LEADING_SPACES_PER_LINE, (match) => "\t".repeat(match.length / 2));
 }
 
 /**
@@ -867,6 +878,7 @@ export function getList(obj: CCLObject, pathParts: string[], options?: GetListOp
  * - No trailing newline is added
  *
  * @param entries - The entries to format
+ * @param options - Optional formatting options
  * @returns CCL-formatted string
  *
  * @example
@@ -881,15 +893,19 @@ export function getList(obj: CCLObject, pathParts: string[], options?: GetListOp
  *
  * @beta
  */
-export function print(entries: Entry[]): string {
+export function print(entries: Entry[], options?: PrintOptions): string {
+	const useTabs = (options?.indentation ?? "spaces") === "tabs";
 	return entries
 		.map(({ key, value }) => {
 			// Empty keys get a leading space for clarity
 			const keyPart = key === "" ? " " : key;
+
+			const formattedValue = useTabs ? spacesToTabs(value) : value;
+
 			// Multiline values: key followed by " =" (value includes newline)
 			// Single-line values: key followed by " = value"
-			const separator = value.includes("\n") ? " =" : " = ";
-			return `${keyPart}${separator}${value}`;
+			const separator = formattedValue.includes("\n") ? " =" : " = ";
+			return `${keyPart}${separator}${formattedValue}`;
 		})
 		.join("\n");
 }
@@ -900,7 +916,7 @@ export function print(entries: Entry[]): string {
  * Parses the input and produces a normalized output with:
  * - Keys sorted alphabetically
  * - Consistent spacing: " = " between key and value
- * - 2-space indentation for nested content
+ * - Configurable indentation for nested content (2-space or tab)
  * - Trailing newline
  * - All values converted to nested structure form
  *
@@ -908,6 +924,7 @@ export function print(entries: Entry[]): string {
  * It enables deterministic output regardless of input ordering.
  *
  * @param input - The CCL text to canonicalize
+ * @param options - Optional parse and formatting options
  * @returns The canonicalized CCL string
  *
  * @throws {@link CCLParseError} if the input cannot be parsed.
@@ -920,18 +937,19 @@ export function print(entries: Entry[]): string {
  *
  * @beta
  */
-export function canonicalFormat(input: string, options?: ParseOptions): string {
+export function canonicalFormat(input: string, options?: CanonicalFormatOptions): string {
 	const entries = parse(input, options);
 	const obj = buildHierarchy(entries, options);
-	return formatCanonical(obj, 0);
+	const indentUnit = (options?.indentation ?? "spaces") === "tabs" ? "\t" : "  ";
+	return formatCanonical(obj, 0, indentUnit);
 }
 
 /**
  * Recursively format a CCL object in canonical form.
  */
-function formatCanonical(obj: CCLObject, depth: number): string {
-	const indent = "  ".repeat(depth);
-	const childIndent = `${indent}  `;
+function formatCanonical(obj: CCLObject, depth: number, indentUnit: string): string {
+	const indent = indentUnit.repeat(depth);
+	const childIndent = `${indent}${indentUnit}`;
 
 	const lines = Object.keys(obj)
 		.sort()
@@ -948,7 +966,7 @@ function formatCanonical(obj: CCLObject, depth: number): string {
 				return [keyLine, ...value.map((item) => `${childIndent}${item} =`)];
 			}
 			// Nested object: key line + recursive content (trim trailing newline)
-			return [keyLine, formatCanonical(value, depth + 1).slice(0, -1)];
+			return [keyLine, formatCanonical(value, depth + 1, indentUnit).slice(0, -1)];
 		});
 
 	return `${lines.join("\n")}\n`;

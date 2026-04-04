@@ -86,6 +86,16 @@ export interface AccessError {
 export type TabHandling = "tabs_as_content" | "tabs_as_whitespace";
 
 /**
+ * How output functions render indentation.
+ *
+ * - `"spaces"`: Use two spaces per indentation level (default).
+ * - `"tabs"`: Use one tab character per indentation level.
+ *
+ * @beta
+ */
+export type Indentation = "spaces" | "tabs";
+
+/**
  * How the parser treats CRLF (`\r\n`) sequences.
  *
  * - `crlf_preserve_literal`: Preserves `\r` characters exactly as they appear in the input.
@@ -155,4 +165,32 @@ export interface BuildHierarchyOptions extends ParseOptions {
 	 * @defaultValue `"insertion"`
 	 */
 	sort?: "insertion" | "lexicographic";
+}
+
+/**
+ * Options for configuring output formatting in the `print` function.
+ *
+ * @beta
+ */
+export interface PrintOptions {
+	/**
+	 * The indentation style used for output.
+	 * @defaultValue `"spaces"`
+	 */
+	indentation?: Indentation;
+}
+
+/**
+ * Options for configuring canonical format output.
+ * Extends {@link ParseOptions} (for parsing the input) and includes
+ * output formatting options.
+ *
+ * @beta
+ */
+export interface CanonicalFormatOptions extends ParseOptions {
+	/**
+	 * The indentation style used for output.
+	 * @defaultValue `"spaces"`
+	 */
+	indentation?: Indentation;
 }

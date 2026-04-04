@@ -47,12 +47,15 @@ import type {
 	AnyBuildHierarchyFn,
 	AnyParseFn,
 	BuildHierarchyOptions,
+	CanonicalFormatOptions,
 	CCLList,
 	CCLObject,
 	Entry,
 	GetBoolOptions,
 	GetListOptions,
+	Indentation,
 	ParseError,
+	PrintOptions,
 } from "./types.js";
 import { isResult, normalizeBuildHierarchyFunction, normalizeParseFunction } from "./types.js";
 
@@ -140,10 +143,13 @@ export interface CCLFunctions {
 	) => CCLList | undefined | Result<CCLList, AccessError>;
 
 	/** Print entries to CCL format */
-	print?: (entries: Entry[]) => string;
+	print?: (entries: Entry[], options?: PrintOptions) => string;
 
 	/** Format to canonical CCL representation (may return string or Result) */
-	canonical_format?: (input: string) => string | Result<string, ParseError>;
+	canonical_format?: (
+		input: string,
+		options?: CanonicalFormatOptions,
+	) => string | Result<string, ParseError>;
 
 	/** Load and parse CCL from string */
 	load?: (input: string) => CCLObject;
@@ -475,6 +481,19 @@ function postprocessValue(value: string, capabilities: ImplementationCapabilitie
 	}
 
 	return result;
+}
+
+/**
+ * Derive the indentation style from implementation behaviors.
+ */
+function getIndentation(capabilities: ImplementationCapabilities): Indentation | undefined {
+	if (capabilities.behaviors.includes("indent_tabs")) {
+		return "tabs";
+	}
+	if (capabilities.behaviors.includes("indent_spaces")) {
+		return "spaces";
+	}
+	return undefined;
 }
 
 /**
@@ -1184,6 +1203,7 @@ function handlePrintValidation(
 	testCase: TestCase,
 	input: string,
 	functions: CCLFunctions,
+	capabilities: ImplementationCapabilities,
 ): ValidationResult {
 	const rawParseFn = functions.parse;
 	const printFn = functions.print;
@@ -1198,7 +1218,9 @@ function handlePrintValidation(
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
 
-	const result = printFn(parseResult.value);
+	const indentation = getIndentation(capabilities);
+	const printOptions: PrintOptions | undefined = indentation ? { indentation } : undefined;
+	const result = printFn(parseResult.value, printOptions);
 	const expected = testCase.expected.value;
 	const passed = result === expected;
 
@@ -1218,14 +1240,20 @@ function handleCanonicalFormatValidation(
 	testCase: TestCase,
 	input: string,
 	functions: CCLFunctions,
+	capabilities: ImplementationCapabilities,
 ): ValidationResult {
 	const fn = functions.canonical_format;
 	if (!fn) {
 		throw new Error("canonical_format function not implemented");
 	}
 
+	const indentation = getIndentation(capabilities);
+	const formatOptions: CanonicalFormatOptions | undefined = indentation
+		? { indentation }
+		: undefined;
+
 	try {
-		const rawResult = fn(input);
+		const rawResult = fn(input, formatOptions);
 		// Handle both Result-returning and direct-returning functions
 		if (isResult<string, ParseError>(rawResult)) {
 			if (rawResult.isErr) {
@@ -1278,6 +1306,7 @@ function handleRoundTripValidation(
 	_testCase: TestCase,
 	input: string,
 	functions: CCLFunctions,
+	capabilities: ImplementationCapabilities,
 ): ValidationResult {
 	const rawParseFn = functions.parse;
 	const printFn = functions.print;
@@ -1292,7 +1321,9 @@ function handleRoundTripValidation(
 		throw new Error(`Parse failed: ${parseResult.error.message}`);
 	}
 
-	const roundTripped = printFn(parseResult.value);
+	const indentation = getIndentation(capabilities);
+	const printOptions: PrintOptions | undefined = indentation ? { indentation } : undefined;
+	const roundTripped = printFn(parseResult.value, printOptions);
 	const passed = roundTripped === input;
 
 	return {
@@ -1481,15 +1512,15 @@ export function runCCLTest(
 				break;
 
 			case "print":
-				result = handlePrintValidation(testCase, singleInput, functions);
+				result = handlePrintValidation(testCase, singleInput, functions, capabilities);
 				break;
 
 			case "canonical_format":
-				result = handleCanonicalFormatValidation(testCase, singleInput, functions);
+				result = handleCanonicalFormatValidation(testCase, singleInput, functions, capabilities);
 				break;
 
 			case "round_trip":
-				result = handleRoundTripValidation(testCase, singleInput, functions);
+				result = handleRoundTripValidation(testCase, singleInput, functions, capabilities);
 				break;
 
 			case "compose_associative":

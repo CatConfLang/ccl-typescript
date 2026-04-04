@@ -25,7 +25,12 @@ export interface BuildHierarchyOptions extends ParseOptions {
 }
 
 // @beta
-export function canonicalFormat(input: string, options?: ParseOptions): Result<string, ParseError>;
+export function canonicalFormat(input: string, options?: CanonicalFormatOptions): Result<string, ParseError>;
+
+// @beta
+export interface CanonicalFormatOptions extends ParseOptions {
+    indentation?: Indentation;
+}
 
 // @beta
 export class CCLAccessError extends Error {
@@ -101,6 +106,9 @@ export interface GetListOptions {
 // @beta
 export function getString(obj: CCLObject, ...pathParts: string[]): Result<string, AccessError>;
 
+// @beta
+export type Indentation = "spaces" | "tabs";
+
 export { Ok }
 
 export { ok }
@@ -125,7 +133,12 @@ export interface ParseOptions {
 }
 
 // @beta
-export function print(entries: Entry[]): string;
+export function print(entries: Entry[], options?: PrintOptions): string;
+
+// @beta
+export interface PrintOptions {
+    indentation?: Indentation;
+}
 
 export { Result }
 
