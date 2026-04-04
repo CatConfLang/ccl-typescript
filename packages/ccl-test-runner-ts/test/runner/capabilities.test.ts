@@ -113,7 +113,12 @@ describe("validateCapabilities", () => {
 			version: "1.0.0",
 			functions: [],
 			features: [],
-			behaviors: ["boolean_strict", "boolean_lenient", "tabs_as_content", "tabs_as_whitespace"] as const,
+			behaviors: [
+				"boolean_strict",
+				"boolean_lenient",
+				"tabs_as_content",
+				"tabs_as_whitespace",
+			] as const,
 			variant: "proposed_behavior" as const,
 		};
 
