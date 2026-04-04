@@ -24,6 +24,7 @@ const LEADING_SPACES_AND_TABS = /^[ \t]+/;
 const LEADING_SPACES_ONLY = /^ +/;
 const TRAILING_SPACES_AND_TABS = /[ \t]+$/;
 const TRAILING_SPACES_ONLY = /[ ]+$/;
+const CRLF_REGEX = /\r\n/g;
 
 /**
  * Internal resolved options where all fields are required booleans
@@ -31,11 +32,13 @@ const TRAILING_SPACES_ONLY = /[ ]+$/;
  */
 interface ResolvedParseOptions {
 	tabsAreWhitespace: boolean;
+	crlfNormalize: boolean;
 }
 
 function resolveOptions(options?: ParseOptions): ResolvedParseOptions {
 	return {
 		tabsAreWhitespace: (options?.tabHandling ?? "tabs_as_content") === "tabs_as_whitespace",
+		crlfNormalize: (options?.crlfHandling ?? "crlf_preserve_literal") === "crlf_normalize_to_lf",
 	};
 }
 
@@ -91,12 +94,13 @@ function parseWithStrategy(
 	stripContinuationIndent: boolean,
 ): Entry[] {
 	const opts = resolveOptions(options);
-	const baseline = determineBaseline(text, opts);
+	const normalizedText = opts.crlfNormalize ? text.replace(CRLF_REGEX, "\n") : text;
+	const baseline = determineBaseline(normalizedText, opts);
 	const entries: Entry[] = [];
 	let pos = 0;
 
-	while (pos < text.length) {
-		const entryResult = getNextEntry(text, pos, baseline, opts, stripContinuationIndent);
+	while (pos < normalizedText.length) {
+		const entryResult = getNextEntry(normalizedText, pos, baseline, opts, stripContinuationIndent);
 		if (!entryResult) {
 			break;
 		}

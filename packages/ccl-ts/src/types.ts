@@ -86,6 +86,16 @@ export interface AccessError {
 export type TabHandling = "tabs_as_content" | "tabs_as_whitespace";
 
 /**
+ * How the parser treats CRLF (`\r\n`) sequences.
+ *
+ * - `crlf_preserve_literal`: Preserves `\r` characters exactly as they appear in the input.
+ * - `crlf_normalize_to_lf`: Converts all `\r\n` sequences to `\n` before parsing.
+ *
+ * @beta
+ */
+export type CrlfHandling = "crlf_preserve_literal" | "crlf_normalize_to_lf";
+
+/**
  * Options for configuring CCL parsing behavior.
  *
  * @beta
@@ -96,6 +106,12 @@ export interface ParseOptions {
 	 * @defaultValue `"tabs_as_content"`
 	 */
 	tabHandling?: TabHandling;
+
+	/**
+	 * How CRLF sequences are handled during parsing.
+	 * @defaultValue `"crlf_preserve_literal"`
+	 */
+	crlfHandling?: CrlfHandling;
 }
 
 /**

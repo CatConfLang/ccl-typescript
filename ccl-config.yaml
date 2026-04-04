@@ -40,6 +40,7 @@ behaviors:
 # Optional: Additional behaviors supported via function options
 optional_behaviors:
   - boolean_strict
+  - crlf_normalize_to_lf
   - list_coercion_enabled
   - array_order_lexicographic
 

@@ -440,12 +440,21 @@ function buildCapabilities(config: CCLTestConfig): ImplementationCapabilities {
 }
 
 /**
- * Preprocess input based on implementation behaviors.
+ * Preprocess input based on implementation behaviors and test case requirements.
+ *
+ * Normalizes CRLF when either the implementation's primary behavior is
+ * `crlf_normalize_to_lf`, or when the test case specifically requires it
+ * (for implementations that support normalization as an optional behavior).
  */
-function preprocessInput(input: string, capabilities: ImplementationCapabilities): string {
+function preprocessInput(
+	input: string,
+	capabilities: ImplementationCapabilities,
+	testCase?: TestCase,
+): string {
 	let result = input;
 
-	if (capabilities.behaviors.includes("crlf_normalize_to_lf")) {
+	const testRequiresCrlfNormalize = testCase?.behaviors.includes("crlf_normalize_to_lf") ?? false;
+	if (capabilities.behaviors.includes("crlf_normalize_to_lf") || testRequiresCrlfNormalize) {
 		result = result.replace(CRLF_REGEX, "\n");
 	}
 
@@ -1427,7 +1436,7 @@ export function runCCLTest(
 	if (rawInput === undefined) {
 		throw new Error(`Test case "${testCase.name}" has no inputs`);
 	}
-	const inputs = testCase.inputs.map((value) => preprocessInput(value, capabilities));
+	const inputs = testCase.inputs.map((value) => preprocessInput(value, capabilities, testCase));
 	const singleInput = inputs[0] ?? rawInput;
 	const input = inputs.length === 1 ? singleInput : inputs.join("\n---\n");
 
