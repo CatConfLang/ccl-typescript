@@ -8,22 +8,18 @@
  */
 import { describe, expect, test } from "vitest";
 import type { CCLFunction, ImplementationCapabilities } from "../../src/capabilities.js";
-import { loadConfigFileSync } from "../../src/config.js";
 import { getImplementedFunctions, parse } from "../../src/ccl.js";
 import type { TestCase } from "../../src/schema-validation.js";
 import { groupTestsByFunction, loadAllTests, shouldRunTest } from "../../src/test-data.js";
 import type { CCLTestResult } from "../../src/vitest.js";
-import { CCL_CONFIG_PATH, STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH } from "./test-config.js";
+import { STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH, loadStubCapabilities } from "./test-config.js";
 
 /**
  * Current implementation capabilities.
- * Loaded from ccl-config.yaml with skip overrides for the stub parser.
+ * Loaded from ccl-config.yaml with overrides for the stub parser.
  */
 const capabilities: ImplementationCapabilities = {
-	...loadConfigFileSync(CCL_CONFIG_PATH, {
-		name: "ccl-test-runner-ts",
-		version: "0.1.0",
-	}),
+	...loadStubCapabilities(),
 	skipTests: STUB_PARSER_SKIP_TESTS,
 };
 

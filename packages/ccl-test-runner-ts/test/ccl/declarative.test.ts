@@ -8,13 +8,22 @@
  */
 import { describe, expect, test } from "vitest";
 import { parse } from "../../src/ccl.js";
+import type { CCLBehavior } from "../../src/capabilities.js";
+import { loadConfigFileSync } from "../../src/config.js";
 import {
 	type CCLFunctions,
 	createCCLTestCases,
 	defineCCLTests,
 	getCCLTestSuiteInfo,
 } from "../../src/vitest.js";
-import { CCL_CONFIG_PATH, STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH } from "./test-config.js";
+import { CCL_CONFIG_PATH, STUB_PARSER_SKIP_TESTS, TEST_DATA_PATH, applyStubBehaviorOverrides } from "./test-config.js";
+
+// Load behaviors from config file, then apply stub parser overrides
+const fileConfig = loadConfigFileSync(CCL_CONFIG_PATH, {
+	name: "ccl-test-runner-ts-example",
+	version: "0.1.0",
+});
+const stubBehaviors: CCLBehavior[] = applyStubBehaviorOverrides(fileConfig.behaviors);
 
 /**
  * Define CCL test configuration.
@@ -31,6 +40,9 @@ const cclConfig = defineCCLTests({
 	// Load capabilities from ccl-config.yaml; functions declared there but not
 	// wired up below will be marked as "todo" instead of "skip".
 	configPath: CCL_CONFIG_PATH,
+
+	// Override behaviors for the stub parser (e.g. CRLF normalization)
+	behaviors: stubBehaviors,
 
 	// Wire up only the functions you've implemented
 	functions: {

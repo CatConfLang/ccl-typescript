@@ -326,9 +326,17 @@ export function createCapabilities(
 	partial: Partial<ImplementationCapabilities> & { name: string },
 ): ImplementationCapabilities {
 	const defaults = getStubCapabilities();
-	return {
+	const result: ImplementationCapabilities = {
 		...defaults,
 		...partial,
+		functions: partial.functions ?? defaults.functions,
+		features: partial.features ?? defaults.features,
+		behaviors: partial.behaviors ?? defaults.behaviors,
 		version: partial.version ?? defaults.version,
 	};
+	const optionalBehaviors = partial.optionalBehaviors ?? defaults.optionalBehaviors;
+	if (optionalBehaviors) {
+		result.optionalBehaviors = optionalBehaviors;
+	}
+	return result;
 }
