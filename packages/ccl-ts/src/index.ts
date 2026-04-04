@@ -52,6 +52,7 @@ export type {
 	CCLListItem,
 	CCLObject,
 	CCLValue,
+	CrlfHandling,
 	Entry,
 	GetBoolOptions,
 	GetListOptions,
