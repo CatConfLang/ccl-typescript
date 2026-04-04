@@ -123,6 +123,9 @@ const cclConfig = defineCCLTests({
 		print,
 		canonical_format: canonicalFormat,
 	} satisfies CCLFunctions,
+
+	// https://github.com/CatConfLang/ccl-test-data/issues/112
+	skipTests: ["list_with_whitespace_reference_build_hierarchy"],
 });
 
 describe("CCL", async () => {
