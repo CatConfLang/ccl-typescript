@@ -42,6 +42,9 @@ behaviors:
 optional_behaviors:
   - boolean_strict
   - crlf_normalize_to_lf
+  - tabs_as_whitespace
+  - delimiter_prefer_spaced
+  - toplevel_indent_strip
   - indent_tabs
   - list_coercion_enabled
   - array_order_lexicographic

@@ -82,9 +82,39 @@ export interface GetListOptions {
 }
 
 /**
+ * How the parser treats tab characters.
+ */
+export type TabHandling = "tabs_as_content" | "tabs_as_whitespace";
+
+/**
+ * How the parser treats CRLF sequences.
+ */
+export type CrlfHandling = "crlf_preserve_literal" | "crlf_normalize_to_lf";
+
+/**
+ * How the parser finds the key-value delimiter.
+ */
+export type DelimiterMode = "first_equals" | "prefer_spaced";
+
+/**
+ * How the parser handles continuation line indentation.
+ */
+export type ToplevelIndent = "strip" | "preserve";
+
+/**
+ * Options for configuring CCL parsing behavior.
+ */
+export interface ParseOptions {
+	tabHandling?: TabHandling;
+	crlfHandling?: CrlfHandling;
+	delimiterMode?: DelimiterMode;
+	toplevelIndent?: ToplevelIndent;
+}
+
+/**
  * Options for configuring hierarchy construction behavior.
  */
-export interface BuildHierarchyOptions {
+export interface BuildHierarchyOptions extends ParseOptions {
 	/**
 	 * Controls the ordering of list items built from duplicate keys.
 	 * - `"insertion"` (default): items appear in the order they were defined.
@@ -108,7 +138,7 @@ export interface PrintOptions {
 /**
  * Options for configuring canonical format output.
  */
-export interface CanonicalFormatOptions {
+export interface CanonicalFormatOptions extends ParseOptions {
 	indentation?: Indentation;
 }
 
@@ -146,7 +176,7 @@ export type HierarchyResult =
 /**
  * Parse function that throws on error.
  */
-export type ParseFn = (input: string) => Entry[];
+export type ParseFn = (input: string, options?: ParseOptions) => Entry[];
 
 /**
  * Build_hierarchy function that throws on error.
@@ -181,7 +211,7 @@ export type ComposeFn = (base: Entry[], overlay: Entry[]) => Entry[];
 /**
  * Parse function that returns a true-myth Result.
  */
-export type ParseResultFn = (input: string) => Result<Entry[], ParseError>;
+export type ParseResultFn = (input: string, options?: ParseOptions) => Result<Entry[], ParseError>;
 
 /**
  * Build hierarchy function that returns a true-myth Result.
@@ -200,7 +230,7 @@ export type BuildHierarchyResultFn = (
  * Parse function that returns a legacy ParseResult.
  * @deprecated Use ParseResultFn (true-myth Result) instead
  */
-export type LegacyParseResultFn = (input: string) => ParseResult;
+export type LegacyParseResultFn = (input: string, options?: ParseOptions) => ParseResult;
 
 /**
  * Build hierarchy function that returns a legacy HierarchyResult.
@@ -297,10 +327,10 @@ export function isHierarchyResult(value: unknown): value is HierarchyResult {
  */
 export function normalizeParseFunction(
 	fn: AnyParseFn,
-): (input: string) => Result<Entry[], ParseError> {
-	return (input: string): Result<Entry[], ParseError> => {
+): (input: string, options?: ParseOptions) => Result<Entry[], ParseError> {
+	return (input: string, options?: ParseOptions): Result<Entry[], ParseError> => {
 		try {
-			const result = fn(input);
+			const result = fn(input, options);
 
 			// Check if it's a true-myth Result
 			if (isResult<Entry[], ParseError>(result)) {

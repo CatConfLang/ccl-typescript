@@ -52,6 +52,18 @@ export const STUB_PARSER_SKIP_TESTS: string[] = [
 	"deeply_nested_list_parse",
 	// Round-trip normalization
 	"round_trip_whitespace_normalization_parse",
+	// Behavior options not implemented in stub parser
+	"behavior_combo_tabs_and_crlf_parse",
+	"delimiter_spaced_empty_value_parse",
+	"delimiter_spaced_multiple_equals_parse",
+	"key_with_tabs_ocaml_reference_parse",
+	"leading_whitespace_baseline_zero_parse",
+	"tabs_as_whitespace_in_value_parse",
+	"tabs_as_whitespace_leading_tab_parse",
+	"tabs_as_whitespace_mixed_indent_parse",
+	"tabs_as_whitespace_multiline_parse",
+	"tabs_as_whitespace_multiple_tabs_parse",
+	"url_with_query_params_as_key_parse",
 ];
 
 /**

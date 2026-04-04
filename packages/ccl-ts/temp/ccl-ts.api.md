@@ -25,7 +25,12 @@ export interface BuildHierarchyOptions extends ParseOptions {
 }
 
 // @beta
-export function canonicalFormat(input: string, options?: ParseOptions): Result<string, ParseError>;
+export function canonicalFormat(input: string, options?: CanonicalFormatOptions): Result<string, ParseError>;
+
+// @beta
+export interface CanonicalFormatOptions extends ParseOptions {
+    indentation?: Indentation;
+}
 
 // @beta
 export class CCLAccessError extends Error {
@@ -62,6 +67,9 @@ export function compose(base: Entry[], overlay: Entry[]): Entry[];
 
 // @beta
 export type CrlfHandling = "crlf_preserve_literal" | "crlf_normalize_to_lf";
+
+// @beta
+export type DelimiterMode = "first_equals" | "prefer_spaced";
 
 // @beta
 export interface Entry {
@@ -101,6 +109,9 @@ export interface GetListOptions {
 // @beta
 export function getString(obj: CCLObject, ...pathParts: string[]): Result<string, AccessError>;
 
+// @beta
+export type Indentation = "spaces" | "tabs";
+
 export { Ok }
 
 export { ok }
@@ -121,15 +132,25 @@ export function parseIndented(text: string, options?: ParseOptions): Result<Entr
 // @beta
 export interface ParseOptions {
     crlfHandling?: CrlfHandling;
+    delimiterMode?: DelimiterMode;
     tabHandling?: TabHandling;
+    toplevelIndent?: ToplevelIndent;
 }
 
 // @beta
-export function print(entries: Entry[]): string;
+export function print(entries: Entry[], options?: PrintOptions): string;
+
+// @beta
+export interface PrintOptions {
+    indentation?: Indentation;
+}
 
 export { Result }
 
 // @beta
 export type TabHandling = "tabs_as_content" | "tabs_as_whitespace";
+
+// @beta
+export type ToplevelIndent = "strip" | "preserve";
 
 ```
