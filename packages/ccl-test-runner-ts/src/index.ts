@@ -94,6 +94,29 @@ export {
 	normalizeParseFunction,
 } from "./types.js";
 
+// Test results format and generation
+export type {
+	AggregatedResults,
+	AggregateOptions,
+	CategorizedTest,
+	CCLTestResults,
+	FunctionResults,
+	GenerateTestResultsOptions,
+	ImplementationInfo,
+	ScorecardMetrics,
+	SkipReasonCategory,
+	TagBreakdown,
+	TestOutcome,
+	TestSuiteInfo,
+	TestSummary,
+} from "./test-results.js";
+export {
+	aggregateResults,
+	categorizeSkipReason,
+	computeMetrics,
+	generateTestResults,
+} from "./test-results.js";
+
 // NOTE: CCL domain types (Entry, CCLObject, ParseResult, etc.) and function
 // type signatures are exported from 'ccl-test-runner-ts/types' for type-only
 // imports. This ensures consumers use `import type` for type definitions.

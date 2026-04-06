@@ -9,6 +9,7 @@ esm/
 # Test output
 _temp/
 .coverage/
+ccl-test-results.json
 
 # Nx
 .nx/

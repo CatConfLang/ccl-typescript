@@ -8,7 +8,9 @@
  * Test data is provided by the @tylerbu/ccl-test-data workspace package.
  */
 
+import { writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
+import { generateTestResults } from "ccl-test-runner-ts";
 import {
 	type CCLFunctions,
 	type CCLTestResult,
@@ -17,7 +19,7 @@ import {
 	getCCLTestSuiteInfo,
 } from "ccl-test-runner-ts/vitest";
 import { dirname, join } from "pathe";
-import { describe, expect, test } from "vitest";
+import { afterAll, describe, expect, test } from "vitest";
 import {
 	buildHierarchy,
 	canonicalFormat,
@@ -175,6 +177,20 @@ describe("CCL", async () => {
 						break;
 				}
 			}
+		});
+	}
+
+	// Generate JSON test results when CCL_GENERATE_RESULTS is set
+	if (process.env.CCL_GENERATE_RESULTS) {
+		afterAll(async () => {
+			const results = await generateTestResults({
+				config: cclConfig,
+				language: "typescript",
+				includeTests: process.env.CCL_RESULTS_INCLUDE_TESTS === "1",
+			});
+			const outputPath = join(import.meta.dirname, "..", "ccl-test-results.json");
+			await writeFile(outputPath, JSON.stringify(results, null, 2));
+			console.log(`\nTest results written to ${outputPath}`);
 		});
 	}
 });
