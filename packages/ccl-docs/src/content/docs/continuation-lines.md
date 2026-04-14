@@ -7,6 +7,8 @@ description: Understanding how CCL determines which lines are part of a value vs
 
 CCL uses indentation to determine whether a line continues the previous value or starts a new entry. This page explains the rules in detail, including the critical distinction between **top-level** and **nested** parsing contexts.
 
+For the precise algorithm that assembles continuation lines into a value string, see [AI Implementation Guide: Value Construction](/ai-implementation-guide#value-construction).
+
 ## The Basic Rule
 
 When parsing CCL, each line's indentation is compared to a **baseline** value (called **N**):
@@ -26,6 +28,12 @@ CCL has two parsing contexts with different rules for determining N:
 
 When parsing a CCL document from the beginning, how N is determined depends on the `toplevel_indent_strip` vs `toplevel_indent_preserve` behavior choice (see [Behavior Reference](/behavior-reference#continuation-baseline)).
 
+:::caution[First Content Line Rule]
+**The first non-empty content line always starts a new entry, regardless of its indentation.** Continuation detection (comparing indentation to N) only applies to lines *after* the first entry has been established. This rule applies in both top-level and nested parsing contexts.
+
+Without this rule, a parser using `toplevel_indent_strip` (N=0) would incorrectly treat *every* indented line as a continuation — even the very first line, which has no preceding entry to continue.
+:::
+
 #### With `toplevel_indent_strip` (default)
 
 **N is always 0.** Any line with leading whitespace becomes a continuation. This is the OCaml reference implementation's behavior.
@@ -42,6 +50,22 @@ server =
 3. Line 3: `  port = 8080` at indent 2 → 2 > 0 → **continuation**
 
 **Result:** One entry: `{key: "server", value: "\n  host = localhost\n  port = 8080"}`
+
+Note that line 1 starts an entry even though its indent (0) is not > N (0). The first content line rule ensures parsing always begins by creating an entry, not by checking for continuation.
+
+#### Edge case: all lines indented with `toplevel_indent_strip`
+
+```ccl
+  name = Alice
+  age = 30
+```
+
+With N=0, both lines have indent 2 which is > 0. Without the first content line rule, a parser might try to make line 1 a continuation of nothing. The correct behavior:
+
+1. Line 1: `  name = Alice` → **first content line rule applies** → starts entry, key = "name"
+2. Line 2: `  age = 30` at indent 2 → 2 > 0 → **continuation** of name's value
+
+**Result:** One entry: `{key: "name", value: "Alice\n  age = 30"}`
 
 #### With `toplevel_indent_preserve`
 
@@ -201,9 +225,11 @@ Nested parse of primary's value (N=4):
 
 ## Edge Cases
 
-### Empty Lines
+### Empty Lines in Values
 
-Empty lines (containing only whitespace or nothing) are typically skipped during continuation detection. They don't break a continuation:
+Empty lines within a value block do **not** automatically end the value. The semantic rule is:
+
+> **A value ends when a non-empty line with indentation ≤ N is encountered, or at end of input.** Empty lines between continuation lines are preserved in the value. Trailing empty lines (those not followed by another continuation line) are **not** included in the value.
 
 ```ccl
 message =
@@ -212,7 +238,37 @@ message =
   line three
 ```
 
-The empty line between "line one" and "line three" is preserved in the value.
+The empty line between "line one" and "line three" is preserved in the value because `line three` has indentation > N, confirming the value continues. The result is: `"\n  line one\n\n  line three"`.
+
+However, trailing empty lines are excluded:
+
+```ccl
+message =
+  line one
+
+next = entry
+```
+
+Here the empty line is followed by `next = entry` at indentation ≤ N, so the empty line is **not** part of `message`'s value. The result is: `"\n  line one"`.
+
+**Implementation approaches:**
+
+There are two common ways to implement this:
+
+1. **Lookahead**: When an empty line is encountered during value collection, scan ahead past any consecutive empty lines. If a non-empty line with indentation > N exists, preserve the empty line(s) in the value; otherwise, end the value.
+
+   ```pseudocode
+   function has_more_continuations(text, pos, baseline):
+       // Scan forward past empty lines
+       while pos < text.length:
+           line = get_line_at(text, pos)
+           if line is not empty:
+               return count_leading_whitespace(line) > baseline
+           pos = next_line(pos)
+       return false
+   ```
+
+2. **Greedy parsing** (as in the OCaml reference): Continue reading past empty lines unconditionally. When a non-empty line with indentation ≤ N is found, stop — the empty lines before it are implicitly excluded because parsing stopped before consuming them.
 
 ### Mixed Tabs and Spaces
 
@@ -240,7 +296,10 @@ function parse(text):
     pos = 0
 
     while pos < text.length:
-        // Find next '=' and extract key
+        // Find next '=' and extract key.
+        // This naturally implements the first content line rule:
+        // the parser always seeks '=' first, creating an entry before
+        // any continuation detection occurs.
         eq_index = find_next_equals(text, pos)
         key = extract_and_trim_key(text, pos, eq_index)
 

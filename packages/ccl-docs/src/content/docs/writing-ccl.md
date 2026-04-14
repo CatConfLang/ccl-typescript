@@ -255,9 +255,7 @@ section =
 ```
 
 :::note
-Some lenient implementations may silently discard a line with no `=` rather than error. Either way, the line will not produce an entry — so the practical rule is the same: **every line must include `=`**.
-
-Note also that a key can span lines if the `=` appears on the next line: `key\n= value` is valid and produces `key = value`.
+A line without `=` is the start of a [multi-line key](/parsing-algorithm#multi-line-keys) — the parser continues reading until `=` is found on a subsequent line. For example, `key\n= value` produces `Entry {key: "key", value: "value"}`.
 :::
 
 ### Inline Comments
