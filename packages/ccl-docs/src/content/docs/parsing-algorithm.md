@@ -38,7 +38,7 @@ Find the `=` delimiter and split into key and value. The strategy used depends o
 
 **Key whitespace rules**:
 - Trim all whitespace from keys (including newlines): `"  key  "` → `"key"`
-- Keys can span multiple lines if `=` appears on a subsequent line
+- Keys can span multiple lines — see [Multi-Line Keys](#multi-line-keys) below
 
 **Value whitespace rules**:
 - Trim leading whitespace on first line: `key =   value` → `"value"`
@@ -66,7 +66,41 @@ See [Continuation Lines](/continuation-lines) for detailed examples and [Behavio
 - Empty key `= value` → list item
 - Comment entry `/ = text` → key is `/`, value is `text`
 
+### Multi-Line Keys
+
+:::note[Feature Tag]
+Tests for multi-line key behavior are tagged `feature:multiline_keys` for reporting purposes.
+:::
+
+When a line has no `=` delimiter, it is the beginning of a multi-line key. The OCaml reference implementation's parser reads `many (not_char '=')` which naturally consumes across line boundaries until `=` is found — multi-line keys are a natural consequence of the parsing algorithm.
+
+The rule is:
+
+1. **Buffer** the line's content (trimmed).
+2. **Continue reading** until a line containing `=` is found.
+3. The buffered text plus any text before `=` on the final line forms the key (with all whitespace including newlines collapsed and trimmed).
+
+**Examples:**
+
+```
+key
+= val
+```
+Line 1 has no `=` → buffer `"key"`. Line 2 has `=` with nothing before it → key is `"key"`, value is `"val"`.
+
+```
+long key
+name = Alice
+```
+Lines are consumed until `=` is found. The text before `=` spans both lines → key is `"long key name"`, value is `"Alice"`.
+
+**Implementation approaches:**
+- **Parser combinator** (as in the OCaml reference): Reading `many (not_char '=')` naturally consumes across line boundaries until `=` is found, making multi-line keys implicit.
+- **Explicit buffering**: Buffer lines without `=` and consume the buffer when a line containing `=` is found, prepending the buffer to the key.
+
 ### Build Hierarchy
+
+`build_hierarchy` always returns a map (object/dict). Multiple entries with the same key (including empty key `""` for list items) accumulate into a list stored under that key. See [AI Implementation Guide: build_hierarchy](/ai-implementation-guide#build_hierarchy) for the full algorithm and type details.
 
 Indentation determines structure. Example:
 
@@ -181,7 +215,7 @@ def recursively_parse(entries):
 ## Error Handling Essentials
 
 **Malformed input**:
-- Line with no '=' → parse error (reference OCaml implementation errors with "end_of_input"; more lenient implementations may discard the line)
+- Line with no '=' → part of a [multi-line key](#multi-line-keys); buffer and continue reading until `=` is found
 - Inconsistent indentation → use explicit indentation counting
 - Empty lines → ignore
 

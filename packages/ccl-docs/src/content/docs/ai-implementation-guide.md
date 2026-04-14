@@ -58,11 +58,23 @@ Entry {
 
 1. Find the first `=` character in the input
 2. Everything before `=` is the key (trimmed of all whitespace including newlines)
-3. Parse the value:
-   - Trim leading whitespace on the first line
-   - Include continuation lines (lines with greater indentation) as part of the value
-   - Trim trailing whitespace from the final line
+3. Construct the value string (see precise rules below)
 4. Repeat for remaining input
+
+#### Value Construction
+
+The value string is assembled as follows:
+
+1. **First line**: Everything after `=` on the same line, with leading whitespace trimmed.
+2. **Continuation lines**: Each subsequent line with indentation > N (the baseline) is appended verbatim, preserving its leading whitespace.
+3. **Joining**: Lines are joined with `\n` separators.
+4. **Final trim**: Trailing whitespace is trimmed from the complete result.
+
+**Empty first line with continuations:** When the text after `=` is empty (or whitespace-only) and continuation lines follow, the trimmed first line is empty, so the value begins with `\n` followed by the first continuation line.
+
+For example, `database =\n  host = localhost` produces value `"\n  host = localhost"` — the empty first line becomes `""`, joined with `\n` to the continuation `"  host = localhost"`.
+
+**Single-line values** are simply the trimmed text after `=`: `key = value` → `"value"`.
 
 **Example:**
 ```ccl
@@ -86,10 +98,11 @@ Parses to:
 - Empty key `= value` → list item (key is empty string)
 - Comment entry `/ = text` → key is `/`, value is `text`
 
-**Value rules:**
-- Trim leading whitespace on first line: `key =   value` → value is `"value"`
-- Trim trailing whitespace on final line: `key = value  ` → value is `"value"`
-- Preserve internal structure (newlines + indentation for continuation lines)
+**Value rules** (summary — see "Value construction" above for full algorithm):
+- First line: trim leading whitespace after `=`: `key =   value` → value is `"value"`
+- Continuation lines: preserved verbatim, including their leading whitespace
+- Final line: trim trailing whitespace: `key = value  ` → value is `"value"`
+- Lines joined with `\n`; internal newlines and indentation preserved
 
 **Indentation handling:**
 
@@ -123,10 +136,20 @@ Converts flat entries into a nested object structure via recursive parsing.
 build_hierarchy(entries: List[Entry]) -> CCL
 ```
 
-**CCL type:**
+**Return type:**
+
+`build_hierarchy` **always returns a map** (object/dict), even when all entries have empty keys. The observable structure of a CCL value is:
+
+- **String** — terminal value (no `=` in content, fixed point reached)
+- **Map** — nested object (from recursive parsing of a value containing `=`)
+- **List** — array of values (from multiple entries sharing the same key)
+
+Different languages encode this differently. The pseudocode uses:
 ```
-CCL = Map[string, CCL | string | List[string]]
+CCL = Map[string, CCL | string | List[CCLValue]]
 ```
+
+The OCaml reference uses a uniform recursive type `Fix of t Map.Make(String).t` where every value is a nested map (strings are represented as single-key maps). What matters is the observable output, not the internal type encoding.
 
 **Algorithm:**
 
@@ -135,8 +158,8 @@ function build_hierarchy(entries):
     result = {}
     for entry in entries:
         if entry.key == "":
-            # Empty key = list item
-            add_to_list(result, "", entry.value)
+            # Empty key = list item (accumulate under "" key)
+            accumulate_list(result, "", entry.value)
         else if contains_ccl_syntax(entry.value):
             # Value has '=' → parse recursively
             nested_entries = parse(entry.value)
@@ -149,6 +172,8 @@ function build_hierarchy(entries):
 function contains_ccl_syntax(value):
     return "=" in value
 ```
+
+**List accumulation for empty keys:** When multiple entries share the same key (including `""`), their values are collected into a list. For example, input `= alice\n= bob` produces `{"": ["alice", "bob"]}` — a map with key `""` mapping to a list. Implementations may use any internal mechanism to achieve this (explicit list tracking, tagged unions, etc.).
 
 **Fixed-point termination:** Recursion stops when values contain no `=` characters. Plain strings like `"localhost"` or `"5432"` have no structure to parse.
 
@@ -169,12 +194,14 @@ After recursive parsing:
     "host": "localhost",
     "port": "5432"
   },
-  "users": ["alice", "bob"]
+  "users": {"": ["alice", "bob"]}
 }
 ```
 
+Note: `users` is a map with empty-key list, not a bare list. Library convenience functions like `get_list` may present this as `["alice", "bob"]` to callers.
+
 **Handling special cases:**
-- **Empty keys:** Multiple entries with empty key `""` form a list
+- **Empty keys:** Multiple entries with empty key `""` accumulate into a list stored in the map under key `""`
 - **Duplicate keys:** Merge values or convert to list (implementation choice)
 - **Nested values:** Any value containing `=` is parsed recursively
 
@@ -413,16 +440,21 @@ Entry {
 
 ### CCL Object
 
-The hierarchical structure after `build_hierarchy`:
+The hierarchical structure after `build_hierarchy`. The top-level return is always a map:
 
 ```
-CCL = Map[string, CCL | string | List]
+CCL = Map[string, CCLValue]
+CCLValue = string | CCL | List[CCLValue]
 ```
 
 Where values can be:
 - **String** - Terminal value (no `=` in content)
 - **CCL** - Nested object (parsed from value containing `=`)
-- **List** - Array of values (from multiple empty-key entries)
+- **List** - Array of values (from multiple entries with the same key, including empty-key `""` list items)
+
+:::note[Type Encoding Varies]
+This pseudocode type is one valid representation. The OCaml reference uses a uniform recursive type `Fix of t Map.Make(String).t` where every value is a nested map. Other implementations may use tagged unions, interfaces, or dynamic types. Choose what's idiomatic for your language — the observable structure is what matters.
+:::
 
 ---
 
