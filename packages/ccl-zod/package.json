@@ -1,6 +1,6 @@
 {
 	"name": "ccl-zod",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "Zod schema integration for CCL — extract typed objects from CCLObjects.",
 	"homepage": "https://github.com/tylerbutler/ccl-typescript/tree/main/packages/ccl-zod",
 	"bugs": "https://github.com/tylerbutler/ccl-typescript/issues",
