@@ -1,16 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { TestCase } from "../../src/schema-validation.js";
 import {
-	type CCLTestResults,
-	type FunctionResults,
-	type ScorecardMetrics,
-	type TagBreakdown,
-	type TestOutcome,
-	type TestSummary,
-	computeMetrics,
-	categorizeSkipReason,
 	aggregateResults,
+	categorizeSkipReason,
+	computeMetrics,
 	generateTestResults,
+	type TestSummary,
 } from "../../src/test-results.js";
 import { TEST_DATA_PATH } from "../ccl/test-config.js";
 
@@ -159,9 +154,7 @@ describe("categorizeSkipReason", () => {
 	});
 
 	it("detects conflict category", () => {
-		expect(categorizeSkipReason("Function conflict: test conflicts with compose")).toBe(
-			"conflict",
-		);
+		expect(categorizeSkipReason("Function conflict: test conflicts with compose")).toBe("conflict");
 	});
 
 	it("detects behavior category from 'Missing behavior' format", () => {
@@ -403,10 +396,10 @@ describe("aggregateResults", () => {
 
 		expect(result.tests).toBeDefined();
 		expect(result.tests).toHaveLength(2);
-		expect(result.tests![0]).toEqual(
+		expect(result.tests?.[0]).toEqual(
 			expect.objectContaining({ name: "t1", validation: "parse", outcome: "pass" }),
 		);
-		expect(result.tests![1]).toEqual(
+		expect(result.tests?.[1]).toEqual(
 			expect.objectContaining({
 				name: "t2",
 				validation: "parse",
@@ -467,7 +460,7 @@ describe("aggregateResults", () => {
 
 		const result = aggregateResults(tests, { includeTests: true });
 
-		expect(result.tests![0]).toEqual(
+		expect(result.tests?.[0]).toEqual(
 			expect.objectContaining({
 				outcome: "fail",
 				error: "Expected 3 entries but got 2",
@@ -570,10 +563,10 @@ describe("generateTestResults", () => {
 		});
 
 		expect(results.tests).toBeDefined();
-		expect(results.tests!.length).toBe(results.summary.totalTests);
+		expect(results.tests?.length).toBe(results.summary.totalTests);
 
 		// Each test should have a name and outcome
-		for (const t of results.tests!) {
+		for (const t of results.tests ?? []) {
 			expect(t.name).toBeTruthy();
 			expect(["pass", "fail", "skip", "todo"]).toContain(t.outcome);
 		}

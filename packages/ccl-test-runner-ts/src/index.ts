@@ -85,15 +85,6 @@ export {
 	loadTestData,
 	shouldRunTest,
 } from "./test-data.js";
-
-// Type utilities (runtime functions)
-export {
-	isHierarchyResult,
-	isParseResult,
-	normalizeBuildHierarchyFunction,
-	normalizeParseFunction,
-} from "./types.js";
-
 // Test results format and generation
 export type {
 	AggregatedResults,
@@ -116,6 +107,13 @@ export {
 	computeMetrics,
 	generateTestResults,
 } from "./test-results.js";
+// Type utilities (runtime functions)
+export {
+	isHierarchyResult,
+	isParseResult,
+	normalizeBuildHierarchyFunction,
+	normalizeParseFunction,
+} from "./types.js";
 
 // NOTE: CCL domain types (Entry, CCLObject, ParseResult, etc.) and function
 // type signatures are exported from 'ccl-test-runner-ts/types' for type-only
