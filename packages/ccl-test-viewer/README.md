@@ -46,7 +46,7 @@ CCL_USE_GITHUB=false pnpm sync-data
 CCL_SKIP_SYNC_IF_EXISTS=true pnpm sync-data
 ```
 
-**Data Source**: `tylerbutler/ccl-test-data` repository (main branch, generated_tests directory)
+**Data Source**: `CatConfLang/ccl-test-data` repository (main branch, generated_tests directory)
 
 **Authentication**: The script automatically uses authentication via:
 1. `GITHUB_TOKEN` environment variable (if set)

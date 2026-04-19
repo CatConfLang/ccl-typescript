@@ -35,7 +35,7 @@ import { join } from "pathe";
 import { runOperation } from "./structuredConcurrency.js";
 
 const GITHUB_API_BASE = "https://api.github.com";
-const REPO_OWNER = "tylerbutler";
+const REPO_OWNER = "CatConfLang";
 const REPO_NAME = "ccl-test-data";
 
 /** Default output directory for downloaded test data */
