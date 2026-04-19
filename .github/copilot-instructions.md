@@ -21,10 +21,9 @@ ccl-test-data ← (internal, not published)
 
 ccl-test-viewer ← (internal, not published)
   └── SvelteKit + Tauri + Tailwind CSS visualization app
-
-ccl-docs ← (internal, not published)
-  └── Astro/Starlight documentation site
 ```
+
+The documentation site (previously `packages/ccl-docs`) now lives in its own repo: <https://github.com/tylerbutler/ccl-website>.
 
 ## Build, Test, and Lint
 

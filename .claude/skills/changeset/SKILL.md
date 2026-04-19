@@ -31,7 +31,6 @@ Changesets reference packages by their **npm name** (from package.json `name` fi
 | `packages/ccl-ts` | `ccl-ts` |
 | `packages/ccl-test-runner-ts` | `ccl-test-runner-ts` |
 | `packages/ccl-zod` | `ccl-zod` |
-| `packages/ccl-docs` | `ccl-docs` |
 | `packages/ccl-test-data` | `@tylerbu/ccl-test-data` |
 | `packages/ccl-test-viewer` | `@tylerbu/ccl-test-viewer` |
 
