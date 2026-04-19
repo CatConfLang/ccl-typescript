@@ -85,28 +85,20 @@ export {
 	loadTestData,
 	shouldRunTest,
 } from "./test-data.js";
+// Nutrition label (markdown rollup)
+export type { GenerateNutritionLabelOptions } from "./nutrition-label.js";
+export { generateNutritionLabel } from "./nutrition-label.js";
+
 // Test results format and generation
 export type {
-	AggregatedResults,
-	AggregateOptions,
-	CategorizedTest,
 	CCLTestResults,
-	FunctionResults,
 	GenerateTestResultsOptions,
 	ImplementationInfo,
-	ScorecardMetrics,
 	SkipReasonCategory,
-	TagBreakdown,
 	TestOutcome,
 	TestSuiteInfo,
-	TestSummary,
 } from "./test-results.js";
-export {
-	aggregateResults,
-	categorizeSkipReason,
-	computeMetrics,
-	generateTestResults,
-} from "./test-results.js";
+export { categorizeSkipReason, generateTestResults } from "./test-results.js";
 // Type utilities (runtime functions)
 export {
 	isHierarchyResult,

@@ -1,12 +1,12 @@
 /**
- * CCL Test Results JSON format types and aggregation functions.
+ * CCL Test Results JSON format types and generation.
  *
  * Defines a structured JSON output format for CCL test results that can be
  * produced by any test runner and consumed to build scorecards or
- * "nutrition facts" labels for implementations.
+ * "nutrition facts" labels for implementations. Consumers derive summaries,
+ * metrics, and per-tag breakdowns from the raw test outcomes.
  */
 
-import type { TestCase } from "./schema-validation.js";
 import type { CCLTestConfig, CCLTestResult } from "./vitest.js";
 
 // ---------------------------------------------------------------------------
@@ -15,52 +15,39 @@ import type { CCLTestConfig, CCLTestResult } from "./vitest.js";
 
 /**
  * Top-level test results document.
- * Self-contained: a consumer can build a full scorecard from this alone.
+ * Consumers derive summaries, metrics, and per-tag breakdowns from `tests`.
  */
 export interface CCLTestResults {
-	/** URL to JSON schema for validation */
-	$schema?: string;
-	/** Format version for forward compatibility */
-	formatVersion: "1.0.0";
+	/**
+	 * URL to the JSON schema this document conforms to. Declares which version
+	 * of the test-results format this document targets — consumers pin the URL
+	 * to a ccl-test-data release tag (e.g. `.../vX.Y.Z/schemas/test-results-format.json`).
+	 */
+	$schema: string;
 	/** ISO 8601 timestamp */
 	generatedAt: string;
-
-	/** Identity and configuration of the implementation under test */
+	/** Identity and capability declaration of the implementation under test */
 	implementation: ImplementationInfo;
 	/** Version of the ccl-test-data test suite used */
 	testSuite: TestSuiteInfo;
-	/** Aggregate counts across all tests */
-	summary: TestSummary;
-	/** Computed metrics ready for scorecard display */
-	metrics: ScorecardMetrics;
-	/** Per-function breakdown of results */
-	functions: Record<string, FunctionResults>;
-	/** Per-behavior breakdown */
-	behaviors: Record<string, TagBreakdown>;
-	/** Per-feature breakdown */
-	features: Record<string, TagBreakdown>;
-	/** Per-variant breakdown */
-	variants: Record<string, TagBreakdown>;
-
-	/** Individual test outcomes — optional, omit for compact reports */
-	tests?: TestOutcome[];
+	/** Individual test outcomes with full tag metadata for consumer-side aggregation */
+	tests: TestOutcome[];
 }
 
 /**
- * Implementation identity and declared capabilities.
+ * Implementation identity and capability declaration.
  */
 export interface ImplementationInfo {
 	name: string;
 	version: string;
 	language: string;
 	variant: string;
-	declaredFunctions: string[];
+	/**
+	 * Functions with actual implementations.
+	 * Cannot be derived from test outcomes alone — a function may be implemented
+	 * but have all its tests skipped.
+	 */
 	implementedFunctions: string[];
-	todoFunctions: string[];
-	behaviors: string[];
-	optionalBehaviors: string[];
-	features: string[];
-	skipTests?: string[];
 }
 
 /**
@@ -68,75 +55,29 @@ export interface ImplementationInfo {
  */
 export interface TestSuiteInfo {
 	version?: string;
+	/** Total number of tests in the suite. Should equal tests.length. */
 	totalTests: number;
 }
 
 /**
- * Aggregate test counts.
- * Invariant: passed + failed + skipped + todo = totalTests
- */
-export interface TestSummary {
-	totalTests: number;
-	passed: number;
-	failed: number;
-	skipped: number;
-	todo: number;
-	skipReasons: Record<string, number>;
-}
-
-/**
- * Pre-computed metrics for scorecard display.
- * All ratios are in [0, 1]. null when denominator is 0.
- */
-export interface ScorecardMetrics {
-	/** passed / (passed + failed) */
-	passRate: number | null;
-	/** (total - skipped) / total */
-	coverage: number | null;
-	/** (passed + failed) / (total - skipped) */
-	completeness: number | null;
-	/** passed / total */
-	overallScore: number | null;
-}
-
-/**
- * Per-function results breakdown.
- */
-export interface FunctionResults {
-	status: "implemented" | "todo" | "unsupported";
-	passed: number;
-	failed: number;
-	skipped: number;
-	todo: number;
-	total: number;
-	passRate: number | null;
-}
-
-/**
- * Breakdown for a behavior, feature, or variant tag.
- */
-export interface TagBreakdown {
-	passed: number;
-	failed: number;
-	skipped: number;
-	todo: number;
-	total: number;
-}
-
-/**
- * Individual test outcome.
+ * Individual test outcome with full tag metadata.
+ * Tags are copied from the test case so consumers can aggregate by any dimension.
  */
 export interface TestOutcome {
 	name: string;
 	validation: string;
+	behaviors: string[];
+	features: string[];
+	variants: string[];
 	outcome: "pass" | "fail" | "skip" | "todo";
+	/** Raw skip/todo reason — consumers categorize as needed */
 	reason?: string;
 	error?: string;
 	durationMs?: number;
 }
 
 // ---------------------------------------------------------------------------
-// Skip reason categories
+// Consumer utilities
 // ---------------------------------------------------------------------------
 
 export type SkipReasonCategory =
@@ -148,7 +89,7 @@ export type SkipReasonCategory =
 	| "other";
 
 /**
- * Categorize a skip reason string into a bucket.
+ * Categorize a raw skip reason string into a display bucket.
  *
  * The test runner produces these formats:
  * - "function:parse not supported" → function
@@ -198,213 +139,6 @@ export function categorizeSkipReason(reason: string): SkipReasonCategory {
 }
 
 // ---------------------------------------------------------------------------
-// Metric computation
-// ---------------------------------------------------------------------------
-
-/**
- * Compute scorecard metrics from a test summary.
- * Returns null for any metric where the denominator is 0.
- */
-export function computeMetrics(summary: TestSummary): ScorecardMetrics {
-	const { totalTests, passed, failed, skipped } = summary;
-	const ran = passed + failed;
-	const applicable = totalTests - skipped;
-
-	return {
-		passRate: ran > 0 ? passed / ran : null,
-		coverage: totalTests > 0 ? applicable / totalTests : null,
-		completeness: applicable > 0 ? ran / applicable : null,
-		overallScore: totalTests > 0 ? passed / totalTests : null,
-	};
-}
-
-// ---------------------------------------------------------------------------
-// Result aggregation
-// ---------------------------------------------------------------------------
-
-/**
- * A categorized test result ready for aggregation.
- */
-export interface CategorizedTest {
-	testCase: TestCase;
-	outcome: "pass" | "fail" | "skip" | "todo";
-	reason?: string | undefined;
-	error?: string | undefined;
-}
-
-/**
- * Options for aggregateResults.
- */
-export interface AggregateOptions {
-	/** Include individual test outcomes in the output */
-	includeTests?: boolean;
-}
-
-/**
- * Aggregated results (everything except implementation info and test suite metadata).
- */
-export interface AggregatedResults {
-	summary: TestSummary;
-	metrics: ScorecardMetrics;
-	functions: Record<string, FunctionResults>;
-	behaviors: Record<string, TagBreakdown>;
-	features: Record<string, TagBreakdown>;
-	variants: Record<string, TagBreakdown>;
-	tests?: TestOutcome[];
-}
-
-function emptyTagBreakdown(): TagBreakdown {
-	return { passed: 0, failed: 0, skipped: 0, todo: 0, total: 0 };
-}
-
-function emptyFunctionResults(): FunctionResults {
-	return {
-		status: "unsupported",
-		passed: 0,
-		failed: 0,
-		skipped: 0,
-		todo: 0,
-		total: 0,
-		passRate: null,
-	};
-}
-
-function tallyOutcome(
-	bucket: { passed: number; failed: number; skipped: number; todo: number; total: number },
-	outcome: "pass" | "fail" | "skip" | "todo",
-): void {
-	bucket.total++;
-	switch (outcome) {
-		case "pass":
-			bucket.passed++;
-			break;
-		case "fail":
-			bucket.failed++;
-			break;
-		case "skip":
-			bucket.skipped++;
-			break;
-		case "todo":
-			bucket.todo++;
-			break;
-	}
-}
-
-/**
- * Aggregate categorized tests into the results format.
- * This is a pure function operating on pre-categorized test data.
- */
-export function aggregateResults(
-	tests: CategorizedTest[],
-	options: AggregateOptions = {},
-): AggregatedResults {
-	const summary: TestSummary = {
-		totalTests: tests.length,
-		passed: 0,
-		failed: 0,
-		skipped: 0,
-		todo: 0,
-		skipReasons: {},
-	};
-
-	const functions: Record<string, FunctionResults> = {};
-	const behaviors: Record<string, TagBreakdown> = {};
-	const features: Record<string, TagBreakdown> = {};
-	const variants: Record<string, TagBreakdown> = {};
-	const testOutcomes: TestOutcome[] | undefined = options.includeTests ? [] : undefined;
-
-	for (const { testCase, outcome, reason, error } of tests) {
-		// Summary counts
-		switch (outcome) {
-			case "pass":
-				summary.passed++;
-				break;
-			case "fail":
-				summary.failed++;
-				break;
-			case "skip":
-				summary.skipped++;
-				break;
-			case "todo":
-				summary.todo++;
-				break;
-		}
-
-		// Skip reason categorization
-		if (outcome === "skip" && reason) {
-			const category = categorizeSkipReason(reason);
-			summary.skipReasons[category] = (summary.skipReasons[category] ?? 0) + 1;
-		}
-
-		// Per-function breakdown
-		const fn = testCase.validation;
-		if (functions[fn] === undefined) {
-			functions[fn] = emptyFunctionResults();
-		}
-		tallyOutcome(functions[fn], outcome);
-
-		// Per-behavior breakdown
-		for (const behavior of testCase.behaviors) {
-			if (behaviors[behavior] === undefined) {
-				behaviors[behavior] = emptyTagBreakdown();
-			}
-			tallyOutcome(behaviors[behavior], outcome);
-		}
-
-		// Per-feature breakdown
-		for (const feature of testCase.features) {
-			if (features[feature] === undefined) {
-				features[feature] = emptyTagBreakdown();
-			}
-			tallyOutcome(features[feature], outcome);
-		}
-
-		// Per-variant breakdown
-		for (const variant of testCase.variants) {
-			if (variants[variant] === undefined) {
-				variants[variant] = emptyTagBreakdown();
-			}
-			tallyOutcome(variants[variant], outcome);
-		}
-
-		// Individual test outcome
-		if (testOutcomes) {
-			const entry: TestOutcome = {
-				name: testCase.name,
-				validation: testCase.validation,
-				outcome,
-			};
-			if (reason) entry.reason = reason;
-			if (error) entry.error = error;
-			testOutcomes.push(entry);
-		}
-	}
-
-	// Compute per-function passRate
-	for (const fnResult of Object.values(functions)) {
-		const ran = fnResult.passed + fnResult.failed;
-		fnResult.passRate = ran > 0 ? fnResult.passed / ran : null;
-	}
-
-	const metrics = computeMetrics(summary);
-
-	const result: AggregatedResults = {
-		summary,
-		metrics,
-		functions,
-		behaviors,
-		features,
-		variants,
-	};
-
-	if (testOutcomes) {
-		result.tests = testOutcomes;
-	}
-
-	return result;
-}
-
-// ---------------------------------------------------------------------------
 // generateTestResults — full pipeline
 // ---------------------------------------------------------------------------
 
@@ -416,23 +150,30 @@ export interface GenerateTestResultsOptions {
 	config: CCLTestConfig;
 	/** Implementation language (e.g., "typescript", "go") */
 	language: string;
-	/** Include individual test outcomes in output */
-	includeTests?: boolean;
+	/**
+	 * URL stamped into the document's `$schema` field. Pin this to a release
+	 * tag of ccl-test-data (e.g. `.../vX.Y.Z/schemas/test-results-format.json`)
+	 * so consumers can resolve the exact format version. Defaults to `main`.
+	 */
+	schemaUrl?: string;
 }
+
+const DEFAULT_SCHEMA_URL =
+	"https://raw.githubusercontent.com/CatConfLang/ccl-test-data/main/schemas/test-results-format.json";
 
 /**
  * Generate a complete CCLTestResults document from a CCL test config.
  *
- * This runs the full pipeline:
+ * Runs the full pipeline:
  * 1. Builds capabilities from the config
  * 2. Loads and categorizes all tests
  * 3. Runs each "run" test and records pass/fail
- * 4. Aggregates everything into the results format
+ * 4. Returns raw outcomes with full tag metadata for consumer-side aggregation
  */
 export async function generateTestResults(
 	options: GenerateTestResultsOptions,
 ): Promise<CCLTestResults> {
-	const { config, language, includeTests = false } = options;
+	const { config, language, schemaUrl = DEFAULT_SCHEMA_URL } = options;
 
 	// Dynamically import to avoid circular dependencies — vitest.ts is the
 	// main module and test-results.ts is a utility module.
@@ -443,24 +184,32 @@ export async function generateTestResults(
 		createCCLTestCases(config),
 	]);
 
-	// Run tests and categorize outcomes
-	const categorizedTests: CategorizedTest[] = [];
+	const testOutcomes: TestOutcome[] = [];
 
 	for (const { categorization, run } of tests) {
 		const { testCase } = categorization;
+		const tags = {
+			behaviors: [...testCase.behaviors],
+			features: [...testCase.features],
+			variants: [...testCase.variants],
+		};
 
 		switch (categorization.type) {
 			case "skip":
-				categorizedTests.push({
-					testCase,
+				testOutcomes.push({
+					name: testCase.name,
+					validation: testCase.validation,
+					...tags,
 					outcome: "skip",
 					reason: categorization.reason,
 				});
 				break;
 
 			case "todo":
-				categorizedTests.push({
-					testCase,
+				testOutcomes.push({
+					name: testCase.name,
+					validation: testCase.validation,
+					...tags,
 					outcome: "todo",
 					reason: categorization.reason,
 				});
@@ -471,38 +220,26 @@ export async function generateTestResults(
 				try {
 					result = run();
 				} catch (e) {
-					categorizedTests.push({
-						testCase,
+					testOutcomes.push({
+						name: testCase.name,
+						validation: testCase.validation,
+						...tags,
 						outcome: "fail",
 						error: e instanceof Error ? e.message : String(e),
 					});
 					break;
 				}
 
-				categorizedTests.push({
-					testCase,
+				const entry: TestOutcome = {
+					name: testCase.name,
+					validation: testCase.validation,
+					...tags,
 					outcome: result.passed ? "pass" : "fail",
-					error: result.error,
-				});
+				};
+				if (result.error) entry.error = result.error;
+				testOutcomes.push(entry);
 				break;
 			}
-		}
-	}
-
-	// Aggregate
-	const aggregated = aggregateResults(categorizedTests, { includeTests });
-
-	// Determine function statuses from suite info
-	const implementedSet = new Set(suiteInfo.implementedFunctions);
-	const declaredSet = new Set(suiteInfo.capabilities.functions);
-
-	for (const [fn, fnResult] of Object.entries(aggregated.functions)) {
-		if (implementedSet.has(fn as never)) {
-			fnResult.status = "implemented";
-		} else if (declaredSet.has(fn as never)) {
-			fnResult.status = "todo";
-		} else {
-			fnResult.status = "unsupported";
 		}
 	}
 
@@ -519,38 +256,20 @@ export async function generateTestResults(
 
 	const { capabilities } = suiteInfo;
 
-	const results: CCLTestResults = {
-		formatVersion: "1.0.0",
+	return {
+		$schema: schemaUrl,
 		generatedAt: new Date().toISOString(),
-
 		implementation: {
 			name: capabilities.name,
 			version: capabilities.version,
 			language,
 			variant: capabilities.variant,
-			declaredFunctions: [...capabilities.functions],
 			implementedFunctions: [...suiteInfo.implementedFunctions],
-			todoFunctions: [...suiteInfo.declaredButNotImplemented],
-			behaviors: [...capabilities.behaviors],
-			optionalBehaviors: [...(capabilities.optionalBehaviors ?? [])],
-			features: [...capabilities.features],
-			...(capabilities.skipTests?.length ? { skipTests: [...capabilities.skipTests] } : {}),
 		},
-
 		testSuite: {
-			totalTests: aggregated.summary.totalTests,
+			totalTests: testOutcomes.length,
 			...(testSuiteVersion ? { version: testSuiteVersion } : {}),
 		},
-
-		summary: aggregated.summary,
-		metrics: aggregated.metrics,
-		functions: aggregated.functions,
-		behaviors: aggregated.behaviors,
-		features: aggregated.features,
-		variants: aggregated.variants,
-
-		...(aggregated.tests ? { tests: aggregated.tests } : {}),
+		tests: testOutcomes,
 	};
-
-	return results;
 }

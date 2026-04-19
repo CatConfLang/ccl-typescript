@@ -46,7 +46,8 @@
 	},
 	"types": "./esm/index.d.ts",
 	"bin": {
-		"ccl-download-tests": "./esm/download.js"
+		"ccl-download-tests": "./esm/download.js",
+		"ccl-nutrition-label": "./esm/nutrition-label-cli.js"
 	},
 	"files": [
 		"esm"
@@ -61,7 +62,8 @@
 		"lint": "biome lint .",
 		"lint:fix": "biome lint . --write --unsafe",
 		"release:license": "generate-license-file -c ../../.generatelicensefile.cjs",
-		"sync-schema": "dill https://raw.githubusercontent.com/tylerbutler/ccl-test-data/main/schemas/generated-format.json -o schemas/",
+		"sync-schema": "dill https://raw.githubusercontent.com/CatConfLang/ccl-test-data/main/schemas/generated-format.json -o schemas/",
+		"sync-results-schema": "dill https://raw.githubusercontent.com/CatConfLang/ccl-test-data/main/schemas/test-results-format.json -o schemas/",
 		"test": "vitest run",
 		"test:ccl": "vitest run test/ccl",
 		"test:coverage": "vitest run --coverage",
