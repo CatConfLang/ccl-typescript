@@ -36,6 +36,15 @@ export default defineConfig({
 	},
 	integrations: [
 		starlight({
+			head: [
+				{
+					tag: "script",
+					attrs: {
+						src: "https://tinylytics.app/embed/_BjJ-yw4sLmoooN5EEtc.js",
+						defer: true,
+					},
+				},
+			],
 			title: "CCL",
 			description: "CCL (Categorical Configuration Language) documentation",
 			lastUpdated: true,
