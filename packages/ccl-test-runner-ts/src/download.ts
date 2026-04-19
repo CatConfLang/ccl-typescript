@@ -309,9 +309,6 @@ const main = defineCommand({
 			default: false,
 		},
 	},
-	subCommands: {
-		schema: schemaCommand,
-	},
 	async run({ args }) {
 		if (args.version !== undefined && args.latest) {
 			consola.error("--version and --latest are mutually exclusive");
@@ -333,7 +330,35 @@ const main = defineCommand({
 	},
 });
 
-runMain(main)
+// citty resolves subcommands before parsing options, which causes space-separated
+// option values (e.g. --output ./dir) to be misidentified as subcommand names.
+// See: https://github.com/unjs/citty/issues/133
+// We detect the "schema" subcommand from raw argv ourselves to avoid this.
+function detectSubcommand(): string | undefined {
+	const stringOptions = new Set(["-o", "--output", "-v", "--version"]);
+	const args = process.argv.slice(2);
+	for (let i = 0; i < args.length; i++) {
+		const arg = args[i];
+		if (arg === undefined || arg === "--") break;
+		if (stringOptions.has(arg)) {
+			i++; // skip the value
+			continue;
+		}
+		if (!arg.startsWith("-")) return arg;
+	}
+	return undefined;
+}
+
+const subcommand = detectSubcommand();
+
+// Strip the subcommand token so citty doesn't re-parse it as a positional arg
+if (subcommand === "schema") {
+	const idx = process.argv.indexOf("schema");
+	process.argv.splice(idx, 1);
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: union of two CommandDef types can't be narrowed for runMain
+runMain((subcommand === "schema" ? schemaCommand : main) as any)
 	.catch((error: unknown) => {
 		consola.error(error);
 		process.exit(1);
