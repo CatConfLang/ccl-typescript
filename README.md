@@ -10,7 +10,8 @@ TypeScript packages for [CCL (Categorical Configuration Language)](https://ccl.t
 | [`@tylerbu/ccl-test-runner-ts`](./packages/ccl-test-runner-ts) | Test framework with vitest integration and CLI |
 | [`@tylerbu/ccl-test-data`](./packages/ccl-test-data) | Test fixture package (JSON files) |
 | [`@tylerbu/ccl-test-viewer`](./packages/ccl-test-viewer) | SvelteKit + Tauri visualization app |
-| [`@tylerbu/ccl-docs`](./packages/ccl-docs) | Astro/Starlight documentation site |
+
+The documentation site lives in its own repo: [ccl-website](https://github.com/tylerbutler/ccl-website) (deployed at <https://ccl.tylerbutler.com>).
 
 ## Development
 
