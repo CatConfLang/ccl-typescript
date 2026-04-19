@@ -33,7 +33,7 @@ function getWorkspaceDataPath(): string {
 }
 
 // GitHub repository configuration (fallback when workspace package unavailable)
-const GITHUB_REPO = "tylerbutler/ccl-test-data";
+const GITHUB_REPO = "CatConfLang/ccl-test-data";
 const GITHUB_BRANCH = "main";
 const GITHUB_PATH = "generated_tests";
 const GITHUB_API_BASE = `https://api.github.com/repos/${GITHUB_REPO}`;

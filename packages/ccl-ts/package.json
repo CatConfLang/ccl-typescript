@@ -41,7 +41,9 @@
 		"lint:fix": "biome lint . --write --unsafe",
 		"release:license": "generate-license-file -c ../../.generatelicensefile.cjs",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage"
+		"test:coverage": "vitest run --coverage",
+		"test:results": "CCL_GENERATE_RESULTS=1 vitest run",
+		"test:results:detailed": "CCL_GENERATE_RESULTS=1 CCL_RESULTS_INCLUDE_TESTS=1 vitest run"
 	},
 	"dependencies": {
 		"true-myth": "^9.3.1"

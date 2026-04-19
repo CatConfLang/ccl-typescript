@@ -753,7 +753,12 @@ function handleGetStringValidation(
 		throw new Error("get_string function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
+	const obj = buildObjectFromInput(
+		input,
+		functions,
+		deriveBuildHierarchyOptions(testCase),
+		deriveParseOptions(testCase),
+	);
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Check if we expect an error
@@ -833,7 +838,12 @@ function handleGetIntValidation(
 		throw new Error("get_int function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
+	const obj = buildObjectFromInput(
+		input,
+		functions,
+		deriveBuildHierarchyOptions(testCase),
+		deriveParseOptions(testCase),
+	);
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Check if we expect an error
@@ -913,7 +923,12 @@ function handleGetBoolValidation(
 		throw new Error("get_bool function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
+	const obj = buildObjectFromInput(
+		input,
+		functions,
+		deriveBuildHierarchyOptions(testCase),
+		deriveParseOptions(testCase),
+	);
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Derive options from test case behaviors
@@ -999,7 +1014,12 @@ function handleGetFloatValidation(
 		throw new Error("get_float function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
+	const obj = buildObjectFromInput(
+		input,
+		functions,
+		deriveBuildHierarchyOptions(testCase),
+		deriveParseOptions(testCase),
+	);
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Check if we expect an error
@@ -1079,7 +1099,12 @@ function handleGetListValidation(
 		throw new Error("get_list function not implemented");
 	}
 
-	const obj = buildObjectFromInput(input, functions, deriveBuildHierarchyOptions(testCase), deriveParseOptions(testCase));
+	const obj = buildObjectFromInput(
+		input,
+		functions,
+		deriveBuildHierarchyOptions(testCase),
+		deriveParseOptions(testCase),
+	);
 	const pathArgs = getPathArgsFromTestCase(testCase);
 
 	// Derive options from test case behaviors
@@ -1294,7 +1319,9 @@ function handleCanonicalFormatValidation(
 	const indentation = getIndentation(capabilities);
 	const parseOptions = deriveParseOptions(testCase);
 	const formatOptions: CanonicalFormatOptions | undefined =
-		indentation || parseOptions ? { ...parseOptions, ...(indentation ? { indentation } : {}) } : undefined;
+		indentation || parseOptions
+			? { ...parseOptions, ...(indentation ? { indentation } : {}) }
+			: undefined;
 
 	try {
 		const rawResult = fn(input, formatOptions);

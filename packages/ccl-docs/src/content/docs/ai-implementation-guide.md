@@ -483,6 +483,6 @@ PROCESSING:      filter, compose
 FORMATTING:      print, canonical_format
 TERMINOLOGY:     Always use snake_case
 ALGORITHM:       Recursive fixed-point parsing
-TEST SUITE:      github.com/tylerbutler/ccl-test-data
+TEST SUITE:      github.com/CatConfLang/ccl-test-data
 DOCUMENTATION:   ccl.tylerbutler.com
 ```
