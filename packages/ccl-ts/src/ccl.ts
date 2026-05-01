@@ -2,7 +2,7 @@
  * CCL (Categorical Configuration Language) parser implementation.
  *
  * This module provides the core parsing functionality for CCL.
- * See https://ccl.tylerbutler.com for the CCL specification.
+ * See https://catconflang.com for the CCL specification.
  *
  * Functions throw {@link CCLParseError} or {@link CCLAccessError} on failure.
  */
