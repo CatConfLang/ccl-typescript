@@ -1,6 +1,6 @@
 # CCL TypeScript
 
-TypeScript packages for [CCL (Categorical Configuration Language)](https://ccl.tylerbutler.com).
+TypeScript packages for [CCL (Categorical Configuration Language)](https://catconflang.com).
 
 ## Packages
 
@@ -11,7 +11,7 @@ TypeScript packages for [CCL (Categorical Configuration Language)](https://ccl.t
 | [`@tylerbu/ccl-test-data`](./packages/ccl-test-data) | Test fixture package (JSON files) |
 | [`@tylerbu/ccl-test-viewer`](./packages/ccl-test-viewer) | SvelteKit + Tauri visualization app |
 
-The documentation site lives in its own repo: [ccl-website](https://github.com/tylerbutler/ccl-website) (deployed at <https://ccl.tylerbutler.com>).
+The documentation site lives in its own repo: [ccl-website](https://github.com/tylerbutler/ccl-website) (deployed at <https://catconflang.com>).
 
 ## Development
 

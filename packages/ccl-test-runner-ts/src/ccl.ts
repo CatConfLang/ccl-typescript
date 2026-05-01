@@ -102,7 +102,7 @@ function processLine(state: ParseState, line: string, trimmed: string, indent: n
 /**
  * Parse CCL text into flat key-value entries.
  *
- * Algorithm (from https://ccl.tylerbutler.com/parsing-algorithm/):
+ * Algorithm (from https://catconflang.com/parsing-algorithm/):
  * - Lines at base indentation with `=` start new entries
  * - Lines indented MORE than current entry become part of that entry's value
  * - Keys are fully trimmed; values have spaces trimmed (tabs preserved)

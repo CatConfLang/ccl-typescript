@@ -2,7 +2,7 @@
  * ccl-zod — Zod schema integration for CCL.
  *
  * Extract typed JavaScript objects from CCLObjects using Zod schemas.
- * See https://ccl.tylerbutler.com for the CCL specification.
+ * See https://catconflang.com for the CCL specification.
  *
  * @packageDocumentation
  */

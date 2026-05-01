@@ -2,7 +2,7 @@
  * ccl-ts - TypeScript CCL (Categorical Configuration Language) parser.
  *
  * This package provides a CCL parser implementation in TypeScript.
- * See https://ccl.tylerbutler.com for the CCL specification.
+ * See https://catconflang.com for the CCL specification.
  *
  * All functions that can fail return Result types from true-myth.
  * Use `.isOk` / `.isErr` to check success, or `.match()` for pattern matching.
